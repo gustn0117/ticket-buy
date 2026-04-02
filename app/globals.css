@@ -1,17 +1,17 @@
 @import "tailwindcss";
 
 :root {
-  --primary: #4CAF50;
-  --primary-dark: #388E3C;
-  --primary-light: #C8E6C9;
-  --background: #f5f5f5;
-  --foreground: #333333;
+  --primary: #22C55E;
+  --primary-dark: #16A34A;
+  --primary-light: #DCFCE7;
+  --background: #FAFAFA;
+  --foreground: #1A1A1A;
   --card-bg: #ffffff;
-  --border: #e0e0e0;
-  --text-muted: #999999;
-  --danger: #e53935;
-  --warning: #FF9800;
-  --info: #2196F3;
+  --border: #E5E7EB;
+  --text-muted: #9CA3AF;
+  --danger: #EF4444;
+  --warning: #F59E0B;
+  --info: #3B82F6;
 }
 
 @theme inline {
@@ -33,7 +33,10 @@
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: 'Noto Sans KR', Arial, Helvetica, sans-serif;
+  font-family: var(--font-geist-sans), 'Noto Sans KR', -apple-system, BlinkMacSystemFont, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  letter-spacing: -0.01em;
 }
 
 * {
@@ -42,14 +45,14 @@ body {
 
 /* Scrollbar */
 ::-webkit-scrollbar {
-  width: 6px;
+  width: 5px;
 }
 ::-webkit-scrollbar-track {
-  background: #f1f1f1;
+  background: transparent;
 }
 ::-webkit-scrollbar-thumb {
-  background: #ccc;
-  border-radius: 3px;
+  background: #D1D5DB;
+  border-radius: 10px;
 }
 
 /* Custom utilities */

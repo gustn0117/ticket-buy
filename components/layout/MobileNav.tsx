@@ -16,7 +16,7 @@ export default function MobileNav() {
   const { isLoggedIn } = useAuth();
 
   return (
-    <nav className="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 z-50">
+    <nav className="md:hidden fixed bottom-0 left-0 right-0 bg-white/90 backdrop-blur-md border-t border-gray-100 z-50">
       <div className="flex justify-around items-center h-14">
         {navItems.map((item) => {
           const Icon = item.icon;
@@ -25,22 +25,22 @@ export default function MobileNav() {
             <Link
               key={item.href}
               href={item.href}
-              className={`flex flex-col items-center gap-0.5 text-xs ${
-                isActive ? 'text-primary' : 'text-gray-500'
+              className={`flex flex-col items-center gap-0.5 text-[10px] font-medium ${
+                isActive ? 'text-primary' : 'text-gray-400'
               }`}
             >
-              <Icon size={20} />
+              <Icon size={20} strokeWidth={isActive ? 2.2 : 1.8} />
               <span>{item.label}</span>
             </Link>
           );
         })}
         <Link
           href={isLoggedIn ? '/dashboard' : '/login'}
-          className={`flex flex-col items-center gap-0.5 text-xs ${
-            pathname === '/login' || pathname === '/dashboard' ? 'text-primary' : 'text-gray-500'
+          className={`flex flex-col items-center gap-0.5 text-[10px] font-medium ${
+            pathname === '/login' || pathname === '/dashboard' ? 'text-primary' : 'text-gray-400'
           }`}
         >
-          <User size={20} />
+          <User size={20} strokeWidth={pathname === '/login' || pathname === '/dashboard' ? 2.2 : 1.8} />
           <span>{isLoggedIn ? '내정보' : '로그인'}</span>
         </Link>
       </div>
