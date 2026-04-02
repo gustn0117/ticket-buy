@@ -6,7 +6,6 @@ import { Settings, PenSquare } from 'lucide-react';
 import HeroBanner from '@/components/home/HeroBanner';
 import PremiumBuyerCard from '@/components/home/PremiumBuyerCard';
 import SellPostItem from '@/components/home/SellPostItem';
-import Sidebar from '@/components/home/Sidebar';
 import { premiumBuyers, sellPosts, buyPosts } from '@/data/mock';
 
 export default function Home() {
@@ -18,10 +17,8 @@ export default function Home() {
     <div className="max-w-[1280px] mx-auto px-4 py-4 md:py-6">
       <HeroBanner />
 
-      <div className="flex gap-6">
-        {/* Left Content */}
-        <div className="flex-1 min-w-0">
-          {/* Tabs */}
+      <div>
+        {/* Tabs */}
           <div className="bg-white rounded-t-lg border border-gray-200 overflow-hidden">
             <div className="flex">
               <button
@@ -93,11 +90,6 @@ export default function Home() {
               )}
             </div>
           </div>
-        </div>
-
-        {/* Sidebar - Desktop only */}
-        <div className="hidden lg:block w-[300px] shrink-0">
-          <Sidebar />
         </div>
       </div>
     </div>
