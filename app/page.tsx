@@ -4,7 +4,6 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { Settings, PenSquare } from 'lucide-react';
 import HeroBanner from '@/components/home/HeroBanner';
-import CategoryBar from '@/components/home/CategoryBar';
 import PremiumBuyerCard from '@/components/home/PremiumBuyerCard';
 import SellPostItem from '@/components/home/SellPostItem';
 import Sidebar from '@/components/home/Sidebar';
@@ -12,20 +11,12 @@ import { premiumBuyers, sellPosts, buyPosts } from '@/data/mock';
 
 export default function Home() {
   const [activeTab, setActiveTab] = useState<'buy' | 'sell'>('buy');
-  const [selectedCategory, setSelectedCategory] = useState('all');
-
-  const filteredSellPosts = selectedCategory === 'all'
-    ? sellPosts
-    : sellPosts.filter(p => p.category === selectedCategory);
-
-  const filteredBuyPosts = selectedCategory === 'all'
-    ? buyPosts
-    : buyPosts.filter(p => p.category === selectedCategory);
+  const filteredSellPosts = sellPosts;
+  const filteredBuyPosts = buyPosts;
 
   return (
     <div className="max-w-[1280px] mx-auto px-4 py-4 md:py-6">
       <HeroBanner />
-      <CategoryBar onSelect={setSelectedCategory} />
 
       <div className="flex gap-6">
         {/* Left Content */}
