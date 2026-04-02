@@ -1,65 +1,114 @@
-import Image from "next/image";
+'use client';
+
+import { useState } from 'react';
+import Link from 'next/link';
+import { Settings, PenSquare } from 'lucide-react';
+import HeroBanner from '@/components/home/HeroBanner';
+import CategoryBar from '@/components/home/CategoryBar';
+import PremiumBuyerCard from '@/components/home/PremiumBuyerCard';
+import SellPostItem from '@/components/home/SellPostItem';
+import Sidebar from '@/components/home/Sidebar';
+import { premiumBuyers, sellPosts, buyPosts } from '@/data/mock';
 
 export default function Home() {
+  const [activeTab, setActiveTab] = useState<'buy' | 'sell'>('buy');
+  const [selectedCategory, setSelectedCategory] = useState('all');
+
+  const filteredSellPosts = selectedCategory === 'all'
+    ? sellPosts
+    : sellPosts.filter(p => p.category === selectedCategory);
+
+  const filteredBuyPosts = selectedCategory === 'all'
+    ? buyPosts
+    : buyPosts.filter(p => p.category === selectedCategory);
+
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
+    <div className="max-w-[1280px] mx-auto px-4 py-4 md:py-6">
+      <HeroBanner />
+      <CategoryBar onSelect={setSelectedCategory} />
+
+      <div className="flex gap-6">
+        {/* Left Content */}
+        <div className="flex-1 min-w-0">
+          {/* Tabs */}
+          <div className="bg-white rounded-t-lg border border-gray-200 overflow-hidden">
+            <div className="flex">
+              <button
+                onClick={() => setActiveTab('buy')}
+                className={`flex-1 py-3.5 text-center font-medium text-sm transition-colors ${
+                  activeTab === 'buy'
+                    ? 'text-primary border-b-2 border-primary bg-white'
+                    : 'text-gray-500 bg-gray-50 hover:bg-gray-100'
+                }`}
+              >
+                삽니다
+              </button>
+              <button
+                onClick={() => setActiveTab('sell')}
+                className={`flex-1 py-3.5 text-center font-medium text-sm transition-colors ${
+                  activeTab === 'sell'
+                    ? 'text-primary border-b-2 border-primary bg-white'
+                    : 'text-gray-500 bg-gray-50 hover:bg-gray-100'
+                }`}
+              >
+                팝니다
+              </button>
+            </div>
+          </div>
+
+          {/* Premium Buyers Section */}
+          {activeTab === 'buy' && (
+            <div className="bg-white border-x border-gray-200 p-4">
+              <div className="flex items-center gap-2 mb-3">
+                <h2 className="font-bold text-base">프리미엄 구매 업체</h2>
+                <span className="text-xs bg-gray-100 text-gray-500 px-2 py-0.5 rounded">광고</span>
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                {premiumBuyers.map((buyer) => (
+                  <PremiumBuyerCard key={buyer.id} {...buyer} />
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Post List */}
+          <div className="bg-white border border-gray-200 rounded-b-lg">
+            <div className="flex items-center justify-between px-4 py-3 border-b border-gray-100">
+              <h3 className="font-bold text-sm">
+                {activeTab === 'buy' ? '일반 구매글' : '일반 판매글'}
+              </h3>
+              <div className="flex items-center gap-2">
+                <button className="text-gray-400 hover:text-gray-600">
+                  <Settings size={16} />
+                </button>
+                <Link
+                  href={`/board/write?type=${activeTab}`}
+                  className="flex items-center gap-1 bg-primary text-white text-xs px-3 py-1.5 rounded hover:bg-primary-dark transition-colors"
+                >
+                  <PenSquare size={12} />
+                  {activeTab === 'buy' ? '구매' : '판매'}
+                </Link>
+              </div>
+            </div>
+
+            <div>
+              {(activeTab === 'sell' ? filteredSellPosts : filteredBuyPosts).map((post) => (
+                <SellPostItem key={post.id} post={post} />
+              ))}
+              {(activeTab === 'sell' ? filteredSellPosts : filteredBuyPosts).length === 0 && (
+                <div className="py-12 text-center text-gray-400 text-sm">
+                  등록된 글이 없습니다.
+                </div>
+              )}
+            </div>
+          </div>
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
+
+        {/* Sidebar - Desktop only */}
+        <div className="hidden lg:block w-[300px] shrink-0">
+          <Sidebar />
         </div>
-      </main>
+      </div>
     </div>
   );
 }

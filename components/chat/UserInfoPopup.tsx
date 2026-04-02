@@ -1,0 +1,73 @@
+'use client';
+
+import { X, Flag } from 'lucide-react';
+
+interface UserInfoPopupProps {
+  user: {
+    name: string;
+    type: string;
+    joinDate: string;
+    tradeCompleted: number;
+    tradeOngoing: number;
+    tradeDelayed: number;
+  };
+  onClose: () => void;
+}
+
+export default function UserInfoPopup({ user, onClose }: UserInfoPopupProps) {
+  return (
+    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4" onClick={onClose}>
+      <div className="bg-white rounded-lg w-full max-w-sm" onClick={e => e.stopPropagation()}>
+        <div className="flex items-center justify-between p-4 border-b border-gray-100">
+          <h3 className="font-bold">유저 정보</h3>
+          <button onClick={onClose} className="text-gray-400 hover:text-gray-600">
+            <X size={20} />
+          </button>
+        </div>
+
+        <div className="p-5">
+          <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 bg-gray-200 rounded-full flex items-center justify-center text-gray-500">
+                <span className="text-lg">👤</span>
+              </div>
+              <div>
+                <span className="font-bold">{user.name}</span>
+                <span className="text-sm text-gray-500 ml-1">({user.type})</span>
+              </div>
+            </div>
+            <button className="flex items-center gap-1 text-red-500 text-sm border border-red-200 px-2 py-1 rounded hover:bg-red-50">
+              <Flag size={14} /> 신고
+            </button>
+          </div>
+
+          <p className="text-sm text-gray-500 mb-4">가입일: {user.joinDate}</p>
+
+          <div className="space-y-1">
+            <h4 className="text-sm font-medium mb-2">거래 통계</h4>
+            <div className="flex gap-4 text-sm">
+              <span className="text-green-600">거래완료 {user.tradeCompleted}건</span>
+              <span className="text-blue-600">거래중 {user.tradeOngoing}건</span>
+              <span className="text-red-600">지연중 {user.tradeDelayed}건</span>
+            </div>
+          </div>
+
+          <div className="mt-4 space-y-2">
+            <div className="flex items-center justify-between py-2 border-b border-gray-100 text-sm">
+              <span>거래완료 {user.tradeCompleted}건</span>
+              <span className="text-gray-400">{'>'}</span>
+            </div>
+            <div className="flex items-center justify-between py-2 border-b border-gray-100 text-sm">
+              <span>거래중 {user.tradeOngoing}건</span>
+              <span className="text-gray-400">{'>'}</span>
+            </div>
+            <div className="flex items-center justify-between py-2 border-b border-gray-100 text-sm">
+              <span>지연중 {user.tradeDelayed}건</span>
+              <span className="text-gray-400">{'>'}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
