@@ -2,7 +2,7 @@
 
 import { useState, useRef, useEffect, use } from 'react';
 import Link from 'next/link';
-import { ArrowLeft, Paperclip, Send, X, FileText, CreditCard, Truck, CheckCircle2 } from 'lucide-react';
+import { ArrowLeft, Paperclip, Send, X, FileText, CreditCard, Truck, CheckCircle2, Heart } from 'lucide-react';
 import TradeStepBar from '@/components/chat/TradeStepBar';
 import QuoteForm, { QuoteData } from '@/components/chat/QuoteForm';
 import UserInfoPopup from '@/components/chat/UserInfoPopup';
@@ -242,7 +242,7 @@ export default function ChatRoomPage({ params }: { params: Promise<{ id: string 
               <div key={msg.id} className="flex justify-center">
                 <div className="bg-white border border-primary/30 rounded-lg p-4 text-sm max-w-[80%]">
                   <div className="flex items-center gap-2 mb-2">
-                    <span className="text-primary font-bold">💚 견적을 제안했습니다</span>
+                    <span className="text-primary font-bold flex items-center gap-1"><Heart size={16} className="fill-primary" /> 견적을 제안했습니다</span>
                   </div>
                   {msg.data && (
                     <div className="text-xs space-y-1 text-gray-600">

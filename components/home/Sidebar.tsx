@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { Search, Shield, AlertTriangle } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { notices } from '@/data/mock';
+import { MegaphoneIcon } from '@/components/icons/SvgIcons';
 
 export default function Sidebar() {
   const { isLoggedIn, user } = useAuth();
@@ -57,7 +58,7 @@ export default function Sidebar() {
       {/* Notices */}
       <div className="bg-white rounded-lg p-4 border border-gray-200">
         <h3 className="font-bold text-base mb-3 flex items-center gap-2">
-          <span className="text-lg">📢</span> 공지사항
+          <MegaphoneIcon size={18} /> 공지사항
         </h3>
         <ul className="space-y-2">
           {notices.slice(0, 5).map((notice) => (

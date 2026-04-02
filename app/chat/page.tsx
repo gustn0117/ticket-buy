@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import { MessageCircle } from 'lucide-react';
+import { MessageCircle, User } from 'lucide-react';
 import { chatList } from '@/data/mock';
 
 const statusFilters = ['전체', '거래중', '견적대기', '거래완료', '취소'];
@@ -46,8 +46,8 @@ export default function ChatListPage() {
           >
             <div className="flex items-start justify-between mb-2">
               <div className="flex items-center gap-2">
-                <div className="w-9 h-9 bg-gray-200 rounded-full flex items-center justify-center text-sm">
-                  👤
+                <div className="w-9 h-9 bg-gray-200 rounded-full flex items-center justify-center text-gray-500">
+                  <User size={18} />
                 </div>
                 <div>
                   <div className="flex items-center gap-2">

@@ -2,24 +2,25 @@
 
 import { useState, useEffect } from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { HandshakeIcon, ShieldCheckIcon, FireIcon } from '@/components/icons/SvgIcons';
 
 const banners = [
   {
     id: 1,
     title: '티켓바이와 함께할 공식 제휴 업체(광고주)를 모집합니다!',
-    subtitle: '🤝',
+    icon: HandshakeIcon,
     bg: 'from-green-700 to-green-900',
   },
   {
     id: 2,
     title: '안전한 상품권 거래, 티켓바이에서 시작하세요',
-    subtitle: '🛡️',
+    icon: ShieldCheckIcon,
     bg: 'from-blue-700 to-blue-900',
   },
   {
     id: 3,
     title: '프리미엄 업체 등록 시 다양한 혜택 제공!',
-    subtitle: '🔥',
+    icon: FireIcon,
     bg: 'from-orange-600 to-red-700',
   },
 ];
@@ -47,7 +48,7 @@ export default function HeroBanner() {
           }`}
         >
           <div className="text-center text-white px-8">
-            <span className="text-4xl md:text-5xl mb-4 block">{banner.subtitle}</span>
+            <span className="mb-4 block text-white">{<banner.icon size={48} />}</span>
             <h2 className="text-lg md:text-2xl font-bold">{banner.title}</h2>
           </div>
         </div>

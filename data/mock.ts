@@ -1,17 +1,17 @@
 // 상품권 카테고리
 export const categories = [
-  { id: 'all', name: '전체', icon: '🎫' },
-  { id: 'lotte', name: '롯데', icon: '🔴' },
-  { id: 'shinsegae', name: '신세계', icon: '⭐' },
-  { id: 'culture', name: '문화상품권', icon: '🎭' },
-  { id: 'cultureland', name: '컬쳐랜드', icon: '🎪' },
-  { id: 'starbucks', name: '스타벅스', icon: '☕' },
-  { id: 'oncash', name: '온캐시', icon: '💚' },
-  { id: 'googleplay', name: '구글플레이', icon: '▶️' },
-  { id: 'teencash', name: '틴캐시', icon: '🎮' },
-  { id: 'baemin', name: '배민상품권', icon: '🛵' },
-  { id: 'happymoney', name: '해피머니', icon: '😊' },
-  { id: 'etc', name: '기타', icon: '⊞' },
+  { id: 'all', name: '전체' },
+  { id: 'lotte', name: '롯데' },
+  { id: 'shinsegae', name: '신세계' },
+  { id: 'culture', name: '문화상품권' },
+  { id: 'cultureland', name: '컬쳐랜드' },
+  { id: 'starbucks', name: '스타벅스' },
+  { id: 'oncash', name: '온캐시' },
+  { id: 'googleplay', name: '구글플레이' },
+  { id: 'teencash', name: '틴캐시' },
+  { id: 'baemin', name: '배민상품권' },
+  { id: 'happymoney', name: '해피머니' },
+  { id: 'etc', name: '기타' },
 ];
 
 // 프리미엄 구매 업체
@@ -19,7 +19,7 @@ export const premiumBuyers = [
   {
     id: 1,
     name: '하나티켓',
-    description: '신세계 / 롯데 / 해피머니 등 각종 상품권 매입합니다 🔥 사장이 직접 친절하게 답변드려요 👍',
+    description: '신세계 / 롯데 / 해피머니 등 각종 상품권 매입합니다. 사장이 직접 친절하게 답변드려요.',
     brands: ['신세계', '롯데'],
     phone: '010-5613-68**',
     region: '서울특별시 강남구 역삼동',
@@ -29,7 +29,7 @@ export const premiumBuyers = [
   {
     id: 2,
     name: '시그널티켓',
-    description: '안녕하세요 😊 시그널티켓입니다. 신세계 / 롯데 상품권 매입하고 있습니다.',
+    description: '안녕하세요. 시그널티켓입니다. 신세계 / 롯데 상품권 매입하고 있습니다.',
     brands: ['롯데', '신세계'],
     phone: '010-5537-22**',
     region: '경기 성남시',
@@ -39,7 +39,7 @@ export const premiumBuyers = [
   {
     id: 3,
     name: '불꽃티켓',
-    description: '신세계 / 롯데 / 문화상품권 등 모든 상품권 매입합니다 🔥 라인 아이디 ★ firetkt888',
+    description: '신세계 / 롯데 / 문화상품권 등 모든 상품권 매입합니다. 라인 아이디: firetkt888',
     brands: ['신세계', '롯데'],
     phone: '010-5329-55**',
     region: '대구광역시',
@@ -49,7 +49,7 @@ export const premiumBuyers = [
   {
     id: 4,
     name: '마포상품권',
-    description: '✅ 정식 등록 업체🔥 상품권 매입 안내 안녕하세요! 상품권을 정중하게 매입하고 있습니다.',
+    description: '정식 등록 업체. 상품권 매입 안내. 안녕하세요! 상품권을 정중하게 매입하고 있습니다.',
     brands: ['롯데', '신세계'],
     phone: '010-5929-55**',
     region: '서울 마포구',
@@ -59,7 +59,7 @@ export const premiumBuyers = [
   {
     id: 5,
     name: '온티켓',
-    description: '안녕하세요 👋 온티켓입니다. 선물 받으시고 사용하지 않은 상품권 매입합니다!',
+    description: '안녕하세요. 온티켓입니다. 선물 받으시고 사용하지 않은 상품권 매입합니다!',
     brands: ['신세계', '문화상품권'],
     phone: '010-3447-72**',
     region: '서울 강서구',
@@ -69,7 +69,7 @@ export const premiumBuyers = [
   {
     id: 6,
     name: '행운상품권',
-    description: '"행운" 을 드리는 "행운" 상품권 구매합니다 🍀 라인아이디:good9949',
+    description: '"행운" 을 드리는 "행운" 상품권 구매합니다. 라인아이디: good9949',
     brands: ['신세계'],
     phone: '010-8131-99**',
     region: '부산광역시',
@@ -234,17 +234,17 @@ export const buyPosts = [
 export const notices = [
   {
     id: 1,
-    title: '🤝 티켓바이와 함께할 공식 제휴 업체(광고주)를 모집합니다!',
+    title: '티켓바이와 함께할 공식 제휴 업체(광고주)를 모집합니다!',
     date: '2026.03.31 18:28',
   },
   {
     id: 2,
-    title: '[필독] 🚨 3자 사기 및 보이스피싱 예방을 위한 안전 거래 수칙',
+    title: '[필독] 3자 사기 및 보이스피싱 예방을 위한 안전 거래 수칙',
     date: '2026.03.31 18:26',
   },
   {
     id: 3,
-    title: '쉽고 빠른 상품권 거래의 시작, \'티켓바이\' 정식 오픈 안내 🎉',
+    title: '쉽고 빠른 상품권 거래의 시작, \'티켓바이\' 정식 오픈 안내',
     date: '2026.03.31 18:23',
   },
   {

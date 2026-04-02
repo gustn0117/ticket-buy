@@ -1,6 +1,6 @@
 'use client';
 
-import { X, Flag } from 'lucide-react';
+import { X, Flag, User } from 'lucide-react';
 
 interface UserInfoPopupProps {
   user: {
@@ -29,7 +29,7 @@ export default function UserInfoPopup({ user, onClose }: UserInfoPopupProps) {
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 bg-gray-200 rounded-full flex items-center justify-center text-gray-500">
-                <span className="text-lg">👤</span>
+                <User size={20} />
               </div>
               <div>
                 <span className="font-bold">{user.name}</span>
