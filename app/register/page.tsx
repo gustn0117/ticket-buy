@@ -39,7 +39,7 @@ export default function RegisterPage() {
         name: form.name,
         phone: form.phone || null,
         type: 'normal',
-        business_name: null,
+        password_hash: form.password,
       });
       alert('회원가입이 완료되었습니다!');
       router.push('/login');

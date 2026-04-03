@@ -25,7 +25,7 @@ export interface DBUser {
   name: string;
   phone: string | null;
   type: 'normal' | 'business';
-  business_name: string | null;
+  password_hash?: string;
   created_at: string;
   updated_at: string;
 }

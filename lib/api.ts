@@ -4,7 +4,7 @@ import type { DBPost, DBUser, DBChat, DBMessage, DBNotice } from './types';
 // ─── Posts ───
 
 export async function getPosts(type?: 'sell' | 'buy') {
-  let q = supabase.from('posts').select('*, author:users!author_id(id, name, type, business_name)').order('created_at', { ascending: false });
+  let q = supabase.from('posts').select('*, author:users!author_id(id, name, type)').order('created_at', { ascending: false });
   if (type) q = q.eq('type', type);
   const { data, error } = await q;
   if (error) throw error;
@@ -16,7 +16,7 @@ export async function getPost(id: string) {
   try { await supabase.rpc('increment_views', { post_id: id }); } catch {}
   const { data, error } = await supabase
     .from('posts')
-    .select('*, author:users!author_id(id, name, type, business_name)')
+    .select('*, author:users!author_id(id, name, type)')
     .eq('id', id)
     .single();
   if (error) throw error;
@@ -71,7 +71,7 @@ export async function loginUser(email: string, password: string) {
 export async function getChats(userId: string) {
   const { data, error } = await supabase
     .from('chats')
-    .select('*, post:posts(*), buyer:users!buyer_id(id, name, type, business_name), seller:users!seller_id(id, name, type, business_name)')
+    .select('*, post:posts(*), buyer:users!buyer_id(id, name, type), seller:users!seller_id(id, name, type)')
     .or(`buyer_id.eq.${userId},seller_id.eq.${userId}`)
     .order('updated_at', { ascending: false });
   if (error) throw error;
@@ -81,7 +81,7 @@ export async function getChats(userId: string) {
 export async function getChat(id: string) {
   const { data, error } = await supabase
     .from('chats')
-    .select('*, post:posts(*), buyer:users!buyer_id(id, name, type, business_name), seller:users!seller_id(id, name, type, business_name)')
+    .select('*, post:posts(*), buyer:users!buyer_id(id, name, type), seller:users!seller_id(id, name, type)')
     .eq('id', id)
     .single();
   if (error) throw error;

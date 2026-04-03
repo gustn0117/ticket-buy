@@ -41,7 +41,7 @@ export default function Header() {
             {isLoggedIn ? (
               <>
                 <Link href="/dashboard" className="flex items-center gap-1.5 px-3 py-1.5 text-[13px] text-zinc-600 hover:text-zinc-900 font-medium">
-                  <User size={14} />{user?.business_name || user?.name}
+                  <User size={14} />{user?.name}
                 </Link>
                 <span className="text-zinc-200">|</span>
                 <button onClick={logout} className="px-2 py-1.5 text-[12px] text-zinc-400 hover:text-zinc-700">로그아웃</button>
