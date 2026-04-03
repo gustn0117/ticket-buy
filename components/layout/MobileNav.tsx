@@ -16,32 +16,23 @@ export default function MobileNav() {
   const { isLoggedIn } = useAuth();
 
   return (
-    <nav className="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 z-50">
-      <div className="flex justify-around items-center h-14">
+    <nav className="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-zinc-200 z-50">
+      <div className="flex justify-around items-center h-[52px]">
         {navItems.map((item) => {
           const Icon = item.icon;
           const isActive = pathname === item.href.split('?')[0];
           return (
-            <Link
-              key={item.href}
-              href={item.href}
-              className={`flex flex-col items-center gap-0.5 text-[10px] font-medium ${
-                isActive ? 'text-gray-900' : 'text-gray-400'
-              }`}
-            >
-              <Icon size={20} strokeWidth={isActive ? 2.2 : 1.6} />
-              <span>{item.label}</span>
+            <Link key={item.href} href={item.href}
+              className={`flex flex-col items-center gap-0.5 text-[10px] ${isActive ? 'text-zinc-900 font-semibold' : 'text-zinc-400'}`}>
+              <Icon size={18} strokeWidth={isActive ? 2 : 1.5} />
+              {item.label}
             </Link>
           );
         })}
-        <Link
-          href={isLoggedIn ? '/dashboard' : '/login'}
-          className={`flex flex-col items-center gap-0.5 text-[10px] font-medium ${
-            pathname === '/login' || pathname?.startsWith('/dashboard') ? 'text-gray-900' : 'text-gray-400'
-          }`}
-        >
-          <User size={20} strokeWidth={pathname === '/login' || pathname?.startsWith('/dashboard') ? 2.2 : 1.6} />
-          <span>{isLoggedIn ? '내정보' : '로그인'}</span>
+        <Link href={isLoggedIn ? '/dashboard' : '/login'}
+          className={`flex flex-col items-center gap-0.5 text-[10px] ${pathname === '/login' || pathname?.startsWith('/dashboard') ? 'text-zinc-900 font-semibold' : 'text-zinc-400'}`}>
+          <User size={18} strokeWidth={pathname === '/login' || pathname?.startsWith('/dashboard') ? 2 : 1.5} />
+          {isLoggedIn ? '내정보' : '로그인'}
         </Link>
       </div>
     </nav>

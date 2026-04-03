@@ -4,24 +4,9 @@ import { useState, useEffect } from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 
 const banners = [
-  {
-    id: 1,
-    title: '공식 제휴 업체를 모집합니다',
-    subtitle: '티켓바이와 함께 성장할 파트너를 찾고 있습니다.',
-    bg: 'bg-gray-900',
-  },
-  {
-    id: 2,
-    title: '계약서 기반 안심 거래 시스템',
-    subtitle: '전자 계약서와 단계별 거래 프로세스로 안전하게.',
-    bg: 'bg-gray-800',
-  },
-  {
-    id: 3,
-    title: '프리미엄 업체 등록 혜택',
-    subtitle: '업체 등록 시 상단 노출 및 다양한 혜택을 제공합니다.',
-    bg: 'bg-gray-900',
-  },
+  { id: 1, title: '공식 제휴 업체를 모집합니다', desc: '티켓바이와 함께 성장할 파트너를 찾고 있습니다.' },
+  { id: 2, title: '계약서 기반 안심 거래', desc: '전자 계약서와 단계별 프로세스로 안전하게 거래하세요.' },
+  { id: 3, title: '프리미엄 업체 등록 혜택', desc: '업체 등록 시 상단 노출 및 다양한 혜택을 제공합니다.' },
 ];
 
 export default function HeroBanner() {
@@ -33,35 +18,26 @@ export default function HeroBanner() {
   }, []);
 
   return (
-    <div className="relative w-full rounded-none md:rounded-lg overflow-hidden mb-8 -mx-6 md:mx-0 px-6 md:px-0" style={{ width: 'calc(100% + 48px)' }}>
-      <div className="md:rounded-lg overflow-hidden">
-        {banners.map((banner, idx) => (
-          <div
-            key={banner.id}
-            className={`${idx === 0 ? '' : 'absolute inset-0'} ${banner.bg} transition-opacity duration-500 ${idx === current ? 'opacity-100 relative' : 'opacity-0 absolute inset-0'}`}
-          >
-            <div className="px-8 md:px-14 py-14 md:py-20">
-              <p className="text-gray-400 text-xs md:text-sm mb-3 tracking-wide">{banner.subtitle}</p>
-              <h2 className="text-white text-xl md:text-3xl font-bold tracking-tight leading-tight">{banner.title}</h2>
-            </div>
+    <div className="relative bg-zinc-900 rounded-lg overflow-hidden mb-8">
+      {banners.map((b, idx) => (
+        <div key={b.id}
+          className={`transition-opacity duration-500 ${idx === current ? 'opacity-100' : 'opacity-0 absolute inset-0'}`}>
+          <div className="px-8 md:px-12 py-12 md:py-16">
+            <p className="text-zinc-500 text-[12px] mb-2">{b.desc}</p>
+            <h2 className="text-white text-[20px] md:text-[26px] font-semibold leading-tight">{b.title}</h2>
           </div>
-        ))}
-      </div>
-
-      <button onClick={() => setCurrent((c) => (c - 1 + banners.length) % banners.length)}
-        className="absolute left-8 md:left-4 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center text-white transition-colors">
-        <ChevronLeft size={16} />
-      </button>
-      <button onClick={() => setCurrent((c) => (c + 1) % banners.length)}
-        className="absolute right-8 md:right-4 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center text-white transition-colors">
-        <ChevronRight size={16} />
-      </button>
-
-      <div className="absolute bottom-4 left-8 md:left-14 flex gap-1.5">
-        {banners.map((_, idx) => (
-          <button key={idx} onClick={() => setCurrent(idx)}
-            className={`h-0.5 rounded-full transition-all duration-300 ${idx === current ? 'bg-white w-6' : 'bg-white/30 w-3'}`} />
-        ))}
+        </div>
+      ))}
+      <div className="absolute bottom-4 right-4 flex items-center gap-2">
+        <button onClick={() => setCurrent((c) => (c - 1 + banners.length) % banners.length)}
+          className="w-7 h-7 rounded border border-zinc-700 flex items-center justify-center text-zinc-400 hover:text-white hover:border-zinc-500 transition-colors">
+          <ChevronLeft size={14} />
+        </button>
+        <span className="text-[11px] text-zinc-500 tabular-nums">{current + 1} / {banners.length}</span>
+        <button onClick={() => setCurrent((c) => (c + 1) % banners.length)}
+          className="w-7 h-7 rounded border border-zinc-700 flex items-center justify-center text-zinc-400 hover:text-white hover:border-zinc-500 transition-colors">
+          <ChevronRight size={14} />
+        </button>
       </div>
     </div>
   );

@@ -18,8 +18,8 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   const pathname = usePathname();
 
   return (
-    <div className="max-w-[1200px] mx-auto px-6 py-6">
-      <div className="flex overflow-x-auto gap-0 mb-6 border-b border-gray-200 scrollbar-hide">
+    <div className="max-w-[1140px] mx-auto px-5 py-6">
+      <div className="flex overflow-x-auto gap-0 mb-5 border-b border-zinc-200 scrollbar-hide">
         {navItems.map((item) => {
           const Icon = item.icon;
           const isActive = pathname === item.href;
@@ -27,9 +27,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
             <Link
               key={item.href}
               href={item.href}
-              className={`flex items-center gap-1.5 px-4 py-3 text-xs font-medium whitespace-nowrap border-b-2 transition-colors ${
-                isActive ? 'border-gray-900 text-gray-900' : 'border-transparent text-gray-400 hover:text-gray-600'
-              }`}
+              className={`tab-underline flex items-center gap-1.5 whitespace-nowrap ${isActive ? 'active' : ''}`}
             >
               <Icon size={13} />
               {item.label}
@@ -38,7 +36,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         })}
         <Link
           href="/board/write"
-          className="flex items-center gap-1.5 px-4 py-3 text-xs font-medium whitespace-nowrap border-b-2 border-transparent text-gray-400 hover:text-gray-600 transition-colors ml-auto"
+          className="btn-secondary ml-auto whitespace-nowrap self-center mb-1"
         >
           <PenSquare size={13} />
           등록 글

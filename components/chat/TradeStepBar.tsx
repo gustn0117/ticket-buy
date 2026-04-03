@@ -17,22 +17,22 @@ export default function TradeStepBar({ currentStep }: TradeStepBarProps) {
           <div key={step.step} className="flex items-center">
             <div className="flex flex-col items-center">
               <div
-                className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold transition-colors ${
+                className={`w-8 h-8 rounded-full flex items-center justify-center text-[11px] font-semibold transition-colors ${
                   isCompleted
-                    ? 'bg-primary text-white'
+                    ? 'bg-zinc-900 text-white'
                     : isCurrent
-                    ? 'bg-primary text-white ring-2 ring-primary/30'
-                    : 'bg-gray-200 text-gray-500'
+                    ? 'bg-blue-500 text-white ring-2 ring-blue-200'
+                    : 'bg-zinc-300 text-white'
                 }`}
               >
                 {isCompleted ? <Check size={16} /> : step.step}
               </div>
-              <span className={`text-[10px] mt-1 ${isCurrent ? 'text-primary font-bold' : 'text-gray-400'}`}>
+              <span className={`text-[11px] mt-1 ${isCurrent ? 'text-blue-500 font-medium' : 'text-zinc-400'}`}>
                 {step.label}
               </span>
             </div>
             {idx < tradeSteps.length - 1 && (
-              <div className={`w-6 sm:w-10 md:w-16 h-0.5 mx-1 ${isCompleted ? 'bg-primary' : 'bg-gray-200'}`} />
+              <div className={`w-6 sm:w-10 md:w-16 h-0.5 mx-1 ${isCompleted ? 'bg-zinc-900' : 'bg-zinc-200'}`} />
             )}
           </div>
         );

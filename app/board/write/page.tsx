@@ -34,21 +34,21 @@ export default function WritePostPage() {
   };
 
   return (
-    <div className="max-w-[640px] mx-auto px-4 py-6 animate-fade-in">
-      <Link href="/board" className="inline-flex items-center gap-1.5 text-sm text-gray-500 hover:text-gray-900 mb-5 transition-colors font-medium">
+    <div className="max-w-[640px] mx-auto px-5 py-6 animate-fade-in">
+      <Link href="/board" className="inline-flex items-center gap-1.5 text-[13px] text-zinc-500 hover:text-zinc-900 mb-5 transition-colors font-medium">
         <ArrowLeft size={16} /> 목록으로
       </Link>
 
-      <div className="bg-white rounded-2xl border border-gray-200/60 shadow-sm p-7">
-        <h1 className="text-xl font-extrabold tracking-tight mb-6 text-gray-900">글쓰기</h1>
+      <div className="card p-5">
+        <h1 className="section-title mb-5">글쓰기</h1>
 
-        <form onSubmit={handleSubmit} className="space-y-5">
+        <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1.5">상품권 종류 *</label>
+            <label className="block text-[12px] font-medium text-zinc-600 mb-1">상품권 종류 *</label>
             <select
               value={form.category}
               onChange={(e) => handleChange('category', e.target.value)}
-              className="w-full h-12 px-4 bg-gray-50 border border-gray-200 rounded-xl text-sm transition-all focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500"
+              className="input"
               required
             >
               <option value="">선택하세요</option>
@@ -59,75 +59,73 @@ export default function WritePostPage() {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1.5">제목 *</label>
+            <label className="block text-[12px] font-medium text-zinc-600 mb-1">제목 *</label>
             <input
               type="text"
               value={form.title}
               onChange={(e) => handleChange('title', e.target.value)}
               placeholder="예: 신세계 10만원권 판매"
-              className="w-full h-12 px-4 bg-gray-50 border border-gray-200 rounded-xl text-sm transition-all focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500"
+              className="input"
               required
             />
           </div>
 
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1.5">개당 상품권 금액 (원) *</label>
+              <label className="block text-[12px] font-medium text-zinc-600 mb-1">개당 상품권 금액 (원) *</label>
               <input
                 type="number"
                 value={form.faceValue}
                 onChange={(e) => handleChange('faceValue', e.target.value)}
                 placeholder="100000"
-                className="w-full h-12 px-4 bg-gray-50 border border-gray-200 rounded-xl text-sm transition-all focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500"
+                className="input"
                 required
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1.5">개당 구매금액 (원) *</label>
+              <label className="block text-[12px] font-medium text-zinc-600 mb-1">개당 구매금액 (원) *</label>
               <input
                 type="number"
                 value={form.price}
                 onChange={(e) => handleChange('price', e.target.value)}
                 placeholder="70000"
-                className="w-full h-12 px-4 bg-gray-50 border border-gray-200 rounded-xl text-sm transition-all focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500"
+                className="input"
                 required
               />
             </div>
           </div>
 
           {faceValue > 0 && price > 0 && (
-            <div className="bg-gray-50 rounded-xl px-4 py-3 text-sm border border-gray-200">
-              할인율: <span className="text-gray-900 font-extrabold">{discount}%</span>
+            <div className="bg-zinc-50 rounded-md px-4 py-3 text-[13px] border border-zinc-200">
+              할인율: <span className="text-zinc-900 font-semibold">{discount}%</span>
             </div>
           )}
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1.5">발송 예정</label>
-            <div className="flex items-center gap-4">
-              <select
-                value={form.delivery}
-                onChange={(e) => handleChange('delivery', e.target.value)}
-                className="flex-1 h-12 px-4 bg-gray-50 border border-gray-200 rounded-xl text-sm transition-all focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500"
-              >
-                <option value="즉시발송">즉시발송</option>
-                <option value="3일 이내 발송">3일 이내 발송</option>
-                <option value="5일 이내 발송">5일 이내 발송</option>
-                <option value="7일 이내 발송">7일 이내 발송</option>
-                <option value="14일 이내 발송">14일 이내 발송</option>
-              </select>
-            </div>
+            <label className="block text-[12px] font-medium text-zinc-600 mb-1">발송 예정</label>
+            <select
+              value={form.delivery}
+              onChange={(e) => handleChange('delivery', e.target.value)}
+              className="input"
+            >
+              <option value="즉시발송">즉시발송</option>
+              <option value="3일 이내 발송">3일 이내 발송</option>
+              <option value="5일 이내 발송">5일 이내 발송</option>
+              <option value="7일 이내 발송">7일 이내 발송</option>
+              <option value="14일 이내 발송">14일 이내 발송</option>
+            </select>
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1.5">배송 방법</label>
-            <div className="flex bg-gray-100 rounded-xl p-1">
+            <label className="block text-[12px] font-medium text-zinc-600 mb-1">배송 방법</label>
+            <div className="flex gap-2">
               {[
                 { value: 'mobile', label: '모바일' },
                 { value: 'parcel', label: '택배' },
                 { value: 'direct', label: '직접만남' },
               ].map(opt => (
-                <label key={opt.value} className={`flex-1 flex items-center justify-center gap-1.5 py-2.5 text-sm font-semibold rounded-lg cursor-pointer transition-all duration-200 ${
-                  form.deliveryMethod === opt.value ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500'
+                <label key={opt.value} className={`flex-1 flex items-center justify-center gap-1.5 py-2 text-[13px] font-medium rounded-md cursor-pointer transition-colors ${
+                  form.deliveryMethod === opt.value ? 'bg-zinc-900 text-white' : 'bg-zinc-100 text-zinc-500 hover:bg-zinc-200'
                 }`}>
                   <input
                     type="radio"
@@ -144,31 +142,28 @@ export default function WritePostPage() {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1.5">지역</label>
+            <label className="block text-[12px] font-medium text-zinc-600 mb-1">지역</label>
             <input
               type="text"
               value={form.region}
               onChange={(e) => handleChange('region', e.target.value)}
               placeholder="예: 서울, 전국"
-              className="w-full h-12 px-4 bg-gray-50 border border-gray-200 rounded-xl text-sm transition-all focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500"
+              className="input"
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1.5">상세 설명</label>
+            <label className="block text-[12px] font-medium text-zinc-600 mb-1">상세 설명</label>
             <textarea
               value={form.description}
               onChange={(e) => handleChange('description', e.target.value)}
               placeholder="추가 설명을 입력하세요"
               rows={4}
-              className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm resize-none transition-all focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500"
+              className="input h-auto py-3 resize-none"
             />
           </div>
 
-          <button
-            type="submit"
-            className="w-full h-12 bg-gray-900 text-white rounded-xl font-semibold  transition-all shadow-lg shadow-black/10 hover:shadow-black/15 text-sm"
-          >
+          <button type="submit" className="btn-primary w-full h-10">
             등록하기
           </button>
         </form>

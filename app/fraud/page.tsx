@@ -2,29 +2,26 @@ import { Shield, AlertTriangle, Phone, FileText, Users } from 'lucide-react';
 
 export default function FraudPage() {
   return (
-    <div className="max-w-[960px] mx-auto px-4 py-8 animate-fade-in">
+    <div className="max-w-[740px] mx-auto px-5 py-6 animate-fade-in">
       {/* Hero Section */}
-      <div className="relative bg-gray-900 rounded-2xl p-8 md:p-12 text-center text-white mb-8 shadow-lg shadow-black/10 overflow-hidden">
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_50%,rgba(255,255,255,0.1),transparent_70%)]" />
-        <div className="relative">
-          <div className="w-16 h-16 bg-white/20 backdrop-blur-sm rounded-2xl flex items-center justify-center mx-auto mb-4">
-            <Shield size={32} className="text-white" />
-          </div>
-          <h1 className="text-2xl md:text-3xl font-extrabold tracking-tight mb-2">사기 방지 가이드</h1>
-          <p className="text-emerald-100 text-sm md:text-base">안전한 상품권 거래를 위한 필수 안내사항</p>
+      <div className="card bg-zinc-900 text-white p-8 text-center mb-6">
+        <div className="w-14 h-14 bg-white/20 rounded-lg flex items-center justify-center mx-auto mb-4">
+          <Shield size={28} className="text-white" />
         </div>
+        <h1 className="text-[15px] font-semibold mb-1">사기 방지 가이드</h1>
+        <p className="text-zinc-400 text-[12px]">안전한 상품권 거래를 위한 필수 안내사항</p>
       </div>
 
-      <div className="space-y-6">
+      <div className="space-y-5">
         {/* Warning */}
-        <div className="bg-red-50 border border-red-200/60 rounded-2xl p-6 shadow-sm">
-          <div className="flex items-start gap-4">
-            <div className="w-10 h-10 bg-red-100 rounded-xl flex items-center justify-center shrink-0">
-              <AlertTriangle size={20} className="text-red-500" />
+        <div className="card bg-red-50 border-red-200 p-5">
+          <div className="flex items-start gap-3">
+            <div className="w-9 h-9 bg-red-100 rounded-lg flex items-center justify-center shrink-0">
+              <AlertTriangle size={18} className="text-red-500" />
             </div>
             <div>
-              <h3 className="font-extrabold text-red-700 mb-3 tracking-tight">주의사항</h3>
-              <ul className="text-sm text-red-600 space-y-2 leading-relaxed">
+              <h3 className="font-semibold text-[13px] text-red-700 mb-2">주의사항</h3>
+              <ul className="text-[12px] text-red-600 space-y-2 leading-relaxed">
                 <li className="flex items-start gap-2">
                   <span className="w-1.5 h-1.5 bg-red-400 rounded-full mt-1.5 shrink-0" />
                   플랫폼 외부에서의 직거래는 사기 피해 시 보호받을 수 없습니다.
@@ -47,32 +44,24 @@ export default function FraudPage() {
         </div>
 
         {/* Safe Trading Tips */}
-        <div className="bg-white rounded-2xl border border-gray-200/60 p-6 shadow-sm">
-          <h2 className="font-extrabold text-lg tracking-tight mb-5">안전 거래 수칙</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div>
+          <h2 className="section-title">안전 거래 수칙</h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
             {[
-              { icon: FileText, title: '계약서 필수 작성', desc: '거래 전 반드시 전자 계약서를 작성하고 서명을 받으세요.', color: 'emerald' },
+              { icon: FileText, title: '계약서 필수 작성', desc: '거래 전 반드시 전자 계약서를 작성하고 서명을 받으세요.', color: 'zinc' },
               { icon: Users, title: '상대방 정보 확인', desc: '거래 전 상대방의 거래 이력과 평판을 확인하세요.', color: 'blue' },
-              { icon: Shield, title: '사업자 조회', desc: '프리미엄 업체의 사업자등록번호를 반드시 확인하세요.', color: 'violet' },
-              { icon: Phone, title: '피해 신고', desc: '사기 피해 시 경찰 사이버수사대(182)에 즉시 신고하세요.', color: 'amber' },
+              { icon: Shield, title: '사업자 조회', desc: '프리미엄 업체의 사업자등록번호를 반드시 확인하세요.', color: 'zinc' },
+              { icon: Phone, title: '피해 신고', desc: '사기 피해 시 경찰 사이버수사대(182)에 즉시 신고하세요.', color: 'blue' },
             ].map((item) => (
-              <div key={item.title} className={`flex items-start gap-4 p-4 rounded-xl border border-gray-100 card-hover bg-gradient-to-br ${
-                item.color === 'emerald' ? 'from-gray-800/50 to-white' :
-                item.color === 'blue' ? 'from-blue-50/50 to-white' :
-                item.color === 'violet' ? 'from-violet-50/50 to-white' :
-                'from-amber-50/50 to-white'
-              }`}>
-                <div className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 ${
-                  item.color === 'emerald' ? 'bg-gray-100 text-gray-900' :
-                  item.color === 'blue' ? 'bg-blue-100 text-blue-600' :
-                  item.color === 'violet' ? 'bg-violet-100 text-violet-600' :
-                  'bg-amber-100 text-amber-600'
+              <div key={item.title} className="card card-hover p-4 flex items-start gap-3">
+                <div className={`w-9 h-9 rounded-lg flex items-center justify-center shrink-0 ${
+                  item.color === 'zinc' ? 'bg-zinc-100 text-zinc-900' : 'bg-blue-50 text-blue-600'
                 }`}>
-                  <item.icon size={18} />
+                  <item.icon size={16} />
                 </div>
                 <div>
-                  <h4 className="font-semibold text-sm mb-1 text-gray-900">{item.title}</h4>
-                  <p className="text-xs text-gray-500 leading-relaxed">{item.desc}</p>
+                  <h4 className="font-medium text-[13px] text-zinc-900 mb-0.5">{item.title}</h4>
+                  <p className="text-[11px] text-zinc-500 leading-relaxed">{item.desc}</p>
                 </div>
               </div>
             ))}
@@ -80,9 +69,9 @@ export default function FraudPage() {
         </div>
 
         {/* Scam Patterns */}
-        <div className="bg-white rounded-2xl border border-gray-200/60 p-6 shadow-sm">
-          <h2 className="font-extrabold text-lg tracking-tight mb-5">주요 사기 유형</h2>
-          <div className="space-y-3">
+        <div>
+          <h2 className="section-title">주요 사기 유형</h2>
+          <div className="card overflow-hidden">
             {[
               { title: '선입금 사기', desc: '상품권을 보내기 전에 먼저 돈을 보내달라고 요구합니다.' },
               { title: '3자 사기', desc: '제3자의 계좌로 입금을 유도하여 중간에서 가로채는 수법입니다.' },
@@ -90,13 +79,13 @@ export default function FraudPage() {
               { title: '피싱 링크', desc: '가짜 사이트 링크를 보내 개인정보를 탈취합니다.' },
               { title: '계약서 위변조', desc: '계약 내용을 임의로 변경하여 불리한 조건을 적용합니다.' },
             ].map((item, idx) => (
-              <div key={item.title} className="flex items-start gap-4 p-4 border border-gray-100 rounded-xl hover:bg-gray-50/50 transition-colors">
-                <div className="w-8 h-8 bg-red-50 rounded-lg flex items-center justify-center shrink-0">
-                  <span className="text-red-500 font-extrabold text-sm">{idx + 1}</span>
+              <div key={item.title} className="flex items-start gap-3 p-4 border-b border-zinc-100 last:border-b-0 hover:bg-zinc-50 transition-colors">
+                <div className="w-7 h-7 bg-red-50 rounded flex items-center justify-center shrink-0">
+                  <span className="text-red-500 font-semibold text-[12px]">{idx + 1}</span>
                 </div>
                 <div>
-                  <h4 className="font-semibold text-sm text-gray-900">{item.title}</h4>
-                  <p className="text-xs text-gray-500 mt-0.5 leading-relaxed">{item.desc}</p>
+                  <h4 className="font-medium text-[13px] text-zinc-900">{item.title}</h4>
+                  <p className="text-[11px] text-zinc-500 mt-0.5 leading-relaxed">{item.desc}</p>
                 </div>
               </div>
             ))}
@@ -104,13 +93,13 @@ export default function FraudPage() {
         </div>
 
         {/* Contact */}
-        <div className="bg-gradient-to-br from-gray-800 to-gray-900/50 border border-gray-200/60 rounded-2xl p-8 text-center shadow-sm">
-          <div className="w-12 h-12 bg-gray-100 rounded-xl flex items-center justify-center mx-auto mb-3">
-            <Phone size={20} className="text-gray-900" />
+        <div className="card bg-blue-50 border-blue-100 p-6 text-center">
+          <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center mx-auto mb-3">
+            <Phone size={18} className="text-blue-600" />
           </div>
-          <p className="text-sm text-gray-600 mb-2 font-medium">사기 피해 신고 및 상담</p>
-          <p className="text-3xl font-extrabold tracking-tight text-gray-900">182</p>
-          <p className="text-xs text-gray-500 mt-1.5">경찰청 사이버수사대</p>
+          <p className="text-[12px] text-zinc-600 mb-1 font-medium">사기 피해 신고 및 상담</p>
+          <p className="text-2xl font-semibold text-zinc-900">182</p>
+          <p className="text-[11px] text-zinc-500 mt-1">경찰청 사이버수사대</p>
         </div>
       </div>
     </div>
