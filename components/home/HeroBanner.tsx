@@ -1,36 +1,26 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { ChevronLeft, ChevronRight, ArrowRight } from 'lucide-react';
-import { HandshakeIcon, ShieldCheckIcon, FireIcon } from '@/components/icons/SvgIcons';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
 
 const banners = [
   {
     id: 1,
-    title: '공식 제휴 업체를\n모집합니다',
-    subtitle: '티켓바이 파트너십',
-    cta: '자세히 보기',
-    icon: HandshakeIcon,
-    gradient: 'from-gray-900 via-gray-800 to-gray-900',
-    accent: 'bg-white/10',
+    title: '공식 제휴 업체를 모집합니다',
+    subtitle: '티켓바이와 함께 성장할 파트너를 찾고 있습니다.',
+    bg: 'bg-gray-900',
   },
   {
     id: 2,
-    title: '계약서 기반\n안심 거래 시스템',
-    subtitle: '안전한 상품권 거래',
-    cta: '안전거래 알아보기',
-    icon: ShieldCheckIcon,
-    gradient: 'from-gray-800 via-gray-900 to-gray-800',
-    accent: 'bg-white/10',
+    title: '계약서 기반 안심 거래 시스템',
+    subtitle: '전자 계약서와 단계별 거래 프로세스로 안전하게.',
+    bg: 'bg-gray-800',
   },
   {
     id: 3,
-    title: '프리미엄 업체 등록\n혜택 제공',
-    subtitle: '업체 등록 안내',
-    cta: '등록 신청하기',
-    icon: FireIcon,
-    gradient: 'from-gray-900 via-gray-900 to-gray-800',
-    accent: 'bg-white/10',
+    title: '프리미엄 업체 등록 혜택',
+    subtitle: '업체 등록 시 상단 노출 및 다양한 혜택을 제공합니다.',
+    bg: 'bg-gray-900',
   },
 ];
 
@@ -38,60 +28,39 @@ export default function HeroBanner() {
   const [current, setCurrent] = useState(0);
 
   useEffect(() => {
-    const timer = setInterval(() => {
-      setCurrent((prev) => (prev + 1) % banners.length);
-    }, 5000);
+    const timer = setInterval(() => setCurrent((p) => (p + 1) % banners.length), 5000);
     return () => clearInterval(timer);
   }, []);
 
-  const prev = () => setCurrent((c) => (c - 1 + banners.length) % banners.length);
-  const next = () => setCurrent((c) => (c + 1) % banners.length);
-
   return (
-    <div className="relative w-full h-[200px] md:h-[260px] rounded-2xl overflow-hidden mb-8 shadow-xl shadow-gray-900/5">
-      {banners.map((banner, idx) => (
-        <div
-          key={banner.id}
-          className={`absolute inset-0 flex items-center transition-all duration-700 bg-gradient-to-br ${banner.gradient} ${
-            idx === current ? 'opacity-100 scale-100' : 'opacity-0 scale-105'
-          }`}
-        >
-          {/* Decorative circles */}
-          <div className="absolute -right-20 -top-20 w-80 h-80 rounded-full bg-white/5" />
-          <div className="absolute -right-10 -bottom-10 w-60 h-60 rounded-full bg-white/5" />
-
-          <div className="relative z-10 flex items-center justify-between w-full px-8 md:px-14">
-            <div className="flex-1">
-              <span className="inline-block text-white/60 text-xs md:text-sm font-medium tracking-wide uppercase mb-2 md:mb-3">{banner.subtitle}</span>
-              <h2 className="text-xl md:text-3xl font-extrabold text-white leading-tight whitespace-pre-line tracking-tight">{banner.title}</h2>
-              <button className="mt-4 md:mt-5 inline-flex items-center gap-2 text-white/90 text-sm font-medium hover:text-white transition-colors group">
-                {banner.cta}
-                <ArrowRight size={14} className="group-hover:translate-x-0.5 transition-transform" />
-              </button>
-            </div>
-            <div className={`hidden md:flex w-24 h-24 rounded-3xl ${banner.accent} items-center justify-center text-white shrink-0 ml-8`}>
-              <banner.icon size={44} />
+    <div className="relative w-full rounded-none md:rounded-lg overflow-hidden mb-8 -mx-6 md:mx-0 px-6 md:px-0" style={{ width: 'calc(100% + 48px)' }}>
+      <div className="md:rounded-lg overflow-hidden">
+        {banners.map((banner, idx) => (
+          <div
+            key={banner.id}
+            className={`${idx === 0 ? '' : 'absolute inset-0'} ${banner.bg} transition-opacity duration-500 ${idx === current ? 'opacity-100 relative' : 'opacity-0 absolute inset-0'}`}
+          >
+            <div className="px-8 md:px-14 py-14 md:py-20">
+              <p className="text-gray-400 text-xs md:text-sm mb-3 tracking-wide">{banner.subtitle}</p>
+              <h2 className="text-white text-xl md:text-3xl font-bold tracking-tight leading-tight">{banner.title}</h2>
             </div>
           </div>
-        </div>
-      ))}
+        ))}
+      </div>
 
-      <button onClick={prev} className="absolute left-4 top-1/2 -translate-y-1/2 w-9 h-9 bg-black/20 hover:bg-black/30 rounded-full flex items-center justify-center text-white transition-colors">
-        <ChevronLeft size={18} />
+      <button onClick={() => setCurrent((c) => (c - 1 + banners.length) % banners.length)}
+        className="absolute left-8 md:left-4 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center text-white transition-colors">
+        <ChevronLeft size={16} />
       </button>
-      <button onClick={next} className="absolute right-4 top-1/2 -translate-y-1/2 w-9 h-9 bg-black/20 hover:bg-black/30 rounded-full flex items-center justify-center text-white transition-colors">
-        <ChevronRight size={18} />
+      <button onClick={() => setCurrent((c) => (c + 1) % banners.length)}
+        className="absolute right-8 md:right-4 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center text-white transition-colors">
+        <ChevronRight size={16} />
       </button>
 
       <div className="absolute bottom-4 left-8 md:left-14 flex gap-1.5">
         {banners.map((_, idx) => (
-          <button
-            key={idx}
-            onClick={() => setCurrent(idx)}
-            className={`h-1 rounded-full transition-all duration-300 ${
-              idx === current ? 'bg-white w-8' : 'bg-white/30 w-4 hover:bg-white/50'
-            }`}
-          />
+          <button key={idx} onClick={() => setCurrent(idx)}
+            className={`h-0.5 rounded-full transition-all duration-300 ${idx === current ? 'bg-white w-6' : 'bg-white/30 w-3'}`} />
         ))}
       </div>
     </div>

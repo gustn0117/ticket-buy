@@ -18,9 +18,8 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   const pathname = usePathname();
 
   return (
-    <div className="max-w-[1280px] mx-auto px-4 lg:px-6 py-6">
-      {/* Tab Navigation */}
-      <div className="flex overflow-x-auto gap-1 mb-6 bg-gray-100 rounded-xl p-1 scrollbar-hide">
+    <div className="max-w-[1200px] mx-auto px-6 py-6">
+      <div className="flex overflow-x-auto gap-0 mb-6 border-b border-gray-200 scrollbar-hide">
         {navItems.map((item) => {
           const Icon = item.icon;
           const isActive = pathname === item.href;
@@ -28,22 +27,20 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
             <Link
               key={item.href}
               href={item.href}
-              className={`flex items-center gap-1.5 px-4 py-2.5 rounded-lg text-xs font-semibold whitespace-nowrap transition-all duration-200 ${
-                isActive
-                  ? 'bg-white text-gray-900 shadow-sm'
-                  : 'text-gray-500 hover:text-gray-700'
+              className={`flex items-center gap-1.5 px-4 py-3 text-xs font-medium whitespace-nowrap border-b-2 transition-colors ${
+                isActive ? 'border-gray-900 text-gray-900' : 'border-transparent text-gray-400 hover:text-gray-600'
               }`}
             >
-              <Icon size={14} />
+              <Icon size={13} />
               {item.label}
             </Link>
           );
         })}
         <Link
           href="/board/write"
-          className="flex items-center gap-1.5 px-4 py-2.5 rounded-lg text-xs font-semibold whitespace-nowrap text-gray-900 hover:bg-gray-50 transition-colors ml-auto"
+          className="flex items-center gap-1.5 px-4 py-3 text-xs font-medium whitespace-nowrap border-b-2 border-transparent text-gray-400 hover:text-gray-600 transition-colors ml-auto"
         >
-          <PenSquare size={14} />
+          <PenSquare size={13} />
           등록 글
         </Link>
       </div>
