@@ -31,7 +31,7 @@ export default function RegisterPage() {
       <div className="w-full max-w-md">
         {/* Logo */}
         <div className="text-center mb-8">
-          <div className="px-4 h-14 bg-gradient-to-br from-emerald-500 to-emerald-600 rounded-2xl inline-flex items-center justify-center text-white font-black text-sm tracking-widest mx-auto mb-4 shadow-lg shadow-emerald-500/20">
+          <div className="px-4 h-14 bg-gray-900 rounded-2xl inline-flex items-center justify-center text-white font-black text-sm tracking-widest mx-auto mb-4 shadow-lg shadow-black/10">
             LOGO
           </div>
           <h1 className="text-2xl font-extrabold tracking-tight text-gray-900">회원가입</h1>
@@ -108,7 +108,7 @@ export default function RegisterPage() {
                   type="checkbox"
                   checked={form.agreeTerms}
                   onChange={(e) => handleChange('agreeTerms', e.target.checked)}
-                  className="w-4.5 h-4.5 rounded-md border-gray-300 text-emerald-500 focus:ring-emerald-500/30"
+                  className="w-4.5 h-4.5 rounded-md border-gray-300 text-gray-800 focus:ring-emerald-500/30"
                   required
                 />
                 <span className="text-gray-600 group-hover:text-gray-900 transition-colors">[필수] 이용약관에 동의합니다</span>
@@ -118,7 +118,7 @@ export default function RegisterPage() {
                   type="checkbox"
                   checked={form.agreePrivacy}
                   onChange={(e) => handleChange('agreePrivacy', e.target.checked)}
-                  className="w-4.5 h-4.5 rounded-md border-gray-300 text-emerald-500 focus:ring-emerald-500/30"
+                  className="w-4.5 h-4.5 rounded-md border-gray-300 text-gray-800 focus:ring-emerald-500/30"
                   required
                 />
                 <span className="text-gray-600 group-hover:text-gray-900 transition-colors">[필수] 개인정보처리방침에 동의합니다</span>
@@ -127,14 +127,14 @@ export default function RegisterPage() {
 
             <button
               type="submit"
-              className="w-full h-12 bg-gradient-to-r from-emerald-500 to-emerald-600 text-white rounded-xl font-semibold hover:from-emerald-600 hover:to-emerald-700 transition-all shadow-lg shadow-emerald-500/20 hover:shadow-emerald-500/30 text-sm mt-2"
+              className="w-full h-12 bg-gray-900 text-white rounded-xl font-semibold  transition-all shadow-lg shadow-black/10 hover:shadow-black/15 text-sm mt-2"
             >
               가입하기
             </button>
           </form>
 
           <p className="text-center text-sm text-gray-400 mt-5">
-            이미 계정이 있으신가요? <Link href="/login" className="text-emerald-600 font-semibold hover:text-emerald-700 transition-colors">로그인</Link>
+            이미 계정이 있으신가요? <Link href="/login" className="text-gray-900 font-semibold hover:text-gray-900 transition-colors">로그인</Link>
           </p>
         </div>
       </div>

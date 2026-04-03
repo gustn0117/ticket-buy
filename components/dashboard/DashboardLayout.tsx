@@ -41,7 +41,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         })}
         <Link
           href="/board/write"
-          className="flex items-center gap-1.5 px-4 py-2.5 rounded-lg text-xs font-semibold whitespace-nowrap text-emerald-600 hover:bg-emerald-50 transition-colors ml-auto"
+          className="flex items-center gap-1.5 px-4 py-2.5 rounded-lg text-xs font-semibold whitespace-nowrap text-gray-900 hover:bg-gray-50 transition-colors ml-auto"
         >
           <PenSquare size={14} />
           등록 글

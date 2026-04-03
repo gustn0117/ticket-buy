@@ -12,11 +12,11 @@ export default function PremiumBuyerCard({ name, description, brands, phone, reg
   return (
     <div className="relative bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 text-white rounded-2xl overflow-hidden card-hover cursor-pointer group">
       {/* Subtle pattern overlay */}
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(16,185,129,0.08),transparent_70%)]" />
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(255,255,255,0.04),transparent_70%)]" />
 
       {/* PRO badge */}
       <div className="absolute top-3 right-3 z-10">
-        <span className="text-[10px] font-bold bg-gradient-to-r from-emerald-400 to-emerald-500 text-white px-2.5 py-1 rounded-full shadow-lg shadow-emerald-500/20">
+        <span className="text-[10px] font-bold bg-white text-gray-900 px-2.5 py-1 rounded-full shadow-lg shadow-black/10">
           PRO
         </span>
       </div>
@@ -35,7 +35,7 @@ export default function PremiumBuyerCard({ name, description, brands, phone, reg
         </div>
 
         {/* Phone */}
-        <div className="bg-emerald-500 hover:bg-emerald-400 rounded-xl py-2.5 px-4 flex items-center justify-center gap-2 transition-colors shadow-lg shadow-emerald-500/20">
+        <div className="bg-white text-gray-900 hover:bg-gray-100 rounded-xl py-2.5 px-4 flex items-center justify-center gap-2 transition-colors">
           <Phone size={13} strokeWidth={2.5} />
           <span className="font-bold text-sm tracking-wide">{phone}</span>
         </div>

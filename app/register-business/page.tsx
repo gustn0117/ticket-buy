@@ -28,7 +28,7 @@ export default function RegisterBusinessPage() {
       <div className="w-full max-w-lg">
         {/* Logo */}
         <div className="text-center mb-8">
-          <div className="px-4 h-14 bg-gradient-to-br from-emerald-500 to-emerald-600 rounded-2xl inline-flex items-center justify-center text-white font-black text-sm tracking-widest mx-auto mb-4 shadow-lg shadow-emerald-500/20">
+          <div className="px-4 h-14 bg-gray-900 rounded-2xl inline-flex items-center justify-center text-white font-black text-sm tracking-widest mx-auto mb-4 shadow-lg shadow-black/10">
             LOGO
           </div>
           <h1 className="text-2xl font-extrabold tracking-tight text-gray-900">매입 업체 제휴 문의</h1>
@@ -37,7 +37,7 @@ export default function RegisterBusinessPage() {
 
         <div className="bg-white rounded-2xl border border-gray-200/60 shadow-xl shadow-gray-900/[0.04] p-7 animate-fade-in">
           {/* Info Box */}
-          <div className="bg-emerald-50 rounded-xl p-4 text-sm text-emerald-700 mb-6 leading-relaxed border border-emerald-100">
+          <div className="bg-gray-50 rounded-xl p-4 text-sm text-gray-900 mb-6 leading-relaxed border border-gray-200">
             <p className="font-bold text-emerald-800 mb-1">안내</p>
             <p>상품권 <strong>매입(삽니다)</strong> 업체로 등록하시려면 아래 정보와 <strong>업체 로그인에 사용할 비밀번호</strong>를 입력해 주세요. 승인 시 이 비밀번호로 바로 로그인할 수 있습니다.</p>
             <p className="mt-2 font-medium">담당 연락용 <strong>메신저 종류·아이디</strong>는 필수입니다.</p>
@@ -149,7 +149,7 @@ export default function RegisterBusinessPage() {
 
             <button
               type="submit"
-              className="w-full h-12 bg-gradient-to-r from-emerald-500 to-emerald-600 text-white rounded-xl font-semibold hover:from-emerald-600 hover:to-emerald-700 transition-all shadow-lg shadow-emerald-500/20 hover:shadow-emerald-500/30 text-sm mt-2"
+              className="w-full h-12 bg-gray-900 text-white rounded-xl font-semibold  transition-all shadow-lg shadow-black/10 hover:shadow-black/15 text-sm mt-2"
             >
               제휴 신청하기
             </button>

@@ -33,7 +33,7 @@ export default function BoardPage() {
         </div>
         <Link
           href={`/board/write?type=${activeTab}`}
-          className="flex items-center gap-1.5 bg-emerald-500 hover:bg-emerald-600 text-white text-sm px-5 py-2.5 rounded-xl transition-all shadow-md shadow-emerald-500/15 font-semibold"
+          className="flex items-center gap-1.5 bg-gray-900 hover:bg-gray-800 text-white text-sm px-5 py-2.5 rounded-xl transition-all shadow-md shadow-black/8 font-semibold"
         >
           <PenSquare size={14} />
           글쓰기

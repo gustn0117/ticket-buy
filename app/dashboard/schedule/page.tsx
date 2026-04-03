@@ -43,7 +43,7 @@ export default function SchedulePage() {
                 key={idx}
                 className={`py-2 rounded-lg font-medium transition-all ${
                   day === today
-                    ? 'bg-gradient-to-br from-emerald-500 to-emerald-600 text-white font-bold shadow-sm shadow-emerald-500/20'
+                    ? 'bg-gray-900 text-white font-bold shadow-sm shadow-black/10'
                     : day === 19
                     ? 'bg-red-50 text-red-600 font-semibold'
                     : day ? 'hover:bg-gray-100 cursor-pointer text-gray-700' : ''
@@ -55,7 +55,7 @@ export default function SchedulePage() {
           </div>
 
           <div className="mt-5 flex gap-3 text-[11px] text-gray-400 flex-wrap">
-            <span className="flex items-center gap-1"><span className="w-2 h-2 bg-emerald-400 rounded-full" />완료</span>
+            <span className="flex items-center gap-1"><span className="w-2 h-2 bg-gray-700 rounded-full" />완료</span>
             <span className="flex items-center gap-1"><span className="w-2 h-2 bg-blue-400 rounded-full" />진행중</span>
             <span className="flex items-center gap-1"><span className="w-2 h-2 bg-red-400 rounded-full" />미수</span>
           </div>
@@ -67,7 +67,7 @@ export default function SchedulePage() {
               <span className="text-xs text-gray-600">3일 전</span>
               <button
                 onClick={() => setReminder3Days(!reminder3Days)}
-                className={`w-11 h-6 rounded-full transition-colors ${reminder3Days ? 'bg-emerald-500' : 'bg-gray-300'}`}
+                className={`w-11 h-6 rounded-full transition-colors ${reminder3Days ? 'bg-gray-900' : 'bg-gray-300'}`}
               >
                 <div className={`w-5 h-5 bg-white rounded-full shadow-sm transition-transform ${reminder3Days ? 'translate-x-5' : 'translate-x-0.5'}`} />
               </button>
@@ -76,7 +76,7 @@ export default function SchedulePage() {
               <span className="text-xs text-gray-600">1일 전 (당일 아침)</span>
               <button
                 onClick={() => setReminderMorning(!reminderMorning)}
-                className={`w-11 h-6 rounded-full transition-colors ${reminderMorning ? 'bg-emerald-500' : 'bg-gray-300'}`}
+                className={`w-11 h-6 rounded-full transition-colors ${reminderMorning ? 'bg-gray-900' : 'bg-gray-300'}`}
               >
                 <div className={`w-5 h-5 bg-white rounded-full shadow-sm transition-transform ${reminderMorning ? 'translate-x-5' : 'translate-x-0.5'}`} />
               </button>
@@ -103,11 +103,11 @@ export default function SchedulePage() {
               <p className="text-xl font-extrabold tracking-tight text-red-500">0<span className="text-xs text-gray-400 font-medium ml-0.5">원</span></p>
             </div>
             <div className="bg-white rounded-2xl border border-gray-200/60 shadow-sm p-5 text-center">
-              <div className="w-10 h-10 bg-emerald-50 rounded-xl flex items-center justify-center mx-auto mb-2">
-                <span className="text-emerald-500 text-sm font-bold">V</span>
+              <div className="w-10 h-10 bg-gray-50 rounded-xl flex items-center justify-center mx-auto mb-2">
+                <span className="text-gray-800 text-sm font-bold">V</span>
               </div>
               <p className="text-xs text-gray-500 font-medium mb-1">완료</p>
-              <p className="text-xl font-extrabold tracking-tight text-emerald-600">0<span className="text-xs text-gray-400 font-medium ml-0.5">원</span></p>
+              <p className="text-xl font-extrabold tracking-tight text-gray-900">0<span className="text-xs text-gray-400 font-medium ml-0.5">원</span></p>
             </div>
           </div>
 

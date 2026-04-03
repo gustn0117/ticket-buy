@@ -35,7 +35,7 @@ export default function WritePostPage() {
 
   return (
     <div className="max-w-[640px] mx-auto px-4 py-6 animate-fade-in">
-      <Link href="/board" className="inline-flex items-center gap-1.5 text-sm text-gray-500 hover:text-emerald-600 mb-5 transition-colors font-medium">
+      <Link href="/board" className="inline-flex items-center gap-1.5 text-sm text-gray-500 hover:text-gray-900 mb-5 transition-colors font-medium">
         <ArrowLeft size={16} /> 목록으로
       </Link>
 
@@ -96,8 +96,8 @@ export default function WritePostPage() {
           </div>
 
           {faceValue > 0 && price > 0 && (
-            <div className="bg-emerald-50 rounded-xl px-4 py-3 text-sm border border-emerald-100">
-              할인율: <span className="text-emerald-600 font-extrabold">{discount}%</span>
+            <div className="bg-gray-50 rounded-xl px-4 py-3 text-sm border border-gray-200">
+              할인율: <span className="text-gray-900 font-extrabold">{discount}%</span>
             </div>
           )}
 
@@ -167,7 +167,7 @@ export default function WritePostPage() {
 
           <button
             type="submit"
-            className="w-full h-12 bg-gradient-to-r from-emerald-500 to-emerald-600 text-white rounded-xl font-semibold hover:from-emerald-600 hover:to-emerald-700 transition-all shadow-lg shadow-emerald-500/20 hover:shadow-emerald-500/30 text-sm"
+            className="w-full h-12 bg-gray-900 text-white rounded-xl font-semibold  transition-all shadow-lg shadow-black/10 hover:shadow-black/15 text-sm"
           >
             등록하기
           </button>

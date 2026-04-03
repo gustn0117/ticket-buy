@@ -4,7 +4,7 @@ export default function FraudPage() {
   return (
     <div className="max-w-[960px] mx-auto px-4 py-8 animate-fade-in">
       {/* Hero Section */}
-      <div className="relative bg-gradient-to-br from-emerald-500 to-emerald-600 rounded-2xl p-8 md:p-12 text-center text-white mb-8 shadow-lg shadow-emerald-500/20 overflow-hidden">
+      <div className="relative bg-gray-900 rounded-2xl p-8 md:p-12 text-center text-white mb-8 shadow-lg shadow-black/10 overflow-hidden">
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_50%,rgba(255,255,255,0.1),transparent_70%)]" />
         <div className="relative">
           <div className="w-16 h-16 bg-white/20 backdrop-blur-sm rounded-2xl flex items-center justify-center mx-auto mb-4">
@@ -57,13 +57,13 @@ export default function FraudPage() {
               { icon: Phone, title: '피해 신고', desc: '사기 피해 시 경찰 사이버수사대(182)에 즉시 신고하세요.', color: 'amber' },
             ].map((item) => (
               <div key={item.title} className={`flex items-start gap-4 p-4 rounded-xl border border-gray-100 card-hover bg-gradient-to-br ${
-                item.color === 'emerald' ? 'from-emerald-50/50 to-white' :
+                item.color === 'emerald' ? 'from-gray-800/50 to-white' :
                 item.color === 'blue' ? 'from-blue-50/50 to-white' :
                 item.color === 'violet' ? 'from-violet-50/50 to-white' :
                 'from-amber-50/50 to-white'
               }`}>
                 <div className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 ${
-                  item.color === 'emerald' ? 'bg-emerald-100 text-emerald-600' :
+                  item.color === 'emerald' ? 'bg-gray-100 text-gray-900' :
                   item.color === 'blue' ? 'bg-blue-100 text-blue-600' :
                   item.color === 'violet' ? 'bg-violet-100 text-violet-600' :
                   'bg-amber-100 text-amber-600'
@@ -104,12 +104,12 @@ export default function FraudPage() {
         </div>
 
         {/* Contact */}
-        <div className="bg-gradient-to-br from-emerald-50 to-emerald-100/50 border border-emerald-200/60 rounded-2xl p-8 text-center shadow-sm">
-          <div className="w-12 h-12 bg-emerald-100 rounded-xl flex items-center justify-center mx-auto mb-3">
-            <Phone size={20} className="text-emerald-600" />
+        <div className="bg-gradient-to-br from-gray-800 to-gray-900/50 border border-gray-200/60 rounded-2xl p-8 text-center shadow-sm">
+          <div className="w-12 h-12 bg-gray-100 rounded-xl flex items-center justify-center mx-auto mb-3">
+            <Phone size={20} className="text-gray-900" />
           </div>
           <p className="text-sm text-gray-600 mb-2 font-medium">사기 피해 신고 및 상담</p>
-          <p className="text-3xl font-extrabold tracking-tight text-emerald-600">182</p>
+          <p className="text-3xl font-extrabold tracking-tight text-gray-900">182</p>
           <p className="text-xs text-gray-500 mt-1.5">경찰청 사이버수사대</p>
         </div>
       </div>

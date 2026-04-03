@@ -41,7 +41,7 @@ export default function Home() {
         </div>
         <Link
           href={`/board/write?type=${activeTab}`}
-          className="flex items-center gap-1.5 bg-emerald-500 hover:bg-emerald-600 text-white text-sm px-5 py-2.5 rounded-xl transition-all shadow-md shadow-emerald-500/15 hover:shadow-emerald-500/25 font-semibold"
+          className="flex items-center gap-1.5 bg-gray-900 hover:bg-gray-800 text-white text-sm px-5 py-2.5 rounded-xl transition-all shadow-md shadow-black/8 hover:shadow-black/12 font-semibold"
         >
           <PenSquare size={14} />
           글쓰기
@@ -52,11 +52,11 @@ export default function Home() {
       {activeTab === 'buy' && (
         <div className="mb-8 animate-fade-in">
           <div className="flex items-center gap-2.5 mb-4">
-            <div className="w-7 h-7 bg-emerald-100 rounded-lg flex items-center justify-center">
-              <TrendingUp size={14} className="text-emerald-600" />
+            <div className="w-7 h-7 bg-gray-100 rounded-lg flex items-center justify-center">
+              <TrendingUp size={14} className="text-gray-900" />
             </div>
             <h2 className="font-bold text-[15px] text-gray-900">프리미엄 구매 업체</h2>
-            <span className="text-[10px] text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-full font-semibold">AD</span>
+            <span className="text-[10px] text-gray-900 bg-gray-50 px-2 py-0.5 rounded-full font-semibold">AD</span>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             {premiumBuyers.map((buyer) => (

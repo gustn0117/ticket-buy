@@ -11,8 +11,8 @@ const banners = [
     subtitle: '티켓바이 파트너십',
     cta: '자세히 보기',
     icon: HandshakeIcon,
-    gradient: 'from-emerald-600 via-emerald-700 to-teal-800',
-    accent: 'bg-emerald-500/20',
+    gradient: 'from-gray-900 via-gray-800 to-gray-900',
+    accent: 'bg-white/10',
   },
   {
     id: 2,
@@ -20,8 +20,8 @@ const banners = [
     subtitle: '안전한 상품권 거래',
     cta: '안전거래 알아보기',
     icon: ShieldCheckIcon,
-    gradient: 'from-blue-600 via-blue-700 to-indigo-800',
-    accent: 'bg-blue-500/20',
+    gradient: 'from-gray-800 via-gray-900 to-gray-800',
+    accent: 'bg-white/10',
   },
   {
     id: 3,
@@ -29,8 +29,8 @@ const banners = [
     subtitle: '업체 등록 안내',
     cta: '등록 신청하기',
     icon: FireIcon,
-    gradient: 'from-violet-600 via-purple-700 to-indigo-800',
-    accent: 'bg-violet-500/20',
+    gradient: 'from-gray-900 via-gray-900 to-gray-800',
+    accent: 'bg-white/10',
   },
 ];
 

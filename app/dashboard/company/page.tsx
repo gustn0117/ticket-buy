@@ -80,7 +80,7 @@ export default function CompanyPage() {
             />
           </div>
 
-          <button className="bg-gradient-to-r from-emerald-500 to-emerald-600 text-white px-8 py-3 rounded-xl text-sm font-semibold hover:from-emerald-600 hover:to-emerald-700 transition-all shadow-lg shadow-emerald-500/20 hover:shadow-emerald-500/30">
+          <button className="bg-gray-900 text-white px-8 py-3 rounded-xl text-sm font-semibold  transition-all shadow-lg shadow-black/10 hover:shadow-black/15">
             저장하기
           </button>
         </div>

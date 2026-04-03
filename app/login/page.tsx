@@ -27,7 +27,7 @@ export default function LoginPage() {
       <div className="w-full max-w-md">
         {/* Logo */}
         <div className="text-center mb-8">
-          <div className="px-4 h-14 bg-gradient-to-br from-emerald-500 to-emerald-600 rounded-2xl inline-flex items-center justify-center text-white font-black text-sm tracking-widest mx-auto mb-4 shadow-lg shadow-emerald-500/20">
+          <div className="px-4 h-14 bg-gray-900 rounded-2xl inline-flex items-center justify-center text-white font-black text-sm tracking-widest mx-auto mb-4 shadow-lg shadow-black/10">
             LOGO
           </div>
           <h1 className="text-2xl font-extrabold tracking-tight text-gray-900">티켓바이 로그인</h1>
@@ -81,15 +81,15 @@ export default function LoginPage() {
 
             <button
               type="submit"
-              className="w-full h-12 bg-gradient-to-r from-emerald-500 to-emerald-600 text-white rounded-xl font-semibold hover:from-emerald-600 hover:to-emerald-700 transition-all shadow-lg shadow-emerald-500/20 hover:shadow-emerald-500/30 text-sm"
+              className="w-full h-12 bg-gray-900 text-white rounded-xl font-semibold  transition-all shadow-lg shadow-black/10 hover:shadow-black/15 text-sm"
             >
               로그인
             </button>
           </form>
 
           <div className="flex items-center justify-between mt-5 text-sm text-gray-400">
-            <Link href="/register" className="hover:text-emerald-600 transition-colors">회원가입</Link>
-            <button className="hover:text-emerald-600 transition-colors">비밀번호 찾기</button>
+            <Link href="/register" className="hover:text-gray-900 transition-colors">회원가입</Link>
+            <button className="hover:text-gray-900 transition-colors">비밀번호 찾기</button>
           </div>
 
           {loginType === 'business' && (

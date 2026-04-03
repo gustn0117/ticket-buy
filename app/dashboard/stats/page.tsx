@@ -11,8 +11,8 @@ export default function StatsPage() {
           <div className="bg-white rounded-2xl border border-gray-200/60 shadow-sm p-6 card-hover">
             <div className="flex items-center justify-between mb-4">
               <p className="text-sm text-gray-500 font-medium">한달간 구매금액</p>
-              <div className="w-10 h-10 bg-emerald-50 rounded-xl flex items-center justify-center">
-                <svg className="w-5 h-5 text-emerald-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <div className="w-10 h-10 bg-gray-50 rounded-xl flex items-center justify-center">
+                <svg className="w-5 h-5 text-gray-800" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                   <path strokeLinecap="round" strokeLinejoin="round" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
               </div>
@@ -30,7 +30,7 @@ export default function StatsPage() {
                 </svg>
               </div>
             </div>
-            <p className="text-3xl font-extrabold tracking-tight text-emerald-600">0<span className="text-sm text-gray-400 font-medium ml-1">원</span></p>
+            <p className="text-3xl font-extrabold tracking-tight text-gray-900">0<span className="text-sm text-gray-400 font-medium ml-1">원</span></p>
           </div>
 
           {/* Loss */}

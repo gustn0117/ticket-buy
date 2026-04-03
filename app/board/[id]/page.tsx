@@ -13,7 +13,7 @@ export default function PostDetailPage({ params }: { params: Promise<{ id: strin
     return (
       <div className="max-w-[960px] mx-auto px-4 py-20 text-center">
         <p className="text-gray-400 mb-4">게시글을 찾을 수 없습니다.</p>
-        <Link href="/board" className="text-emerald-600 font-medium hover:underline">목록으로</Link>
+        <Link href="/board" className="text-gray-900 font-medium hover:underline">목록으로</Link>
       </div>
     );
   }
@@ -30,11 +30,11 @@ export default function PostDetailPage({ params }: { params: Promise<{ id: strin
         {/* Header */}
         <div className="p-6 md:p-8 border-b border-gray-100">
           <div className="flex items-center gap-2 mb-3">
-            <span className={`text-xs px-2.5 py-1 rounded-lg font-semibold ${isSell ? 'bg-blue-50 text-blue-600' : 'bg-emerald-50 text-emerald-600'}`}>
+            <span className={`text-xs px-2.5 py-1 rounded-lg font-semibold ${isSell ? 'bg-blue-50 text-blue-600' : 'bg-gray-50 text-gray-900'}`}>
               {isSell ? '팝니다' : '삽니다'}
             </span>
             <span className="text-xs bg-gray-100 text-gray-500 px-2.5 py-1 rounded-lg font-medium">{post.categoryName}</span>
-            {post.isNew && <span className="text-[9px] bg-emerald-500 text-white w-4 h-4 rounded-full flex items-center justify-center font-bold">N</span>}
+            {post.isNew && <span className="text-[9px] bg-gray-900 text-white w-4 h-4 rounded-full flex items-center justify-center font-bold">N</span>}
           </div>
           <h1 className="text-xl md:text-2xl font-extrabold tracking-tight mb-4">{post.title}</h1>
           <div className="flex flex-wrap items-center gap-4 text-sm text-gray-400">
@@ -71,7 +71,7 @@ export default function PostDetailPage({ params }: { params: Promise<{ id: strin
               </div>
               <div>
                 <span className="text-gray-400 text-xs">할인율</span>
-                <p className="font-bold mt-1 text-emerald-600 text-lg">{post.discount}%</p>
+                <p className="font-bold mt-1 text-gray-900 text-lg">{post.discount}%</p>
               </div>
               <div>
                 <span className="text-gray-400 text-xs">판매가</span>
@@ -82,7 +82,7 @@ export default function PostDetailPage({ params }: { params: Promise<{ id: strin
 
           <Link
             href="/chat/1"
-            className="block w-full text-center bg-gradient-to-r from-emerald-500 to-emerald-600 text-white py-3.5 rounded-xl font-semibold hover:from-emerald-600 hover:to-emerald-700 transition-all shadow-lg shadow-emerald-500/20 hover:shadow-emerald-500/30 text-sm"
+            className="block w-full text-center bg-gray-900 text-white py-3.5 rounded-xl font-semibold  transition-all shadow-lg shadow-black/10 hover:shadow-black/15 text-sm"
           >
             {isSell ? '구매하기' : '판매하기'}
           </Link>

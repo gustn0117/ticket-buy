@@ -34,7 +34,7 @@ export default function ProfilePage() {
                   onClick={() => toggleCategory(cat.id)}
                   className={`px-4 py-2 rounded-xl text-xs font-semibold transition-all duration-200 ${
                     selectedCategories.includes(cat.id)
-                      ? 'bg-gradient-to-r from-emerald-500 to-emerald-600 text-white shadow-sm shadow-emerald-500/20'
+                      ? 'bg-gray-900 text-white shadow-sm shadow-black/10'
                       : 'bg-gray-100 text-gray-500 hover:bg-gray-200'
                   }`}
                 >
@@ -84,7 +84,7 @@ export default function ProfilePage() {
             </div>
           </div>
 
-          <button className="bg-gradient-to-r from-emerald-500 to-emerald-600 text-white px-8 py-3 rounded-xl text-sm font-semibold hover:from-emerald-600 hover:to-emerald-700 transition-all shadow-lg shadow-emerald-500/20 hover:shadow-emerald-500/30">
+          <button className="bg-gray-900 text-white px-8 py-3 rounded-xl text-sm font-semibold  transition-all shadow-lg shadow-black/10 hover:shadow-black/15">
             저장하기
           </button>
         </div>

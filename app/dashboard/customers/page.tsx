@@ -41,7 +41,7 @@ export default function CustomersPage() {
                 <td className="py-3.5 px-5 text-center text-gray-700">{c.trades}건</td>
                 <td className="py-3.5 px-5 text-right font-semibold text-gray-900">{c.totalAmount.toLocaleString()}원</td>
                 <td className="py-3.5 px-5 text-center">
-                  <span className="text-xs bg-emerald-50 text-emerald-600 px-2 py-0.5 rounded-lg font-medium">{c.completed}건</span>
+                  <span className="text-xs bg-gray-50 text-gray-900 px-2 py-0.5 rounded-lg font-medium">{c.completed}건</span>
                 </td>
                 <td className="py-3.5 px-5 text-center">
                   <span className="text-xs bg-blue-50 text-blue-600 px-2 py-0.5 rounded-lg font-medium">{c.ongoing}건</span>

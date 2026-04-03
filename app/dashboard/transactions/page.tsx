@@ -56,7 +56,7 @@ export default function TransactionsPage() {
                 </td>
                 <td className="py-3.5 px-5 text-center">
                   <span className={`text-xs px-2.5 py-1 rounded-lg font-medium ${
-                    tx.status === '완료' ? 'bg-emerald-50 text-emerald-600' :
+                    tx.status === '완료' ? 'bg-gray-50 text-gray-900' :
                     tx.status === '진행중' ? 'bg-blue-50 text-blue-600' :
                     tx.status === '취소' ? 'bg-red-50 text-red-600' :
                     tx.status === '지연' ? 'bg-yellow-50 text-yellow-600' :

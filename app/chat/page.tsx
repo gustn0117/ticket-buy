@@ -17,8 +17,8 @@ export default function ChatListPage() {
   return (
     <div className="max-w-[640px] mx-auto px-4 py-6 animate-fade-in">
       <h1 className="text-xl font-extrabold tracking-tight mb-5 flex items-center gap-2.5">
-        <div className="w-9 h-9 bg-emerald-100 rounded-xl flex items-center justify-center">
-          <MessageCircle size={18} className="text-emerald-600" />
+        <div className="w-9 h-9 bg-gray-100 rounded-xl flex items-center justify-center">
+          <MessageCircle size={18} className="text-gray-900" />
         </div>
         채팅
       </h1>
@@ -65,7 +65,7 @@ export default function ChatListPage() {
               </div>
               <div className="text-right shrink-0">
                 <span className={`text-[10px] px-2.5 py-1 rounded-lg font-semibold ${
-                  chat.status === '거래완료' ? 'bg-emerald-50 text-emerald-600' :
+                  chat.status === '거래완료' ? 'bg-gray-50 text-gray-900' :
                   chat.status === '거래중' ? 'bg-blue-50 text-blue-600' :
                   chat.status === '견적대기' ? 'bg-yellow-50 text-yellow-600' :
                   'bg-gray-100 text-gray-500'
@@ -86,7 +86,7 @@ export default function ChatListPage() {
             </div>
 
             <div className="flex gap-3 mt-3 pt-3 border-t border-gray-100 text-[11px] text-gray-400">
-              <span className="flex items-center gap-1"><span className="w-1.5 h-1.5 bg-emerald-400 rounded-full" />완료 {chat.tradeCompleted}건</span>
+              <span className="flex items-center gap-1"><span className="w-1.5 h-1.5 bg-gray-700 rounded-full" />완료 {chat.tradeCompleted}건</span>
               <span className="flex items-center gap-1"><span className="w-1.5 h-1.5 bg-blue-400 rounded-full" />거래중 {chat.tradeOngoing}건</span>
               <span className="flex items-center gap-1"><span className="w-1.5 h-1.5 bg-red-400 rounded-full" />지연 {chat.tradeDelayed}건</span>
             </div>

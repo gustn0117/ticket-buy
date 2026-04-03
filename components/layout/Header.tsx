@@ -16,7 +16,7 @@ export default function Header() {
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
           <Link href="/" className="flex items-center gap-2.5 shrink-0 group">
-            <div className="px-2.5 h-9 bg-gradient-to-br from-emerald-500 to-emerald-600 rounded-xl flex items-center justify-center text-white font-black text-xs tracking-widest shadow-lg shadow-emerald-500/20 group-hover:shadow-emerald-500/30 transition-shadow">
+            <div className="px-2.5 h-9 bg-gray-900 rounded-xl flex items-center justify-center text-white font-black text-xs tracking-widest shadow-lg shadow-black/10 group-hover:shadow-black/15 transition-shadow">
               LOGO
             </div>
             <div className="hidden sm:block">
@@ -48,9 +48,9 @@ export default function Header() {
             <div className="w-px h-5 bg-gray-200 mx-1" />
             {isLoggedIn ? (
               <div className="flex items-center gap-2 ml-1">
-                <Link href="/dashboard" className="flex items-center gap-2 px-3 py-2 bg-emerald-50 text-emerald-700 font-medium text-sm rounded-lg hover:bg-emerald-100 transition-colors">
-                  <div className="w-6 h-6 rounded-full bg-emerald-200 flex items-center justify-center">
-                    <User size={13} className="text-emerald-700" />
+                <Link href="/dashboard" className="flex items-center gap-2 px-3 py-2 bg-gray-50 text-gray-900 font-medium text-sm rounded-lg hover:bg-gray-100 transition-colors">
+                  <div className="w-6 h-6 rounded-full bg-gray-200 flex items-center justify-center">
+                    <User size={13} className="text-gray-900" />
                   </div>
                   {user?.businessName || user?.name}
                 </Link>
@@ -59,7 +59,7 @@ export default function Header() {
             ) : (
               <Link
                 href="/login"
-                className="ml-1 px-5 py-2 bg-gradient-to-r from-emerald-500 to-emerald-600 text-white text-sm rounded-xl hover:from-emerald-600 hover:to-emerald-700 transition-all shadow-md shadow-emerald-500/20 hover:shadow-emerald-500/30 font-medium"
+                className="ml-1 px-5 py-2 bg-gray-900 text-white text-sm rounded-xl  transition-all shadow-md shadow-black/10 hover:shadow-black/15 font-medium"
               >
                 로그인
               </Link>

@@ -5,7 +5,7 @@ export default function Footer() {
         <div className="flex flex-col md:flex-row justify-between gap-8">
           <div>
             <div className="flex items-center gap-2 mb-3">
-              <div className="px-2 h-7 bg-emerald-500 rounded-lg flex items-center justify-center text-white font-black text-[9px] tracking-widest">LOGO</div>
+              <div className="px-2 h-7 bg-gray-900 rounded-lg flex items-center justify-center text-white font-black text-[9px] tracking-widest">LOGO</div>
               <span className="text-white font-bold tracking-tight">티켓바이</span>
             </div>
             <p className="text-sm leading-relaxed text-gray-500 max-w-xs">
