@@ -14,16 +14,17 @@ export default function TransactionsPage() {
 
   return (
     <DashboardLayout>
-      <div className="bg-white rounded-lg border border-gray-200">
-        <div className="p-4 border-b border-gray-100">
-          <h3 className="font-bold text-base mb-3">거래 내역</h3>
-          <div className="flex gap-2">
+      <div className="bg-white rounded-2xl border border-gray-200/60 shadow-sm overflow-hidden animate-fade-in">
+        <div className="p-5 border-b border-gray-100">
+          <h3 className="font-extrabold text-base tracking-tight mb-4">거래 내역</h3>
+          {/* Segmented Control */}
+          <div className="flex bg-gray-100 rounded-xl p-1">
             {['전체', '진행중', '완료', '취소', '지연'].map(tab => (
               <button
                 key={tab}
                 onClick={() => setFilter(tab)}
-                className={`px-3 py-1.5 rounded text-xs font-medium ${
-                  filter === tab ? 'bg-primary text-white' : 'bg-gray-100 text-gray-500'
+                className={`flex-1 px-3 py-2 rounded-lg text-xs font-semibold transition-all duration-200 ${
+                  filter === tab ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500 hover:text-gray-700'
                 }`}
               >
                 {tab}
@@ -32,31 +33,33 @@ export default function TransactionsPage() {
           </div>
         </div>
 
-        <table className="w-full text-sm">
-          <thead className="bg-gray-50 border-b border-gray-200">
+        <table className="w-full text-[13px]">
+          <thead className="bg-gray-50/80 border-b border-gray-200">
             <tr>
-              <th className="text-left py-3 px-4 font-medium text-gray-500">날짜</th>
-              <th className="text-left py-3 px-4 font-medium text-gray-500">상대방</th>
-              <th className="text-left py-3 px-4 font-medium text-gray-500">상품</th>
-              <th className="text-right py-3 px-4 font-medium text-gray-500">금액</th>
-              <th className="text-center py-3 px-4 font-medium text-gray-500">유형</th>
-              <th className="text-center py-3 px-4 font-medium text-gray-500">상태</th>
+              <th className="text-left py-3.5 px-5 font-semibold text-gray-500 text-xs">날짜</th>
+              <th className="text-left py-3.5 px-5 font-semibold text-gray-500 text-xs">상대방</th>
+              <th className="text-left py-3.5 px-5 font-semibold text-gray-500 text-xs">상품</th>
+              <th className="text-right py-3.5 px-5 font-semibold text-gray-500 text-xs">금액</th>
+              <th className="text-center py-3.5 px-5 font-semibold text-gray-500 text-xs">유형</th>
+              <th className="text-center py-3.5 px-5 font-semibold text-gray-500 text-xs">상태</th>
             </tr>
           </thead>
           <tbody>
             {mockTransactions.map((tx) => (
-              <tr key={tx.id} className="border-b border-gray-100 hover:bg-gray-50 cursor-pointer">
-                <td className="py-3 px-4">{tx.date}</td>
-                <td className="py-3 px-4">{tx.partner}</td>
-                <td className="py-3 px-4">{tx.product}</td>
-                <td className="py-3 px-4 text-right font-medium">{tx.amount.toLocaleString()}원</td>
-                <td className="py-3 px-4 text-center">
-                  <span className="text-xs bg-gray-100 text-gray-600 px-2 py-0.5 rounded">{tx.type}</span>
+              <tr key={tx.id} className="border-b border-gray-100 hover:bg-gray-50/50 cursor-pointer transition-colors">
+                <td className="py-3.5 px-5 text-gray-600">{tx.date}</td>
+                <td className="py-3.5 px-5 text-gray-700 font-medium">{tx.partner}</td>
+                <td className="py-3.5 px-5 text-gray-700">{tx.product}</td>
+                <td className="py-3.5 px-5 text-right font-semibold text-gray-900">{tx.amount.toLocaleString()}원</td>
+                <td className="py-3.5 px-5 text-center">
+                  <span className="text-xs bg-gray-100 text-gray-600 px-2.5 py-1 rounded-lg font-medium">{tx.type}</span>
                 </td>
-                <td className="py-3 px-4 text-center">
-                  <span className={`text-xs px-2 py-0.5 rounded ${
-                    tx.status === '완료' ? 'bg-green-100 text-green-600' :
-                    tx.status === '진행중' ? 'bg-blue-100 text-blue-600' :
+                <td className="py-3.5 px-5 text-center">
+                  <span className={`text-xs px-2.5 py-1 rounded-lg font-medium ${
+                    tx.status === '완료' ? 'bg-emerald-50 text-emerald-600' :
+                    tx.status === '진행중' ? 'bg-blue-50 text-blue-600' :
+                    tx.status === '취소' ? 'bg-red-50 text-red-600' :
+                    tx.status === '지연' ? 'bg-yellow-50 text-yellow-600' :
                     'bg-gray-100 text-gray-500'
                   }`}>{tx.status}</span>
                 </td>
@@ -66,7 +69,9 @@ export default function TransactionsPage() {
         </table>
 
         {mockTransactions.length === 0 && (
-          <div className="py-16 text-center text-gray-400 text-sm">거래 내역이 없습니다.</div>
+          <div className="py-20 text-center text-gray-400 text-sm">
+            거래 내역이 없습니다.
+          </div>
         )}
       </div>
     </DashboardLayout>

@@ -19,67 +19,68 @@ export default function CompanyPage() {
 
   return (
     <DashboardLayout>
-      <div className="bg-white rounded-lg border border-gray-200 p-6">
-        <h3 className="font-bold text-base mb-6">업체 정보</h3>
+      <div className="bg-white rounded-2xl border border-gray-200/60 shadow-sm p-7 animate-fade-in">
+        <h3 className="font-extrabold text-base tracking-tight mb-7">업체 정보</h3>
 
-        <div className="space-y-4 max-w-lg">
+        <div className="space-y-5 max-w-lg">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">사업체명</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1.5">사업체명</label>
             <input
               type="text"
               value={form.businessName}
               onChange={(e) => handleChange('businessName', e.target.value)}
-              className="w-full h-10 px-3 border border-gray-300 rounded-lg text-sm focus:outline-none focus:border-primary"
+              className="w-full h-12 px-4 bg-gray-50 border border-gray-200 rounded-xl text-sm transition-all focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500"
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">사업자등록번호</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1.5">사업자등록번호</label>
             <input
               type="text"
               value={form.businessNumber}
               onChange={(e) => handleChange('businessNumber', e.target.value)}
-              className="w-full h-10 px-3 border border-gray-300 rounded-lg text-sm focus:outline-none focus:border-primary bg-gray-50"
+              className="w-full h-12 px-4 bg-gray-100 border border-gray-200 rounded-xl text-sm text-gray-500 cursor-not-allowed"
               readOnly
             />
+            <p className="text-xs text-gray-400 mt-1.5">사업자등록번호는 변경할 수 없습니다.</p>
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">대표자명</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1.5">대표자명</label>
             <input
               type="text"
               value={form.representative}
               onChange={(e) => handleChange('representative', e.target.value)}
-              className="w-full h-10 px-3 border border-gray-300 rounded-lg text-sm focus:outline-none focus:border-primary"
+              className="w-full h-12 px-4 bg-gray-50 border border-gray-200 rounded-xl text-sm transition-all focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500"
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">연락처</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1.5">연락처</label>
             <input
               type="text"
               value={form.phone}
               onChange={(e) => handleChange('phone', e.target.value)}
-              className="w-full h-10 px-3 border border-gray-300 rounded-lg text-sm focus:outline-none focus:border-primary"
+              className="w-full h-12 px-4 bg-gray-50 border border-gray-200 rounded-xl text-sm transition-all focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500"
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">이메일</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1.5">이메일</label>
             <input
               type="email"
               value={form.email}
               onChange={(e) => handleChange('email', e.target.value)}
-              className="w-full h-10 px-3 border border-gray-300 rounded-lg text-sm focus:outline-none focus:border-primary"
+              className="w-full h-12 px-4 bg-gray-50 border border-gray-200 rounded-xl text-sm transition-all focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500"
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">주소</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1.5">주소</label>
             <input
               type="text"
               value={form.address}
               onChange={(e) => handleChange('address', e.target.value)}
-              className="w-full h-10 px-3 border border-gray-300 rounded-lg text-sm focus:outline-none focus:border-primary"
+              className="w-full h-12 px-4 bg-gray-50 border border-gray-200 rounded-xl text-sm transition-all focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500"
             />
           </div>
 
-          <button className="bg-primary text-white px-6 py-2.5 rounded-lg text-sm font-medium hover:bg-primary-dark transition-colors">
+          <button className="bg-gradient-to-r from-emerald-500 to-emerald-600 text-white px-8 py-3 rounded-xl text-sm font-semibold hover:from-emerald-600 hover:to-emerald-700 transition-all shadow-lg shadow-emerald-500/20 hover:shadow-emerald-500/30">
             저장하기
           </button>
         </div>
