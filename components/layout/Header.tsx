@@ -16,8 +16,8 @@ export default function Header() {
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
           <Link href="/" className="flex items-center gap-2.5 shrink-0 group">
-            <div className="w-9 h-9 bg-gradient-to-br from-emerald-500 to-emerald-600 rounded-xl flex items-center justify-center text-white font-black text-base shadow-lg shadow-emerald-500/20 group-hover:shadow-emerald-500/30 transition-shadow">
-              T
+            <div className="px-2.5 h-9 bg-gradient-to-br from-emerald-500 to-emerald-600 rounded-xl flex items-center justify-center text-white font-black text-xs tracking-widest shadow-lg shadow-emerald-500/20 group-hover:shadow-emerald-500/30 transition-shadow">
+              LOGO
             </div>
             <div className="hidden sm:block">
               <span className="text-lg font-extrabold tracking-tight text-gray-900">티켓바이</span>

@@ -27,8 +27,8 @@ export default function LoginPage() {
       <div className="w-full max-w-md">
         {/* Logo */}
         <div className="text-center mb-8">
-          <div className="w-14 h-14 bg-gradient-to-br from-emerald-500 to-emerald-600 rounded-2xl flex items-center justify-center text-white font-black text-xl mx-auto mb-4 shadow-lg shadow-emerald-500/20">
-            T
+          <div className="px-4 h-14 bg-gradient-to-br from-emerald-500 to-emerald-600 rounded-2xl inline-flex items-center justify-center text-white font-black text-sm tracking-widest mx-auto mb-4 shadow-lg shadow-emerald-500/20">
+            LOGO
           </div>
           <h1 className="text-2xl font-extrabold tracking-tight text-gray-900">티켓바이 로그인</h1>
           <p className="text-sm text-gray-500 mt-1">안전한 상품권 거래 플랫폼</p>
