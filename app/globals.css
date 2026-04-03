@@ -43,7 +43,7 @@ body {
   letter-spacing: -0.011em;
 }
 
-* { box-sizing: border-box; margin: 0; }
+* { box-sizing: border-box; }
 
 ::selection { background: #DBEAFE; color: #1E3A5F; }
 
