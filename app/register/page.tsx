@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import { createUser } from '@/lib/api';
 
 export default function RegisterPage() {
   const router = useRouter();
@@ -15,15 +16,39 @@ export default function RegisterPage() {
     agreeTerms: false,
     agreePrivacy: false,
   });
+  const [error, setError] = useState<string | null>(null);
+  const [submitting, setSubmitting] = useState(false);
 
   const handleChange = (field: string, value: string | boolean) => {
     setForm(prev => ({ ...prev, [field]: value }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    alert('회원가입이 완료되었습니다!');
-    router.push('/login');
+    setError(null);
+
+    if (form.password !== form.passwordConfirm) {
+      setError('비밀번호가 일치하지 않습니다.');
+      return;
+    }
+
+    setSubmitting(true);
+    try {
+      await createUser({
+        email: form.email,
+        name: form.name,
+        phone: form.phone || null,
+        type: 'normal',
+        business_name: null,
+      });
+      alert('회원가입이 완료되었습니다!');
+      router.push('/login');
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : '회원가입에 실패했습니다.';
+      setError(message);
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   return (
@@ -98,6 +123,10 @@ export default function RegisterPage() {
               <p className="text-[11px] text-zinc-400 mt-1">숫자만 입력 · 하이픈 자동</p>
             </div>
 
+            {error && (
+              <p className="text-[12px] text-red-500">{error}</p>
+            )}
+
             {/* Agreements */}
             <div className="card p-4 space-y-3">
               <label className="flex items-center gap-3 text-[13px] cursor-pointer group">
@@ -122,8 +151,8 @@ export default function RegisterPage() {
               </label>
             </div>
 
-            <button type="submit" className="btn-primary w-full h-10">
-              가입하기
+            <button type="submit" disabled={submitting} className="btn-primary w-full h-10">
+              {submitting ? '가입 처리 중...' : '가입하기'}
             </button>
           </form>
 

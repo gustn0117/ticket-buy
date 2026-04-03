@@ -1,17 +1,11 @@
 'use client';
 
-import { createContext, useContext, useState, ReactNode } from 'react';
-
-interface User {
-  id: string;
-  name: string;
-  type: 'normal' | 'business';
-  businessName?: string;
-}
+import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import type { DBUser } from '@/lib/types';
 
 interface AuthContextType {
-  user: User | null;
-  login: (user: User) => void;
+  user: DBUser | null;
+  login: (user: DBUser) => void;
   logout: () => void;
   isLoggedIn: boolean;
 }
@@ -24,10 +18,24 @@ const AuthContext = createContext<AuthContextType>({
 });
 
 export function AuthProvider({ children }: { children: ReactNode }) {
-  const [user, setUser] = useState<User | null>(null);
+  const [user, setUser] = useState<DBUser | null>(null);
 
-  const login = (userData: User) => setUser(userData);
-  const logout = () => setUser(null);
+  useEffect(() => {
+    const saved = localStorage.getItem('ticketbuy_user');
+    if (saved) {
+      try { setUser(JSON.parse(saved)); } catch {}
+    }
+  }, []);
+
+  const login = (userData: DBUser) => {
+    setUser(userData);
+    localStorage.setItem('ticketbuy_user', JSON.stringify(userData));
+  };
+
+  const logout = () => {
+    setUser(null);
+    localStorage.removeItem('ticketbuy_user');
+  };
 
   return (
     <AuthContext.Provider value={{ user, login, logout, isLoggedIn: !!user }}>

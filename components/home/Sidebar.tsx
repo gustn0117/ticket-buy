@@ -15,7 +15,7 @@ export default function Sidebar() {
       <div className="bg-white rounded-lg p-5 border border-gray-200">
         {isLoggedIn ? (
           <div className="text-center">
-            <p className="font-medium text-lg mb-1">{user?.businessName || user?.name}</p>
+            <p className="font-medium text-lg mb-1">{user?.business_name || user?.name}</p>
             <p className="text-sm text-gray-500 mb-3">{user?.type === 'business' ? '프리미엄 업체' : '일반 회원'}</p>
             <Link
               href="/dashboard"

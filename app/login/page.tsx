@@ -4,22 +4,46 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/contexts/AuthContext';
+import { getUserByEmail } from '@/lib/api';
 
 export default function LoginPage() {
   const [loginType, setLoginType] = useState<'normal' | 'business'>('normal');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [error, setError] = useState<string | null>(null);
+  const [submitting, setSubmitting] = useState(false);
   const { login } = useAuth();
   const router = useRouter();
 
-  const handleLogin = (e: React.FormEvent) => {
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (loginType === 'business') {
-      login({ id: 'biz1', name: '홍길동', type: 'business', businessName: '티켓마스터' });
-    } else {
-      login({ id: 'user1', name: email || '테스트유저', type: 'normal' });
+    setError(null);
+    setSubmitting(true);
+    try {
+      const user = await getUserByEmail(email);
+      if (!user) {
+        setError('등록되지 않은 이메일입니다.');
+        setSubmitting(false);
+        return;
+      }
+      if (loginType === 'business' && user.type !== 'business') {
+        setError('업체 회원이 아닙니다. 일반 회원 로그인을 이용해주세요.');
+        setSubmitting(false);
+        return;
+      }
+      if (loginType === 'normal' && user.type !== 'normal') {
+        setError('일반 회원이 아닙니다. 업체 로그인을 이용해주세요.');
+        setSubmitting(false);
+        return;
+      }
+      login(user);
+      router.push('/');
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : '로그인에 실패했습니다.';
+      setError(message);
+    } finally {
+      setSubmitting(false);
     }
-    router.push('/');
   };
 
   return (
@@ -33,13 +57,13 @@ export default function LoginPage() {
         <div className="card p-5">
           <div className="flex border-b border-zinc-200 mb-5">
             <button
-              onClick={() => setLoginType('normal')}
+              onClick={() => { setLoginType('normal'); setError(null); }}
               className={`tab-underline flex-1 ${loginType === 'normal' ? 'active' : ''}`}
             >
               일반 회원
             </button>
             <button
-              onClick={() => setLoginType('business')}
+              onClick={() => { setLoginType('business'); setError(null); }}
               className={`tab-underline flex-1 ${loginType === 'business' ? 'active' : ''}`}
             >
               업체 로그인
@@ -55,6 +79,7 @@ export default function LoginPage() {
                 type="text" value={email} onChange={(e) => setEmail(e.target.value)}
                 placeholder={loginType === 'business' ? '사업자번호 또는 이메일' : '이메일을 입력하세요'}
                 className="input"
+                required
               />
             </div>
             <div>
@@ -66,8 +91,12 @@ export default function LoginPage() {
               />
             </div>
 
-            <button type="submit" className="btn-primary w-full h-10">
-              로그인
+            {error && (
+              <p className="text-[12px] text-red-500">{error}</p>
+            )}
+
+            <button type="submit" disabled={submitting} className="btn-primary w-full h-10">
+              {submitting ? '로그인 중...' : '로그인'}
             </button>
           </form>
 

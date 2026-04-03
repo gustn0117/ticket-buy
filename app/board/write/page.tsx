@@ -1,15 +1,34 @@
 'use client';
 
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { useState, useEffect, Suspense } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
 import { categories } from '@/data/mock';
+import { createPost, getPost, updatePost } from '@/lib/api';
+import { useAuth } from '@/contexts/AuthContext';
 
 export default function WritePostPage() {
+  return (
+    <Suspense fallback={<div className="max-w-[640px] mx-auto px-5 py-20 text-center text-zinc-400 text-[13px]">불러오는 중...</div>}>
+      <WritePostContent />
+    </Suspense>
+  );
+}
+
+function WritePostContent() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const { user, isLoggedIn } = useAuth();
+
+  const editId = searchParams.get('edit');
+  const postType = (searchParams.get('type') as 'sell' | 'buy') || 'sell';
+  const isEdit = !!editId;
+
   const [form, setForm] = useState({
+    type: postType,
     category: '',
+    categoryName: '',
     title: '',
     faceValue: '',
     price: '',
@@ -18,20 +37,95 @@ export default function WritePostPage() {
     description: '',
     region: '',
   });
+  const [submitting, setSubmitting] = useState(false);
+  const [loadingEdit, setLoadingEdit] = useState(isEdit);
+
+  useEffect(() => {
+    if (!isLoggedIn) {
+      router.push('/login');
+    }
+  }, [isLoggedIn, router]);
+
+  useEffect(() => {
+    if (editId) {
+      setLoadingEdit(true);
+      getPost(editId)
+        .then((post) => {
+          setForm({
+            type: post.type,
+            category: post.category,
+            categoryName: post.category_name,
+            title: post.title,
+            faceValue: String(post.face_value),
+            price: String(post.price),
+            delivery: post.delivery || '7일 이내 발송',
+            deliveryMethod: post.delivery_method || 'mobile',
+            description: '',
+            region: '',
+          });
+        })
+        .catch(() => {
+          alert('게시글을 불러오지 못했습니다.');
+          router.push('/board');
+        })
+        .finally(() => setLoadingEdit(false));
+    }
+  }, [editId, router]);
 
   const handleChange = (field: string, value: string) => {
-    setForm(prev => ({ ...prev, [field]: value }));
+    setForm(prev => {
+      const next = { ...prev, [field]: value };
+      if (field === 'category') {
+        const cat = categories.find(c => c.id === value);
+        next.categoryName = cat ? cat.name : '';
+      }
+      return next;
+    });
   };
 
   const faceValue = Number(form.faceValue) || 0;
   const price = Number(form.price) || 0;
   const discount = faceValue > 0 ? Math.round((1 - price / faceValue) * 100) : 0;
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    alert('게시글이 등록되었습니다!');
-    router.push('/board');
+    if (!user) return;
+    setSubmitting(true);
+    try {
+      const payload = {
+        type: form.type as 'sell' | 'buy',
+        title: form.title,
+        category: form.category,
+        category_name: form.categoryName,
+        face_value: faceValue,
+        price,
+        discount,
+        delivery_method: form.deliveryMethod,
+        delivery: form.delivery,
+        author_id: user.id,
+        tags: [form.delivery, form.region ? `#${form.region}` : '', form.deliveryMethod === 'mobile' ? '#모바일' : form.deliveryMethod === 'parcel' ? '#택배' : '#직접만남'].filter(Boolean),
+      };
+
+      if (isEdit && editId) {
+        await updatePost(editId, payload);
+        router.push(`/board/${editId}`);
+      } else {
+        const created = await createPost(payload);
+        router.push(`/board/${created.id}`);
+      }
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : '등록에 실패했습니다.';
+      alert(message);
+    } finally {
+      setSubmitting(false);
+    }
   };
+
+  if (loadingEdit) {
+    return (
+      <div className="max-w-[640px] mx-auto px-5 py-20 text-center text-zinc-400 text-[13px]">불러오는 중...</div>
+    );
+  }
 
   return (
     <div className="max-w-[640px] mx-auto px-5 py-6 animate-fade-in">
@@ -40,9 +134,34 @@ export default function WritePostPage() {
       </Link>
 
       <div className="card p-5">
-        <h1 className="section-title mb-5">글쓰기</h1>
+        <h1 className="section-title mb-5">{isEdit ? '글 수정' : '글쓰기'}</h1>
 
         <form onSubmit={handleSubmit} className="space-y-4">
+          {/* Post type */}
+          <div>
+            <label className="block text-[12px] font-medium text-zinc-600 mb-1">글 유형 *</label>
+            <div className="flex gap-2">
+              {[
+                { value: 'sell', label: '팝니다' },
+                { value: 'buy', label: '삽니다' },
+              ].map(opt => (
+                <label key={opt.value} className={`flex-1 flex items-center justify-center gap-1.5 py-2 text-[13px] font-medium rounded-md cursor-pointer transition-colors ${
+                  form.type === opt.value ? 'bg-zinc-900 text-white' : 'bg-zinc-100 text-zinc-500 hover:bg-zinc-200'
+                }`}>
+                  <input
+                    type="radio"
+                    name="postType"
+                    value={opt.value}
+                    checked={form.type === opt.value}
+                    onChange={(e) => handleChange('type', e.target.value)}
+                    className="sr-only"
+                  />
+                  {opt.label}
+                </label>
+              ))}
+            </div>
+          </div>
+
           <div>
             <label className="block text-[12px] font-medium text-zinc-600 mb-1">상품권 종류 *</label>
             <select
@@ -163,8 +282,8 @@ export default function WritePostPage() {
             />
           </div>
 
-          <button type="submit" className="btn-primary w-full h-10">
-            등록하기
+          <button type="submit" disabled={submitting} className="btn-primary w-full h-10">
+            {submitting ? '처리 중...' : isEdit ? '수정하기' : '등록하기'}
           </button>
         </form>
       </div>
