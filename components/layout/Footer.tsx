@@ -1,8 +1,11 @@
 import Link from 'next/link';
+import AdBanner from '@/components/ads/AdBanner';
 
 export default function Footer() {
   return (
-    <footer className="border-t border-zinc-200 bg-white py-10 mt-auto hidden md:block">
+    <footer className="border-t border-zinc-200 bg-white mt-auto hidden md:block">
+      <AdBanner slot="footer_banner" className="h-20 max-w-[1140px] mx-auto mt-8 mb-0 rounded-none" />
+      <div className="py-10">
       <div className="max-w-[1140px] mx-auto px-5">
         <div className="grid grid-cols-4 gap-8">
           <div className="col-span-2">
@@ -34,6 +37,7 @@ export default function Footer() {
         <div className="border-t border-zinc-100 mt-8 pt-4 text-[11px] text-zinc-400">
           &copy; 2026 티켓바이. All rights reserved.
         </div>
+      </div>
       </div>
     </footer>
   );

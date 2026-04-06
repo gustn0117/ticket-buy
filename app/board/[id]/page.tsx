@@ -8,6 +8,7 @@ import { getPost, deletePost, createChat } from '@/lib/api';
 import { useAuth } from '@/contexts/AuthContext';
 import type { DBPost, DBUser } from '@/lib/types';
 import { getCategoryName } from '@/data/mock';
+import AdBanner from '@/components/ads/AdBanner';
 
 type PostWithAuthor = DBPost & { author: DBUser };
 
@@ -149,6 +150,8 @@ export default function PostDetailPage({ params }: { params: Promise<{ id: strin
               {isSell ? '구매하기' : '판매하기'}
             </button>
           )}
+
+          <AdBanner slot="detail_bottom" className="h-20 mt-5" />
         </div>
       </div>
     </div>

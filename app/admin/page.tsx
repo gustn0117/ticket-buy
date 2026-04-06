@@ -3,24 +3,44 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '@/lib/supabase';
 import type { DBUser, DBPost, DBNotice, DBChat } from '@/lib/types';
-import { Users, FileText, Bell, MessageCircle, Trash2, Shield } from 'lucide-react';
+import type { Ad, AdSlot } from '@/lib/ads';
+import { AD_SLOT_LABELS, AD_SLOT_SIZES } from '@/lib/ads';
+import { Users, FileText, Bell, MessageCircle, Trash2, Shield, Megaphone, Pencil, Plus, Eye, EyeOff } from 'lucide-react';
 import { getCategoryName } from '@/data/mock';
 
 const ADMIN_PASSWORD = '1234';
+const ALL_SLOTS = Object.keys(AD_SLOT_LABELS) as AdSlot[];
 
 export default function AdminPage() {
   const [authed, setAuthed] = useState(false);
   const [pw, setPw] = useState('');
-  const [tab, setTab] = useState<'users' | 'posts' | 'notices' | 'chats'>('users');
+  const [tab, setTab] = useState<'users' | 'posts' | 'notices' | 'chats' | 'ads'>('users');
   const [users, setUsers] = useState<DBUser[]>([]);
   const [posts, setPosts] = useState<(DBPost & { author?: DBUser })[]>([]);
   const [notices, setNotices] = useState<DBNotice[]>([]);
   const [chats, setChats] = useState<DBChat[]>([]);
+  const [ads, setAds] = useState<Ad[]>([]);
   const [loading, setLoading] = useState(false);
 
   // Notice form
   const [noticeTitle, setNoticeTitle] = useState('');
   const [noticePinned, setNoticePinned] = useState(false);
+
+  // Ad form
+  const [showAdForm, setShowAdForm] = useState(false);
+  const [editingAd, setEditingAd] = useState<Ad | null>(null);
+  const [adForm, setAdForm] = useState({
+    slot: 'hero_banner' as AdSlot,
+    title: '',
+    description: '',
+    image_url: '',
+    link_url: '',
+    advertiser: '',
+    start_date: new Date().toISOString().slice(0, 10),
+    end_date: new Date(Date.now() + 30 * 86400000).toISOString().slice(0, 10),
+    priority: 0,
+    is_active: true,
+  });
 
   const login = (e: React.FormEvent) => {
     e.preventDefault();
@@ -41,49 +61,56 @@ export default function AdminPage() {
       if (p.data) setPosts(p.data);
       if (n.data) setNotices(n.data);
       if (c.data) setChats(c.data);
+      // Fetch ads
+      const adsRes = await fetch('/api/ads');
+      if (adsRes.ok) setAds(await adsRes.json());
     } catch {}
     setLoading(false);
   };
 
   useEffect(() => { if (authed) fetchData(); }, [authed]);
 
-  const deleteUser = async (id: string) => {
-    if (!confirm('정말 삭제하시겠습니까? 관련 게시글/채팅도 영향받을 수 있습니다.')) return;
-    await supabase.from('users').delete().eq('id', id);
-    fetchData();
+  // CRUD helpers (users, posts, notices, chats - same as before)
+  const deleteUser = async (id: string) => { if (!confirm('정말 삭제하시겠습니까?')) return; await supabase.from('users').delete().eq('id', id); fetchData(); };
+  const deletePost = async (id: string) => { if (!confirm('게시글을 삭제하시겠습니까?')) return; await supabase.from('posts').delete().eq('id', id); fetchData(); };
+  const deleteNotice = async (id: string) => { if (!confirm('공지를 삭제하시겠습니까?')) return; await supabase.from('notices').delete().eq('id', id); fetchData(); };
+  const addNotice = async (e: React.FormEvent) => { e.preventDefault(); if (!noticeTitle.trim()) return; await supabase.from('notices').insert({ title: noticeTitle, is_pinned: noticePinned }); setNoticeTitle(''); setNoticePinned(false); fetchData(); };
+  const toggleUserType = async (id: string, t: string) => { await supabase.from('users').update({ type: t === 'normal' ? 'business' : 'normal' }).eq('id', id); fetchData(); };
+  const deleteChat = async (id: string) => { if (!confirm('채팅을 삭제하시겠습니까?')) return; await supabase.from('messages').delete().eq('chat_id', id); await supabase.from('chats').delete().eq('id', id); fetchData(); };
+
+  // Ad CRUD
+  const resetAdForm = () => {
+    setAdForm({ slot: 'hero_banner', title: '', description: '', image_url: '', link_url: '', advertiser: '', start_date: new Date().toISOString().slice(0, 10), end_date: new Date(Date.now() + 30 * 86400000).toISOString().slice(0, 10), priority: 0, is_active: true });
+    setEditingAd(null);
+    setShowAdForm(false);
   };
 
-  const deletePost = async (id: string) => {
-    if (!confirm('게시글을 삭제하시겠습니까?')) return;
-    await supabase.from('posts').delete().eq('id', id);
-    fetchData();
+  const startEditAd = (ad: Ad) => {
+    setAdForm({ slot: ad.slot, title: ad.title, description: ad.description, image_url: ad.image_url, link_url: ad.link_url, advertiser: ad.advertiser, start_date: ad.start_date.slice(0, 10), end_date: ad.end_date.slice(0, 10), priority: ad.priority, is_active: ad.is_active });
+    setEditingAd(ad);
+    setShowAdForm(true);
   };
 
-  const deleteNotice = async (id: string) => {
-    if (!confirm('공지를 삭제하시겠습니까?')) return;
-    await supabase.from('notices').delete().eq('id', id);
-    fetchData();
-  };
-
-  const addNotice = async (e: React.FormEvent) => {
+  const saveAd = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!noticeTitle.trim()) return;
-    await supabase.from('notices').insert({ title: noticeTitle, is_pinned: noticePinned });
-    setNoticeTitle('');
-    setNoticePinned(false);
+    const payload = { ...adForm, start_date: adForm.start_date + 'T00:00:00Z', end_date: adForm.end_date + 'T23:59:59Z' };
+    if (editingAd) {
+      await fetch('/api/ads', { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ ...payload, id: editingAd.id }) });
+    } else {
+      await fetch('/api/ads', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
+    }
+    resetAdForm();
     fetchData();
   };
 
-  const toggleUserType = async (id: string, currentType: string) => {
-    const newType = currentType === 'normal' ? 'business' : 'normal';
-    await supabase.from('users').update({ type: newType }).eq('id', id);
+  const deleteAd = async (id: string) => {
+    if (!confirm('광고를 삭제하시겠습니까?')) return;
+    await fetch(`/api/ads?id=${id}`, { method: 'DELETE' });
     fetchData();
   };
 
-  const deleteChat = async (id: string) => {
-    if (!confirm('채팅을 삭제하시겠습니까? 관련 메시지도 삭제됩니다.')) return;
-    await supabase.from('messages').delete().eq('chat_id', id);
-    await supabase.from('chats').delete().eq('id', id);
+  const toggleAdActive = async (ad: Ad) => {
+    await fetch('/api/ads', { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id: ad.id, is_active: !ad.is_active }) });
     fetchData();
   };
 
@@ -105,11 +132,12 @@ export default function AdminPage() {
   }
 
   const tabs = [
-    { key: 'users', label: '회원관리', icon: Users, count: users.length },
-    { key: 'posts', label: '게시글관리', icon: FileText, count: posts.length },
-    { key: 'notices', label: '공지관리', icon: Bell, count: notices.length },
-    { key: 'chats', label: '채팅/거래', icon: MessageCircle, count: chats.length },
-  ] as const;
+    { key: 'users' as const, label: '회원', icon: Users, count: users.length },
+    { key: 'posts' as const, label: '게시글', icon: FileText, count: posts.length },
+    { key: 'notices' as const, label: '공지', icon: Bell, count: notices.length },
+    { key: 'chats' as const, label: '거래', icon: MessageCircle, count: chats.length },
+    { key: 'ads' as const, label: '광고', icon: Megaphone, count: ads.length },
+  ];
 
   return (
     <div className="max-w-[1140px] mx-auto px-5 py-6">
@@ -118,8 +146,7 @@ export default function AdminPage() {
         <button onClick={() => setAuthed(false)} className="btn-secondary text-[12px] h-8">로그아웃</button>
       </div>
 
-      {/* Stats */}
-      <div className="grid grid-cols-4 gap-3 mb-5">
+      <div className="grid grid-cols-5 gap-3 mb-5">
         {tabs.map(t => (
           <button key={t.key} onClick={() => setTab(t.key)}
             className={`card card-hover p-3 text-left ${tab === t.key ? 'border-zinc-900' : ''}`}>
@@ -134,7 +161,7 @@ export default function AdminPage() {
 
       {loading && <div className="py-8 text-center text-zinc-400 text-[13px]">불러오는 중...</div>}
 
-      {/* Users Tab */}
+      {/* ─── Users ─── */}
       {!loading && tab === 'users' && (
         <div className="card overflow-hidden">
           <table className="w-full text-[13px]">
@@ -152,16 +179,9 @@ export default function AdminPage() {
                   <td className="py-2.5 px-4 font-medium">{u.name}</td>
                   <td className="py-2.5 px-4 text-zinc-500">{u.email}</td>
                   <td className="py-2.5 px-4 text-zinc-500">{u.phone || '-'}</td>
-                  <td className="py-2.5 px-4 text-center">
-                    <button onClick={() => toggleUserType(u.id, u.type)}
-                      className={`badge cursor-pointer ${u.type === 'business' ? 'bg-blue-50 text-blue-600' : 'bg-zinc-100 text-zinc-500'}`}>
-                      {u.type === 'business' ? '업체' : '일반'}
-                    </button>
-                  </td>
+                  <td className="py-2.5 px-4 text-center"><button onClick={() => toggleUserType(u.id, u.type)} className={`badge cursor-pointer ${u.type === 'business' ? 'bg-blue-50 text-blue-600' : 'bg-zinc-100 text-zinc-500'}`}>{u.type === 'business' ? '업체' : '일반'}</button></td>
                   <td className="py-2.5 px-4 text-zinc-400 text-[11px]">{new Date(u.created_at).toLocaleDateString('ko-KR')}</td>
-                  <td className="py-2.5 px-4 text-center">
-                    <button onClick={() => deleteUser(u.id)} className="text-red-400 hover:text-red-600"><Trash2 size={14} /></button>
-                  </td>
+                  <td className="py-2.5 px-4 text-center"><button onClick={() => deleteUser(u.id)} className="text-red-400 hover:text-red-600"><Trash2 size={14} /></button></td>
                 </tr>
               ))}
               {users.length === 0 && <tr><td colSpan={6} className="py-8 text-center text-zinc-400">회원이 없습니다.</td></tr>}
@@ -170,7 +190,7 @@ export default function AdminPage() {
         </div>
       )}
 
-      {/* Posts Tab */}
+      {/* ─── Posts ─── */}
       {!loading && tab === 'posts' && (
         <div className="card overflow-hidden">
           <table className="w-full text-[13px]">
@@ -194,9 +214,7 @@ export default function AdminPage() {
                   <td className="py-2.5 px-4 text-zinc-500">{p.author?.name || '-'}</td>
                   <td className="py-2.5 px-4 text-center text-zinc-400">{p.views}</td>
                   <td className="py-2.5 px-4 text-zinc-400 text-[11px]">{new Date(p.created_at).toLocaleDateString('ko-KR')}</td>
-                  <td className="py-2.5 px-4 text-center">
-                    <button onClick={() => deletePost(p.id)} className="text-red-400 hover:text-red-600"><Trash2 size={14} /></button>
-                  </td>
+                  <td className="py-2.5 px-4 text-center"><button onClick={() => deletePost(p.id)} className="text-red-400 hover:text-red-600"><Trash2 size={14} /></button></td>
                 </tr>
               ))}
               {posts.length === 0 && <tr><td colSpan={8} className="py-8 text-center text-zinc-400">게시글이 없습니다.</td></tr>}
@@ -205,7 +223,7 @@ export default function AdminPage() {
         </div>
       )}
 
-      {/* Notices Tab */}
+      {/* ─── Notices ─── */}
       {!loading && tab === 'notices' && (
         <div className="space-y-4">
           <form onSubmit={addNotice} className="card p-4 flex items-end gap-3">
@@ -214,12 +232,10 @@ export default function AdminPage() {
               <input value={noticeTitle} onChange={(e) => setNoticeTitle(e.target.value)} placeholder="공지 제목을 입력하세요" className="input" required />
             </div>
             <label className="flex items-center gap-1.5 text-[12px] text-zinc-600 whitespace-nowrap shrink-0 mb-1">
-              <input type="checkbox" checked={noticePinned} onChange={(e) => setNoticePinned(e.target.checked)} className="w-3.5 h-3.5" />
-              고정
+              <input type="checkbox" checked={noticePinned} onChange={(e) => setNoticePinned(e.target.checked)} className="w-3.5 h-3.5" /> 고정
             </label>
             <button type="submit" className="btn-primary h-10 shrink-0">등록</button>
           </form>
-
           <div className="card overflow-hidden">
             <table className="w-full text-[13px]">
               <thead><tr className="bg-zinc-50 border-b border-zinc-200">
@@ -234,9 +250,7 @@ export default function AdminPage() {
                     <td className="py-2.5 px-4 text-center">{n.is_pinned ? <span className="badge bg-zinc-900 text-white">고정</span> : '-'}</td>
                     <td className="py-2.5 px-4">{n.title}</td>
                     <td className="py-2.5 px-4 text-zinc-400 text-[11px]">{new Date(n.created_at).toLocaleDateString('ko-KR')}</td>
-                    <td className="py-2.5 px-4 text-center">
-                      <button onClick={() => deleteNotice(n.id)} className="text-red-400 hover:text-red-600"><Trash2 size={14} /></button>
-                    </td>
+                    <td className="py-2.5 px-4 text-center"><button onClick={() => deleteNotice(n.id)} className="text-red-400 hover:text-red-600"><Trash2 size={14} /></button></td>
                   </tr>
                 ))}
                 {notices.length === 0 && <tr><td colSpan={4} className="py-8 text-center text-zinc-400">공지가 없습니다.</td></tr>}
@@ -246,7 +260,7 @@ export default function AdminPage() {
         </div>
       )}
 
-      {/* Chats Tab */}
+      {/* ─── Chats ─── */}
       {!loading && tab === 'chats' && (
         <div className="card overflow-hidden">
           <table className="w-full text-[13px]">
@@ -268,14 +282,144 @@ export default function AdminPage() {
                   <td className="py-2.5 px-4 text-center">{c.current_step}/6</td>
                   <td className="py-2.5 px-4 text-center"><span className="badge bg-zinc-100 text-zinc-600">{c.status}</span></td>
                   <td className="py-2.5 px-4 text-zinc-400 text-[11px]">{new Date(c.updated_at).toLocaleDateString('ko-KR')}</td>
-                  <td className="py-2.5 px-4 text-center">
-                    <button onClick={() => deleteChat(c.id)} className="text-red-400 hover:text-red-600"><Trash2 size={14} /></button>
-                  </td>
+                  <td className="py-2.5 px-4 text-center"><button onClick={() => deleteChat(c.id)} className="text-red-400 hover:text-red-600"><Trash2 size={14} /></button></td>
                 </tr>
               ))}
               {chats.length === 0 && <tr><td colSpan={7} className="py-8 text-center text-zinc-400">채팅이 없습니다.</td></tr>}
             </tbody>
           </table>
+        </div>
+      )}
+
+      {/* ─── Ads ─── */}
+      {!loading && tab === 'ads' && (
+        <div className="space-y-4">
+          {/* Ad Form */}
+          {showAdForm && (
+            <form onSubmit={saveAd} className="card p-5 space-y-4 animate-fade-in">
+              <div className="flex items-center justify-between mb-2">
+                <h3 className="text-[15px] font-semibold">{editingAd ? '광고 수정' : '새 광고 등록'}</h3>
+                <button type="button" onClick={resetAdForm} className="text-zinc-400 hover:text-zinc-700 text-[12px]">취소</button>
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-[12px] font-medium text-zinc-600 mb-1">슬롯 위치 *</label>
+                  <select value={adForm.slot} onChange={e => setAdForm(p => ({ ...p, slot: e.target.value as AdSlot }))} className="input">
+                    {ALL_SLOTS.map(s => (
+                      <option key={s} value={s}>{AD_SLOT_LABELS[s]} ({AD_SLOT_SIZES[s]})</option>
+                    ))}
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-[12px] font-medium text-zinc-600 mb-1">광고주</label>
+                  <input value={adForm.advertiser} onChange={e => setAdForm(p => ({ ...p, advertiser: e.target.value }))} className="input" placeholder="광고주명" />
+                </div>
+              </div>
+              <div>
+                <label className="block text-[12px] font-medium text-zinc-600 mb-1">광고 제목 *</label>
+                <input value={adForm.title} onChange={e => setAdForm(p => ({ ...p, title: e.target.value }))} className="input" required placeholder="배너에 표시될 제목" />
+              </div>
+              <div>
+                <label className="block text-[12px] font-medium text-zinc-600 mb-1">설명</label>
+                <input value={adForm.description} onChange={e => setAdForm(p => ({ ...p, description: e.target.value }))} className="input" placeholder="짧은 설명" />
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-[12px] font-medium text-zinc-600 mb-1">이미지 URL</label>
+                  <input value={adForm.image_url} onChange={e => setAdForm(p => ({ ...p, image_url: e.target.value }))} className="input" placeholder="https://..." />
+                </div>
+                <div>
+                  <label className="block text-[12px] font-medium text-zinc-600 mb-1">링크 URL</label>
+                  <input value={adForm.link_url} onChange={e => setAdForm(p => ({ ...p, link_url: e.target.value }))} className="input" placeholder="https://..." />
+                </div>
+              </div>
+              <div className="grid grid-cols-3 gap-4">
+                <div>
+                  <label className="block text-[12px] font-medium text-zinc-600 mb-1">시작일</label>
+                  <input type="date" value={adForm.start_date} onChange={e => setAdForm(p => ({ ...p, start_date: e.target.value }))} className="input" />
+                </div>
+                <div>
+                  <label className="block text-[12px] font-medium text-zinc-600 mb-1">종료일</label>
+                  <input type="date" value={adForm.end_date} onChange={e => setAdForm(p => ({ ...p, end_date: e.target.value }))} className="input" />
+                </div>
+                <div>
+                  <label className="block text-[12px] font-medium text-zinc-600 mb-1">우선순위</label>
+                  <input type="number" value={adForm.priority} onChange={e => setAdForm(p => ({ ...p, priority: Number(e.target.value) }))} className="input" />
+                </div>
+              </div>
+              <div className="flex items-center gap-4">
+                <label className="flex items-center gap-1.5 text-[12px] text-zinc-600">
+                  <input type="checkbox" checked={adForm.is_active} onChange={e => setAdForm(p => ({ ...p, is_active: e.target.checked }))} className="w-3.5 h-3.5" /> 활성화
+                </label>
+                <div className="ml-auto flex gap-2">
+                  <button type="button" onClick={resetAdForm} className="btn-secondary h-9">취소</button>
+                  <button type="submit" className="btn-primary h-9">{editingAd ? '수정' : '등록'}</button>
+                </div>
+              </div>
+            </form>
+          )}
+
+          {/* Slot overview */}
+          {!showAdForm && (
+            <div className="flex items-center justify-between">
+              <div className="text-[13px] text-zinc-500">
+                {ALL_SLOTS.length}개 슬롯 / {ads.filter(a => a.is_active).length}개 활성 광고
+              </div>
+              <button onClick={() => setShowAdForm(true)} className="btn-primary h-9">
+                <Plus size={14} /> 새 광고
+              </button>
+            </div>
+          )}
+
+          {/* Grouped by slot */}
+          {!showAdForm && ALL_SLOTS.map(slot => {
+            const slotAds = ads.filter(a => a.slot === slot);
+            if (slotAds.length === 0) return (
+              <div key={slot} className="card p-3 flex items-center justify-between">
+                <div>
+                  <span className="text-[13px] font-medium text-zinc-700">{AD_SLOT_LABELS[slot]}</span>
+                  <span className="text-[11px] text-zinc-400 ml-2">{AD_SLOT_SIZES[slot]}</span>
+                </div>
+                <span className="text-[11px] text-zinc-400">비어있음</span>
+              </div>
+            );
+            return (
+              <div key={slot} className="card overflow-hidden">
+                <div className="px-4 py-2.5 bg-zinc-50 border-b border-zinc-200 flex items-center justify-between">
+                  <div>
+                    <span className="text-[13px] font-medium text-zinc-700">{AD_SLOT_LABELS[slot]}</span>
+                    <span className="text-[11px] text-zinc-400 ml-2">{AD_SLOT_SIZES[slot]}</span>
+                  </div>
+                  <span className="text-[11px] text-zinc-500">{slotAds.length}개</span>
+                </div>
+                {slotAds.map(a => (
+                  <div key={a.id} className="px-4 py-3 border-b border-zinc-100 last:border-b-0 flex items-center gap-3 hover:bg-zinc-50">
+                    {a.image_url ? (
+                      <div className="w-16 h-10 rounded bg-zinc-100 overflow-hidden shrink-0">
+                        <img src={a.image_url} alt="" className="w-full h-full object-cover" />
+                      </div>
+                    ) : (
+                      <div className="w-16 h-10 rounded bg-zinc-100 flex items-center justify-center text-[9px] text-zinc-400 shrink-0">미리보기</div>
+                    )}
+                    <div className="flex-1 min-w-0">
+                      <p className="text-[13px] font-medium text-zinc-800 truncate">{a.title || '(제목 없음)'}</p>
+                      <p className="text-[11px] text-zinc-400">{a.advertiser || '광고주 미지정'} / {a.start_date.slice(0, 10)} ~ {a.end_date.slice(0, 10)}</p>
+                    </div>
+                    <span className={`badge ${a.is_active ? 'bg-green-50 text-green-600' : 'bg-zinc-100 text-zinc-400'}`}>
+                      {a.is_active ? '활성' : '비활성'}
+                    </span>
+                    <div className="flex items-center gap-1.5">
+                      <button onClick={() => toggleAdActive(a)} className="text-zinc-400 hover:text-zinc-600" title={a.is_active ? '비활성화' : '활성화'}>
+                        {a.is_active ? <EyeOff size={14} /> : <Eye size={14} />}
+                      </button>
+                      <button onClick={() => startEditAd(a)} className="text-zinc-400 hover:text-zinc-600"><Pencil size={14} /></button>
+                      <button onClick={() => deleteAd(a.id)} className="text-red-400 hover:text-red-600"><Trash2 size={14} /></button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            );
+          })}
         </div>
       )}
     </div>

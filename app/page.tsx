@@ -7,6 +7,7 @@ import HeroBanner from '@/components/home/HeroBanner';
 import PremiumBuyerCard from '@/components/home/PremiumBuyerCard';
 import SellPostItem from '@/components/home/SellPostItem';
 import { premiumBuyers } from '@/data/mock';
+import AdBanner from '@/components/ads/AdBanner';
 import { getPosts } from '@/lib/api';
 import type { DBPost, DBUser } from '@/lib/types';
 
@@ -29,7 +30,8 @@ export default function Home() {
 
   return (
     <div className="max-w-[1140px] mx-auto px-5 py-6">
-      <HeroBanner />
+      <AdBanner slot="hero_banner" className="h-[200px] mb-6" fallback={<HeroBanner />} />
+      <AdBanner slot="main_top" className="h-[80px] mb-6" />
 
       <div className="flex items-center justify-between border-b border-zinc-200 mb-6">
         <div className="flex">

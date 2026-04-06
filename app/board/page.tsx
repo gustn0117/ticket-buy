@@ -6,6 +6,7 @@ import { PenSquare } from 'lucide-react';
 import SellPostItem from '@/components/home/SellPostItem';
 import { getPosts } from '@/lib/api';
 import type { DBPost, DBUser } from '@/lib/types';
+import AdBanner from '@/components/ads/AdBanner';
 
 type PostWithAuthor = DBPost & { author: DBUser };
 
@@ -26,6 +27,7 @@ export default function BoardPage() {
 
   return (
     <div className="max-w-[1140px] mx-auto px-5 py-6">
+      <AdBanner slot="board_top" className="h-20 mb-5" />
       <div className="flex items-center justify-between mb-5 border-b border-zinc-200">
         <div className="flex">
           <button onClick={() => setActiveTab('buy')}
