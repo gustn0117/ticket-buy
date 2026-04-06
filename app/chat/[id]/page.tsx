@@ -69,8 +69,8 @@ export default function ChatRoomPage({ params }: { params: Promise<{ id: string 
   const addSystemMessage = async (content: string, type: string = 'system-action', data?: Record<string, unknown>) => {
     if (!user) return;
     try {
-      await apiSendMessage({ chat_id: id, sender_id: null, type, content, data: data || null });
-      // Realtime이 자동으로 메시지를 추가함
+      const msg = await apiSendMessage({ chat_id: id, sender_id: null, type, content, data: data || null });
+      setMessages(prev => prev.some(m => m.id === msg.id) ? prev : [...prev, msg]);
     } catch {}
   };
 
@@ -79,8 +79,8 @@ export default function ChatRoomPage({ params }: { params: Promise<{ id: string 
     const text = inputText;
     setInputText('');
     try {
-      await apiSendMessage({ chat_id: id, sender_id: user.id, type: 'message', content: text, data: null });
-      // Realtime이 자동으로 메시지를 추가함
+      const msg = await apiSendMessage({ chat_id: id, sender_id: user.id, type: 'message', content: text, data: null });
+      setMessages(prev => prev.some(m => m.id === msg.id) ? prev : [...prev, msg]);
     } catch {
       setInputText(text);
     }
