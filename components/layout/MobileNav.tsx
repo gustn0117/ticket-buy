@@ -5,30 +5,32 @@ import { usePathname } from 'next/navigation';
 import { ShoppingCart, Tag, MessageCircle, User } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 
-const navItems = [
-  { href: '/board?tab=buy', label: '삽니다', icon: ShoppingCart },
-  { href: '/board?tab=sell', label: '팝니다', icon: Tag },
-  { href: '/chat', label: '채팅', icon: MessageCircle },
-];
-
 export default function MobileNav() {
   const pathname = usePathname();
   const { isLoggedIn } = useAuth();
 
+  const openChat = () => {
+    window.dispatchEvent(new CustomEvent('open-chat-widget'));
+  };
+
   return (
     <nav className="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-zinc-200 z-50">
       <div className="flex justify-around items-center h-[52px]">
-        {navItems.map((item) => {
-          const Icon = item.icon;
-          const isActive = pathname === item.href.split('?')[0];
-          return (
-            <Link key={item.href} href={item.href}
-              className={`flex flex-col items-center gap-0.5 text-[10px] ${isActive ? 'text-zinc-900 font-semibold' : 'text-zinc-400'}`}>
-              <Icon size={18} strokeWidth={isActive ? 2 : 1.5} />
-              {item.label}
-            </Link>
-          );
-        })}
+        <Link href="/board?tab=buy"
+          className={`flex flex-col items-center gap-0.5 text-[10px] ${pathname === '/board' ? 'text-zinc-900 font-semibold' : 'text-zinc-400'}`}>
+          <ShoppingCart size={18} strokeWidth={pathname === '/board' ? 2 : 1.5} />
+          삽니다
+        </Link>
+        <Link href="/board?tab=sell"
+          className="flex flex-col items-center gap-0.5 text-[10px] text-zinc-400">
+          <Tag size={18} strokeWidth={1.5} />
+          팝니다
+        </Link>
+        <button onClick={openChat}
+          className="flex flex-col items-center gap-0.5 text-[10px] text-zinc-400">
+          <MessageCircle size={18} strokeWidth={1.5} />
+          채팅
+        </button>
         <Link href={isLoggedIn ? '/dashboard' : '/login'}
           className={`flex flex-col items-center gap-0.5 text-[10px] ${pathname === '/login' || pathname?.startsWith('/dashboard') ? 'text-zinc-900 font-semibold' : 'text-zinc-400'}`}>
           <User size={18} strokeWidth={pathname === '/login' || pathname?.startsWith('/dashboard') ? 2 : 1.5} />

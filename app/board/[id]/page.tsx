@@ -54,7 +54,8 @@ export default function PostDetailPage({ params }: { params: Promise<{ id: strin
         buyer_id: isSell ? user.id : post.author_id,
         seller_id: isSell ? post.author_id : user.id,
       });
-      router.push(`/chat/${chat.id}`);
+      // 채팅 위젯 열기
+      window.dispatchEvent(new CustomEvent('open-chat-widget', { detail: { chatId: chat.id } }));
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : '채팅 생성에 실패했습니다.';
       alert(message);
