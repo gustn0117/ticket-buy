@@ -3,7 +3,7 @@
 import { use, useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { ArrowLeft, Eye, Clock, Pencil, Trash2 } from 'lucide-react';
+import { ArrowLeft, Eye, Clock, Pencil, Trash2, ShieldCheck } from 'lucide-react';
 import { getPost, deletePost, createChat } from '@/lib/api';
 import { useAuth } from '@/contexts/AuthContext';
 import type { DBPost, DBUser } from '@/lib/types';
@@ -41,7 +41,7 @@ export default function PostDetailPage({ params }: { params: Promise<{ id: strin
     }
   };
 
-  const handleContact = async () => {
+  const handleContact = async (tradeType: 'direct' | 'escrow' = 'direct') => {
     if (!isLoggedIn || !user) {
       router.push('/login');
       return;
@@ -53,8 +53,8 @@ export default function PostDetailPage({ params }: { params: Promise<{ id: strin
         post_id: post.id,
         buyer_id: isSell ? user.id : post.author_id,
         seller_id: isSell ? post.author_id : user.id,
+        trade_type: tradeType,
       });
-      // 채팅 위젯 열기
       window.dispatchEvent(new CustomEvent('open-chat-widget', { detail: { chatId: chat.id } }));
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : '채팅 생성에 실패했습니다.';
@@ -147,9 +147,17 @@ export default function PostDetailPage({ params }: { params: Promise<{ id: strin
               </button>
             </div>
           ) : (
-            <button onClick={handleContact} className="btn-primary w-full h-10">
-              {isSell ? '구매하기' : '판매하기'}
-            </button>
+            <div className="space-y-2">
+              <button onClick={() => handleContact('direct')} className="btn-primary w-full h-10">
+                {isSell ? '구매하기' : '판매하기'} (직접거래)
+              </button>
+              <button onClick={() => handleContact('escrow')} className="btn-secondary w-full h-10 text-zinc-600">
+                <ShieldCheck size={14} /> 중개거래로 안전하게
+              </button>
+              <p className="text-[10px] text-zinc-400 text-center leading-relaxed">
+                중개거래 시 티켓바이가 계약서 작성 및 금전/상품권 전달을 중개합니다.
+              </p>
+            </div>
           )}
 
           <AdBanner slot="detail_bottom" className="h-20 mt-5" />

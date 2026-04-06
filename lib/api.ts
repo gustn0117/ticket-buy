@@ -88,7 +88,7 @@ export async function getChat(id: string) {
   return data as DBChat;
 }
 
-export async function createChat(chat: { post_id: string; buyer_id: string; seller_id: string }) {
+export async function createChat(chat: { post_id: string; buyer_id: string; seller_id: string; trade_type?: 'direct' | 'escrow' }) {
   const { data, error } = await supabase.from('chats').insert(chat).select().single();
   if (error) throw error;
   return data as DBChat;

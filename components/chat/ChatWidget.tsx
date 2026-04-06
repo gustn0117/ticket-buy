@@ -12,7 +12,7 @@ const stepLabels = ['', '견적', '기본정보', '계약서', '입금', '배송
 
 const stepToStatus = (step: number, status?: string): string => {
   if (status && status !== 'active') return status;
-  if (step >= 6) return '거래완료';
+  if (step >= 6 && status === '거래완료') return '거래완료';
   if (step >= 2) return '거래중';
   return '견적대기';
 };
@@ -122,13 +122,30 @@ export default function ChatWidget() {
     await addSystemMessage('견적을 제안했습니다. 상대방의 응답을 기다려주세요.', 'system-action');
   };
 
-  const actions: Record<number, { primary?: { label: string; action: () => void; icon?: React.ReactNode }; secondary?: { label: string; action: () => void; icon?: React.ReactNode }[] }> = {
+  const isEscrow = chat?.trade_type === 'escrow';
+  const completedStep = isEscrow ? 8 : 6;
+
+  // 직접거래 단계: 견적 -> 기본정보 -> 계약서 -> 입금 -> 배송 -> 완료
+  const directActions: Record<number, { primary?: { label: string; action: () => void; icon?: React.ReactNode }; secondary?: { label: string; action: () => void; icon?: React.ReactNode }[] }> = {
     1: { primary: { label: '견적 제안', action: () => setShowQuoteForm(true), icon: <FileText size={12} /> } },
     2: { primary: { label: '기본정보 확인', action: async () => { await addSystemMessage('기본정보를 확인했습니다.'); await advanceStep(3); } }, secondary: [{ label: '기본정보 제출', action: async () => { await addSystemMessage('기본정보를 제출했습니다.'); } }] },
     3: { primary: { label: '계약서 작성', action: async () => { await addSystemMessage('계약서가 작성되었습니다.'); await advanceStep(4); }, icon: <FileText size={12} /> } },
     4: { primary: { label: '입금 확인', action: async () => { await addSystemMessage('입금이 확인되었습니다.'); await advanceStep(5); } }, secondary: [{ label: '입금 요청', action: async () => { await addSystemMessage('입금 확인을 요청했습니다.'); }, icon: <CreditCard size={12} /> }] },
     5: { primary: { label: '거래 완료', action: async () => { await addSystemMessage('거래가 완료되었습니다.'); await advanceStep(6, '거래완료'); }, icon: <CheckCircle2 size={12} /> }, secondary: [{ label: '배송 요청', action: async () => { await addSystemMessage('배송정보를 요청했습니다.'); }, icon: <Truck size={12} /> }, { label: '배송 입력', action: async () => { await addSystemMessage('배송정보가 입력되었습니다.'); } }] },
   };
+
+  // 중개거래 단계: 견적 -> 기본정보 -> 중개계약서 -> 구매자->중개 송금 -> 중개->판매자 송금 -> 판매자 상품권->중개 -> 중개->구매자 전달 -> 완료
+  const escrowActions: Record<number, { primary?: { label: string; action: () => void; icon?: React.ReactNode }; secondary?: { label: string; action: () => void; icon?: React.ReactNode }[] }> = {
+    1: { primary: { label: '견적 제안', action: () => setShowQuoteForm(true), icon: <FileText size={12} /> } },
+    2: { primary: { label: '기본정보 확인', action: async () => { await addSystemMessage('기본정보를 확인했습니다.'); await advanceStep(3); } }, secondary: [{ label: '기본정보 제출', action: async () => { await addSystemMessage('기본정보를 제출했습니다.'); } }] },
+    3: { primary: { label: '중개 계약서 작성', action: async () => { await addSystemMessage('[중개] 중개 계약서가 작성되었습니다. 구매자는 중개업체 계좌로 송금해주세요.'); await advanceStep(4); }, icon: <FileText size={12} /> } },
+    4: { primary: { label: '구매자 송금 확인', action: async () => { await addSystemMessage('[중개] 구매자가 중개업체로 송금을 완료했습니다. 중개업체가 판매자에게 송금합니다.'); await advanceStep(5); } }, secondary: [{ label: '송금 요청', action: async () => { await addSystemMessage('[중개] 구매자에게 중개업체 계좌로 송금을 요청했습니다.'); }, icon: <CreditCard size={12} /> }] },
+    5: { primary: { label: '판매자 송금 완료', action: async () => { await addSystemMessage('[중개] 중개업체가 판매자에게 송금을 완료했습니다. 판매자는 상품권을 중개업체로 전달해주세요.'); await advanceStep(6); } } },
+    6: { primary: { label: '상품권 수령 확인', action: async () => { await addSystemMessage('[중개] 중개업체가 판매자로부터 상품권을 수령했습니다. 구매자에게 전달합니다.'); await advanceStep(7); } }, secondary: [{ label: '상품권 전달 요청', action: async () => { await addSystemMessage('[중개] 판매자에게 상품권 전달을 요청했습니다.'); }, icon: <Truck size={12} /> }] },
+    7: { primary: { label: '거래 완료', action: async () => { await addSystemMessage('[중개] 중개업체가 구매자에게 상품권을 전달했습니다. 거래가 완료되었습니다.'); await advanceStep(8, '거래완료'); }, icon: <CheckCircle2 size={12} /> } },
+  };
+
+  const actions = isEscrow ? escrowActions : directActions;
 
   const formatTime = (d: string) => { const t = new Date(d); return `${t.getHours() < 12 ? '오전' : '오후'} ${t.getHours() % 12 || 12}:${String(t.getMinutes()).padStart(2, '0')}`; };
   const formatRelative = (d: string) => { const m = Math.floor((Date.now() - new Date(d).getTime()) / 60000); if (m < 1) return '방금'; if (m < 60) return `${m}분 전`; const h = Math.floor(m / 60); if (h < 24) return `${h}시간 전`; return `${Math.floor(h / 24)}일 전`; };
@@ -182,6 +199,7 @@ export default function ChatWidget() {
                         <div className="flex items-center gap-1.5">
                           <span className="text-[13px] font-medium text-zinc-900 truncate">{p?.name ?? '알 수 없음'}</span>
                           <span className={`text-[9px] px-1 py-px rounded ${ib ? 'bg-red-50 text-red-500' : 'bg-blue-50 text-blue-500'}`}>{ib ? '판매' : '구매'}</span>
+                          {c.trade_type === 'escrow' && <span className="text-[9px] px-1 py-px rounded bg-blue-50 text-blue-500">중개</span>}
                         </div>
                         <p className="text-[11px] text-zinc-400 truncate">{c.post?.title ?? '삭제된 게시글'}</p>
                       </div>
@@ -210,7 +228,8 @@ export default function ChatWidget() {
                   <span className="text-[13px] font-medium text-zinc-900 truncate block">{partner?.name ?? '...'}</span>
                   <span className="text-[10px] text-zinc-400">{chat?.post?.title ?? ''}</span>
                 </div>
-                {currentStep < 6 && <span className="text-[9px] text-zinc-400 bg-zinc-100 px-1.5 py-0.5 rounded shrink-0">{stepLabels[currentStep]}</span>}
+                {isEscrow && <span className="text-[9px] text-blue-500 bg-blue-50 px-1.5 py-0.5 rounded shrink-0">중개</span>}
+                {currentStep < completedStep && <span className="text-[9px] text-zinc-400 bg-zinc-100 px-1.5 py-0.5 rounded shrink-0">{currentStep}/{completedStep}</span>}
                 <button onClick={() => setOpen(false)} className="text-zinc-400 hover:text-zinc-600"><X size={16} /></button>
               </div>
 
@@ -275,7 +294,7 @@ export default function ChatWidget() {
               )}
 
               {/* Step Actions */}
-              {currentStep < 6 && currentActs && (
+              {currentStep < completedStep && currentActs && (
                 <div className="border-t border-zinc-100 bg-white shrink-0">
                   <button onClick={() => setShowActions(!showActions)}
                     className="w-full flex items-center justify-center gap-1 py-1.5 text-[10px] text-zinc-400 hover:text-zinc-600">
@@ -293,7 +312,7 @@ export default function ChatWidget() {
                   )}
                 </div>
               )}
-              {currentStep >= 6 && (
+              {currentStep >= completedStep && (
                 <div className="border-t border-zinc-100 bg-zinc-50 px-3 py-2 text-center shrink-0">
                   <span className="text-[10px] text-zinc-500 flex items-center justify-center gap-1"><CheckCircle2 size={11} /> 거래 완료</span>
                 </div>

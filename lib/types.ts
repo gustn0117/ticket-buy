@@ -38,6 +38,8 @@ export interface DBChat {
   seller_id: string | null;
   status: string;
   current_step: number;
+  trade_type: 'direct' | 'escrow';
+  escrow_status: string | null;
   created_at: string;
   updated_at: string;
   // joined
