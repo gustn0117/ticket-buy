@@ -2,11 +2,11 @@
 
 import { useState, useEffect, useRef } from 'react';
 import { supabase } from '@/lib/supabase';
-import { getMessages } from '@/lib/api';
-import type { DBUser, DBPost, DBNotice, DBChat, DBMessage } from '@/lib/types';
+import { getMessages, getPremiumBuyers } from '@/lib/api';
+import type { DBUser, DBPost, DBNotice, DBChat, DBMessage, DBPremiumBuyer } from '@/lib/types';
 import type { Ad, AdSlot } from '@/lib/ads';
 import { AD_SLOT_LABELS, AD_SLOT_SIZES } from '@/lib/ads';
-import { Users, FileText, Bell, MessageCircle, Trash2, Shield, Megaphone, Pencil, Plus, Eye, EyeOff, ArrowLeft, Radio } from 'lucide-react';
+import { Users, FileText, Bell, MessageCircle, Trash2, Shield, Megaphone, Pencil, Plus, Eye, EyeOff, ArrowLeft, Radio, Crown } from 'lucide-react';
 import { getCategoryName } from '@/data/mock';
 
 const ADMIN_PASSWORD = '1234';
@@ -15,11 +15,12 @@ const ALL_SLOTS = Object.keys(AD_SLOT_LABELS) as AdSlot[];
 export default function AdminPage() {
   const [authed, setAuthed] = useState(false);
   const [pw, setPw] = useState('');
-  const [tab, setTab] = useState<'users' | 'posts' | 'notices' | 'chats' | 'ads'>('users');
+  const [tab, setTab] = useState<'users' | 'posts' | 'notices' | 'chats' | 'premium' | 'ads'>('users');
   const [users, setUsers] = useState<DBUser[]>([]);
   const [posts, setPosts] = useState<(DBPost & { author?: DBUser })[]>([]);
   const [notices, setNotices] = useState<DBNotice[]>([]);
   const [chats, setChats] = useState<DBChat[]>([]);
+  const [premiumBuyers, setPremiumBuyers] = useState<DBPremiumBuyer[]>([]);
   const [ads, setAds] = useState<Ad[]>([]);
   const [loading, setLoading] = useState(false);
 
@@ -32,6 +33,11 @@ export default function AdminPage() {
   // Notice form
   const [noticeTitle, setNoticeTitle] = useState('');
   const [noticePinned, setNoticePinned] = useState(false);
+
+  // Premium buyer form
+  const [showPremiumForm, setShowPremiumForm] = useState(false);
+  const [editingPremium, setEditingPremium] = useState<DBPremiumBuyer | null>(null);
+  const [premiumForm, setPremiumForm] = useState({ name: '', description: '', phone: '', region: '', brands: '', image_url: '', user_id: '', priority: 0, is_active: true });
 
   // Ad form
   const [showAdForm, setShowAdForm] = useState(false);
@@ -68,6 +74,9 @@ export default function AdminPage() {
       if (p.data) setPosts(p.data);
       if (n.data) setNotices(n.data);
       if (c.data) setChats(c.data);
+      // Fetch premium buyers
+      const pb = await getPremiumBuyers(false);
+      setPremiumBuyers(pb);
       // Fetch ads
       const adsRes = await fetch('/api/ads');
       if (adsRes.ok) setAds(await adsRes.json());
@@ -111,6 +120,23 @@ export default function AdminPage() {
   }, [viewingChat]);
 
   useEffect(() => { msgEndRef.current?.scrollIntoView({ behavior: 'smooth' }); }, [chatMessages]);
+
+  // Premium Buyer CRUD
+  const resetPremiumForm = () => { setPremiumForm({ name: '', description: '', phone: '', region: '', brands: '', image_url: '', user_id: '', priority: 0, is_active: true }); setEditingPremium(null); setShowPremiumForm(false); };
+  const startEditPremium = (b: DBPremiumBuyer) => { setPremiumForm({ name: b.name, description: b.description, phone: b.phone, region: b.region, brands: b.brands?.join(', ') || '', image_url: b.image_url, user_id: b.user_id || '', priority: b.priority, is_active: b.is_active }); setEditingPremium(b); setShowPremiumForm(true); };
+  const savePremium = async (e: React.FormEvent) => {
+    e.preventDefault();
+    const payload = { name: premiumForm.name, description: premiumForm.description, phone: premiumForm.phone, region: premiumForm.region, brands: premiumForm.brands.split(',').map(s => s.trim()).filter(Boolean), image_url: premiumForm.image_url, user_id: premiumForm.user_id || null, priority: premiumForm.priority, is_active: premiumForm.is_active };
+    if (editingPremium) {
+      await supabase.from('premium_buyers').update({ ...payload, updated_at: new Date().toISOString() }).eq('id', editingPremium.id);
+    } else {
+      await supabase.from('premium_buyers').insert(payload);
+    }
+    resetPremiumForm();
+    fetchData();
+  };
+  const deletePremium = async (id: string) => { if (!confirm('프리미엄 업체를 삭제하시겠습니까?')) return; await supabase.from('premium_buyers').delete().eq('id', id); fetchData(); };
+  const togglePremiumActive = async (b: DBPremiumBuyer) => { await supabase.from('premium_buyers').update({ is_active: !b.is_active }).eq('id', b.id); fetchData(); };
 
   // Ad CRUD
   const resetAdForm = () => {
@@ -170,6 +196,7 @@ export default function AdminPage() {
     { key: 'posts' as const, label: '게시글', icon: FileText, count: posts.length },
     { key: 'notices' as const, label: '공지', icon: Bell, count: notices.length },
     { key: 'chats' as const, label: '거래', icon: MessageCircle, count: chats.length },
+    { key: 'premium' as const, label: '프리미엄', icon: Crown, count: premiumBuyers.length },
     { key: 'ads' as const, label: '광고', icon: Megaphone, count: ads.length },
   ];
 
@@ -180,7 +207,7 @@ export default function AdminPage() {
         <button onClick={() => setAuthed(false)} className="btn-secondary text-[12px] h-8">로그아웃</button>
       </div>
 
-      <div className="grid grid-cols-5 gap-3 mb-5">
+      <div className="grid grid-cols-6 gap-3 mb-5">
         {tabs.map(t => (
           <button key={t.key} onClick={() => setTab(t.key)}
             className={`card card-hover p-3 text-left ${tab === t.key ? 'border-zinc-900' : ''}`}>
@@ -383,6 +410,114 @@ export default function AdminPage() {
               </div>
             </div>
           )}
+        </div>
+      )}
+
+      {/* ─── Premium Buyers ─── */}
+      {!loading && tab === 'premium' && (
+        <div className="space-y-4">
+          {showPremiumForm && (
+            <form onSubmit={savePremium} className="card p-5 space-y-3 animate-fade-in">
+              <div className="flex items-center justify-between mb-1">
+                <h3 className="text-[14px] font-semibold">{editingPremium ? '프리미엄 업체 수정' : '프리미엄 업체 등록'}</h3>
+                <button type="button" onClick={resetPremiumForm} className="text-zinc-400 hover:text-zinc-700 text-[12px]">취소</button>
+              </div>
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-[11px] font-medium text-zinc-500 mb-1">업체명 *</label>
+                  <input value={premiumForm.name} onChange={e => setPremiumForm(p => ({ ...p, name: e.target.value }))} className="input h-9" required />
+                </div>
+                <div>
+                  <label className="block text-[11px] font-medium text-zinc-500 mb-1">연락처</label>
+                  <input value={premiumForm.phone} onChange={e => setPremiumForm(p => ({ ...p, phone: e.target.value }))} className="input h-9" placeholder="010-0000-0000" />
+                </div>
+              </div>
+              <div>
+                <label className="block text-[11px] font-medium text-zinc-500 mb-1">소개글</label>
+                <input value={premiumForm.description} onChange={e => setPremiumForm(p => ({ ...p, description: e.target.value }))} className="input h-9" placeholder="업체 소개 문구" />
+              </div>
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-[11px] font-medium text-zinc-500 mb-1">지역</label>
+                  <input value={premiumForm.region} onChange={e => setPremiumForm(p => ({ ...p, region: e.target.value }))} className="input h-9" placeholder="서울 강남구" />
+                </div>
+                <div>
+                  <label className="block text-[11px] font-medium text-zinc-500 mb-1">취급 브랜드 (쉼표 구분)</label>
+                  <input value={premiumForm.brands} onChange={e => setPremiumForm(p => ({ ...p, brands: e.target.value }))} className="input h-9" placeholder="신세계, 롯데" />
+                </div>
+              </div>
+              <div className="grid grid-cols-3 gap-3">
+                <div>
+                  <label className="block text-[11px] font-medium text-zinc-500 mb-1">연결 회원 ID (선택)</label>
+                  <select value={premiumForm.user_id} onChange={e => setPremiumForm(p => ({ ...p, user_id: e.target.value }))} className="input h-9">
+                    <option value="">미연결</option>
+                    {users.filter(u => u.type === 'business').map(u => (
+                      <option key={u.id} value={u.id}>{u.name} ({u.email})</option>
+                    ))}
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-[11px] font-medium text-zinc-500 mb-1">우선순위</label>
+                  <input type="number" value={premiumForm.priority} onChange={e => setPremiumForm(p => ({ ...p, priority: Number(e.target.value) }))} className="input h-9" />
+                </div>
+                <div className="flex items-end pb-0.5">
+                  <label className="flex items-center gap-1.5 text-[12px] text-zinc-600">
+                    <input type="checkbox" checked={premiumForm.is_active} onChange={e => setPremiumForm(p => ({ ...p, is_active: e.target.checked }))} className="w-3.5 h-3.5" /> 활성화
+                  </label>
+                </div>
+              </div>
+              <div className="flex gap-2 pt-1">
+                <button type="button" onClick={resetPremiumForm} className="btn-secondary flex-1 h-9 text-[12px]">취소</button>
+                <button type="submit" className="btn-primary flex-1 h-9 text-[12px]">{editingPremium ? '수정' : '등록'}</button>
+              </div>
+            </form>
+          )}
+
+          {!showPremiumForm && (
+            <div className="flex items-center justify-between">
+              <span className="text-[13px] text-zinc-500">{premiumBuyers.filter(b => b.is_active).length}개 활성</span>
+              <button onClick={() => setShowPremiumForm(true)} className="btn-primary h-9"><Plus size={14} /> 새 업체</button>
+            </div>
+          )}
+
+          <div className="card overflow-hidden">
+            <table className="w-full text-[13px]">
+              <thead><tr className="bg-zinc-50 border-b border-zinc-200">
+                <th className="table-header text-left py-2.5 px-4">업체명</th>
+                <th className="table-header text-left py-2.5 px-4">소개</th>
+                <th className="table-header text-left py-2.5 px-4">브랜드</th>
+                <th className="table-header text-left py-2.5 px-4">연락처</th>
+                <th className="table-header text-left py-2.5 px-4">지역</th>
+                <th className="table-header text-center py-2.5 px-4">순위</th>
+                <th className="table-header text-center py-2.5 px-4">상태</th>
+                <th className="table-header text-center py-2.5 px-4">관리</th>
+              </tr></thead>
+              <tbody>
+                {premiumBuyers.map(b => (
+                  <tr key={b.id} className="border-b border-zinc-100 hover:bg-zinc-50">
+                    <td className="py-2.5 px-4 font-medium">{b.name}</td>
+                    <td className="py-2.5 px-4 text-zinc-500 max-w-[200px] truncate">{b.description || '-'}</td>
+                    <td className="py-2.5 px-4">{b.brands?.map(br => <span key={br} className="badge bg-zinc-100 text-zinc-600 mr-1">{br}</span>)}</td>
+                    <td className="py-2.5 px-4 text-zinc-500">{b.phone || '-'}</td>
+                    <td className="py-2.5 px-4 text-zinc-500">{b.region || '-'}</td>
+                    <td className="py-2.5 px-4 text-center">{b.priority}</td>
+                    <td className="py-2.5 px-4 text-center">
+                      <button onClick={() => togglePremiumActive(b)} className={`badge cursor-pointer ${b.is_active ? 'bg-green-50 text-green-600' : 'bg-zinc-100 text-zinc-400'}`}>
+                        {b.is_active ? '활성' : '비활성'}
+                      </button>
+                    </td>
+                    <td className="py-2.5 px-4 text-center">
+                      <div className="flex items-center justify-center gap-1.5">
+                        <button onClick={() => startEditPremium(b)} className="text-zinc-400 hover:text-zinc-600"><Pencil size={13} /></button>
+                        <button onClick={() => deletePremium(b.id)} className="text-red-400 hover:text-red-600"><Trash2 size={13} /></button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+                {premiumBuyers.length === 0 && <tr><td colSpan={8} className="py-8 text-center text-zinc-400">프리미엄 업체가 없습니다.</td></tr>}
+              </tbody>
+            </table>
+          </div>
         </div>
       )}
 

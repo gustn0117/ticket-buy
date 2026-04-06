@@ -56,6 +56,21 @@ export interface DBMessage {
   created_at: string;
 }
 
+export interface DBPremiumBuyer {
+  id: string;
+  user_id: string | null;
+  name: string;
+  description: string;
+  phone: string;
+  region: string;
+  brands: string[];
+  image_url: string;
+  is_active: boolean;
+  priority: number;
+  created_at: string;
+  updated_at: string;
+}
+
 export interface DBNotice {
   id: string;
   title: string;

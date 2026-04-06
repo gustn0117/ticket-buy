@@ -1,5 +1,5 @@
 import { supabase } from './supabase';
-import type { DBPost, DBUser, DBChat, DBMessage, DBNotice } from './types';
+import type { DBPost, DBUser, DBChat, DBMessage, DBNotice, DBPremiumBuyer } from './types';
 
 // ─── Posts ───
 
@@ -121,6 +121,33 @@ export async function sendMessage(msg: Omit<DBMessage, 'id' | 'created_at'>) {
     await supabase.from('chats').update({ updated_at: new Date().toISOString() }).eq('id', msg.chat_id);
   }
   return data as DBMessage;
+}
+
+// ─── Premium Buyers ───
+
+export async function getPremiumBuyers(activeOnly = true) {
+  let q = supabase.from('premium_buyers').select('*').order('priority', { ascending: false }).order('created_at', { ascending: false });
+  if (activeOnly) q = q.eq('is_active', true);
+  const { data, error } = await q;
+  if (error) throw error;
+  return data as DBPremiumBuyer[];
+}
+
+export async function createPremiumBuyer(buyer: Record<string, unknown>) {
+  const { data, error } = await supabase.from('premium_buyers').insert(buyer).select().single();
+  if (error) throw error;
+  return data as DBPremiumBuyer;
+}
+
+export async function updatePremiumBuyer(id: string, updates: Record<string, unknown>) {
+  const { data, error } = await supabase.from('premium_buyers').update({ ...updates, updated_at: new Date().toISOString() }).eq('id', id).select().single();
+  if (error) throw error;
+  return data as DBPremiumBuyer;
+}
+
+export async function deletePremiumBuyer(id: string) {
+  const { error } = await supabase.from('premium_buyers').delete().eq('id', id);
+  if (error) throw error;
 }
 
 // ─── Notices ───
