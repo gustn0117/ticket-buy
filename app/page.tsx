@@ -62,7 +62,10 @@ export default function Home() {
       <section>
         <div className="flex items-center justify-between mb-3">
           <h2 className="section-title mb-0">{activeTab === 'buy' ? '일반 구매글' : '일반 판매글'}</h2>
-          {!loading && <span className="text-[12px] text-zinc-400">{posts.length}건</span>}
+          <div className="flex items-center gap-3">
+            {!loading && <span className="text-[12px] text-zinc-400">{posts.length}건</span>}
+            <Link href={`/board?tab=${activeTab}`} className="text-[12px] text-zinc-500 hover:text-zinc-900 transition-colors">전체보기</Link>
+          </div>
         </div>
 
         {loading ? (
@@ -71,11 +74,16 @@ export default function Home() {
           <div className="py-16 text-center text-red-400 text-[13px]">{error}</div>
         ) : (
           <div className="card overflow-hidden">
-            {posts.map((post) => (
+            {posts.slice(0, 10).map((post) => (
               <SellPostItem key={post.id} post={post} />
             ))}
             {posts.length === 0 && (
               <div className="py-16 text-center text-zinc-400 text-[13px]">등록된 글이 없습니다.</div>
+            )}
+            {posts.length > 10 && (
+              <Link href={`/board?tab=${activeTab}`} className="block py-3 text-center text-[12px] text-zinc-500 hover:text-zinc-900 hover:bg-zinc-50 border-t border-zinc-100 transition-colors">
+                + {posts.length - 10}건 더보기
+              </Link>
             )}
           </div>
         )}
