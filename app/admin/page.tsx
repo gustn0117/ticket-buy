@@ -1,11 +1,12 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { supabase } from '@/lib/supabase';
-import type { DBUser, DBPost, DBNotice, DBChat } from '@/lib/types';
+import { getMessages } from '@/lib/api';
+import type { DBUser, DBPost, DBNotice, DBChat, DBMessage } from '@/lib/types';
 import type { Ad, AdSlot } from '@/lib/ads';
 import { AD_SLOT_LABELS, AD_SLOT_SIZES } from '@/lib/ads';
-import { Users, FileText, Bell, MessageCircle, Trash2, Shield, Megaphone, Pencil, Plus, Eye, EyeOff } from 'lucide-react';
+import { Users, FileText, Bell, MessageCircle, Trash2, Shield, Megaphone, Pencil, Plus, Eye, EyeOff, ArrowLeft, Radio } from 'lucide-react';
 import { getCategoryName } from '@/data/mock';
 
 const ADMIN_PASSWORD = '1234';
@@ -21,6 +22,12 @@ export default function AdminPage() {
   const [chats, setChats] = useState<DBChat[]>([]);
   const [ads, setAds] = useState<Ad[]>([]);
   const [loading, setLoading] = useState(false);
+
+  // Chat viewer
+  const [viewingChat, setViewingChat] = useState<DBChat | null>(null);
+  const [chatMessages, setChatMessages] = useState<DBMessage[]>([]);
+  const [chatMsgLoading, setChatMsgLoading] = useState(false);
+  const msgEndRef = useRef<HTMLDivElement>(null);
 
   // Notice form
   const [noticeTitle, setNoticeTitle] = useState('');
@@ -76,7 +83,34 @@ export default function AdminPage() {
   const deleteNotice = async (id: string) => { if (!confirm('공지를 삭제하시겠습니까?')) return; await supabase.from('notices').delete().eq('id', id); fetchData(); };
   const addNotice = async (e: React.FormEvent) => { e.preventDefault(); if (!noticeTitle.trim()) return; await supabase.from('notices').insert({ title: noticeTitle, is_pinned: noticePinned }); setNoticeTitle(''); setNoticePinned(false); fetchData(); };
   const toggleUserType = async (id: string, t: string) => { await supabase.from('users').update({ type: t === 'normal' ? 'business' : 'normal' }).eq('id', id); fetchData(); };
-  const deleteChat = async (id: string) => { if (!confirm('채팅을 삭제하시겠습니까?')) return; await supabase.from('messages').delete().eq('chat_id', id); await supabase.from('chats').delete().eq('id', id); fetchData(); };
+  const deleteChat = async (id: string) => { if (!confirm('채팅을 삭제하시겠습니까?')) return; await supabase.from('messages').delete().eq('chat_id', id); await supabase.from('chats').delete().eq('id', id); if (viewingChat?.id === id) setViewingChat(null); fetchData(); };
+
+  // 채팅 실시간 뷰어
+  const openChatViewer = async (chat: DBChat) => {
+    setViewingChat(chat);
+    setChatMsgLoading(true);
+    try {
+      const msgs = await getMessages(chat.id);
+      setChatMessages(msgs);
+    } catch { setChatMessages([]); }
+    setChatMsgLoading(false);
+  };
+
+  useEffect(() => {
+    if (!viewingChat) return;
+    const channel = supabase
+      .channel(`admin-chat-${viewingChat.id}`)
+      .on('postgres_changes', {
+        event: 'INSERT', schema: 'ticket_buy', table: 'messages',
+        filter: `chat_id=eq.${viewingChat.id}`,
+      }, (payload: { new: DBMessage }) => {
+        setChatMessages(prev => prev.some(m => m.id === payload.new.id) ? prev : [...prev, payload.new]);
+      })
+      .subscribe();
+    return () => { supabase.removeChannel(channel); };
+  }, [viewingChat]);
+
+  useEffect(() => { msgEndRef.current?.scrollIntoView({ behavior: 'smooth' }); }, [chatMessages]);
 
   // Ad CRUD
   const resetAdForm = () => {
@@ -262,32 +296,93 @@ export default function AdminPage() {
 
       {/* ─── Chats ─── */}
       {!loading && tab === 'chats' && (
-        <div className="card overflow-hidden">
-          <table className="w-full text-[13px]">
-            <thead><tr className="bg-zinc-50 border-b border-zinc-200">
-              <th className="table-header text-left py-2.5 px-4">게시글</th>
-              <th className="table-header text-left py-2.5 px-4">구매자</th>
-              <th className="table-header text-left py-2.5 px-4">판매자</th>
-              <th className="table-header text-center py-2.5 px-4">단계</th>
-              <th className="table-header text-center py-2.5 px-4">상태</th>
-              <th className="table-header text-left py-2.5 px-4">최근 활동</th>
-              <th className="table-header text-center py-2.5 px-4">관리</th>
-            </tr></thead>
-            <tbody>
-              {chats.map(c => (
-                <tr key={c.id} className="border-b border-zinc-100 hover:bg-zinc-50">
-                  <td className="py-2.5 px-4 font-medium">{(c.post as { title?: string })?.title || '삭제됨'}</td>
-                  <td className="py-2.5 px-4 text-zinc-500">{(c.buyer as { name?: string })?.name || '-'}</td>
-                  <td className="py-2.5 px-4 text-zinc-500">{(c.seller as { name?: string })?.name || '-'}</td>
-                  <td className="py-2.5 px-4 text-center">{c.current_step}/6</td>
-                  <td className="py-2.5 px-4 text-center"><span className="badge bg-zinc-100 text-zinc-600">{c.status}</span></td>
-                  <td className="py-2.5 px-4 text-zinc-400 text-[11px]">{new Date(c.updated_at).toLocaleDateString('ko-KR')}</td>
-                  <td className="py-2.5 px-4 text-center"><button onClick={() => deleteChat(c.id)} className="text-red-400 hover:text-red-600"><Trash2 size={14} /></button></td>
-                </tr>
-              ))}
-              {chats.length === 0 && <tr><td colSpan={7} className="py-8 text-center text-zinc-400">채팅이 없습니다.</td></tr>}
-            </tbody>
-          </table>
+        <div className="grid grid-cols-1 lg:grid-cols-5 gap-4">
+          {/* 채팅 목록 */}
+          <div className={`card overflow-hidden ${viewingChat ? 'lg:col-span-2' : 'lg:col-span-5'}`}>
+            <div className="px-4 py-2.5 bg-zinc-50 border-b border-zinc-200 text-[12px] font-medium text-zinc-600">
+              채팅 목록 ({chats.length})
+            </div>
+            <div className="divide-y divide-zinc-100 max-h-[600px] overflow-y-auto">
+              {chats.map(c => {
+                const buyerName = (c.buyer as { name?: string })?.name || '-';
+                const sellerName = (c.seller as { name?: string })?.name || '-';
+                const postTitle = (c.post as { title?: string })?.title || '삭제됨';
+                const isViewing = viewingChat?.id === c.id;
+                return (
+                  <div key={c.id} onClick={() => openChatViewer(c)}
+                    className={`px-4 py-3 cursor-pointer hover:bg-zinc-50 transition-colors ${isViewing ? 'bg-zinc-100' : ''}`}>
+                    <div className="flex items-center justify-between mb-1">
+                      <span className="text-[13px] font-medium text-zinc-800 truncate">{postTitle}</span>
+                      <div className="flex items-center gap-1.5">
+                        <span className="badge bg-zinc-100 text-zinc-500">{c.current_step}/6</span>
+                        <button onClick={(e) => { e.stopPropagation(); deleteChat(c.id); }} className="text-red-400 hover:text-red-600"><Trash2 size={12} /></button>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-2 text-[11px] text-zinc-400">
+                      <span>{buyerName}</span>
+                      <span className="text-zinc-300">&harr;</span>
+                      <span>{sellerName}</span>
+                      <span className="ml-auto">{new Date(c.updated_at).toLocaleDateString('ko-KR')}</span>
+                    </div>
+                  </div>
+                );
+              })}
+              {chats.length === 0 && <div className="py-12 text-center text-zinc-400 text-[13px]">채팅이 없습니다.</div>}
+            </div>
+          </div>
+
+          {/* 실시간 메시지 뷰어 */}
+          {viewingChat && (
+            <div className="card lg:col-span-3 flex flex-col overflow-hidden">
+              <div className="px-4 py-2.5 bg-zinc-50 border-b border-zinc-200 flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <button onClick={() => setViewingChat(null)} className="text-zinc-400 hover:text-zinc-700 lg:hidden"><ArrowLeft size={16} /></button>
+                  <Radio size={12} className="text-green-500 animate-pulse" />
+                  <span className="text-[12px] font-medium text-zinc-700">실시간 조회</span>
+                  <span className="text-[11px] text-zinc-400">| {(viewingChat.buyer as { name?: string })?.name} &harr; {(viewingChat.seller as { name?: string })?.name}</span>
+                </div>
+                <span className="text-[11px] text-zinc-400">{chatMessages.length}건</span>
+              </div>
+
+              <div className="flex-1 overflow-y-auto p-4 space-y-2 bg-zinc-50 max-h-[520px] min-h-[300px]">
+                {chatMsgLoading ? (
+                  <div className="py-8 text-center text-zinc-400 text-[13px]">불러오는 중...</div>
+                ) : chatMessages.length === 0 ? (
+                  <div className="py-8 text-center text-zinc-400 text-[13px]">메시지가 없습니다.</div>
+                ) : chatMessages.map(msg => {
+                  const isBuyer = msg.sender_id === viewingChat.buyer_id;
+                  const isSeller = msg.sender_id === viewingChat.seller_id;
+                  const senderName = isBuyer ? (viewingChat.buyer as { name?: string })?.name : isSeller ? (viewingChat.seller as { name?: string })?.name : '시스템';
+                  const time = new Date(msg.created_at);
+                  const timeStr = `${String(time.getHours()).padStart(2, '0')}:${String(time.getMinutes()).padStart(2, '0')}`;
+
+                  if (msg.type === 'notice' || msg.type === 'system-action') {
+                    return (
+                      <div key={msg.id} className="text-center">
+                        <span className="inline-block bg-white border border-zinc-200 rounded px-3 py-1.5 text-[11px] text-zinc-500 max-w-[90%]">
+                          {msg.content.length > 80 ? msg.content.slice(0, 80) + '...' : msg.content}
+                        </span>
+                      </div>
+                    );
+                  }
+
+                  return (
+                    <div key={msg.id} className={`flex gap-2 ${isBuyer ? '' : 'flex-row-reverse'}`}>
+                      <div className={`max-w-[70%] ${isBuyer ? '' : 'text-right'}`}>
+                        <p className="text-[10px] text-zinc-400 mb-0.5">{senderName} <span className="text-zinc-300">{timeStr}</span></p>
+                        <div className={`inline-block px-3 py-2 rounded-lg text-[13px] ${
+                          isBuyer ? 'bg-white border border-zinc-200 text-zinc-800' : 'bg-zinc-900 text-white'
+                        }`}>
+                          {msg.content}
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })}
+                <div ref={msgEndRef} />
+              </div>
+            </div>
+          )}
         </div>
       )}
 
