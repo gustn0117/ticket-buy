@@ -8,6 +8,7 @@ import QuoteForm, { QuoteData } from '@/components/chat/QuoteForm';
 import UserInfoPopup from '@/components/chat/UserInfoPopup';
 import { useAuth } from '@/contexts/AuthContext';
 import { getChat, getMessages, sendMessage as apiSendMessage, updateChatStep } from '@/lib/api';
+import { supabase } from '@/lib/supabase';
 import type { DBChat, DBMessage } from '@/lib/types';
 
 export default function ChatRoomPage({ params }: { params: Promise<{ id: string }> }) {
@@ -33,6 +34,32 @@ export default function ChatRoomPage({ params }: { params: Promise<{ id: string 
       })
       .catch((err) => setError(err.message || '채팅을 불러오지 못했습니다.'))
       .finally(() => setLoading(false));
+
+    // Supabase Realtime 구독
+    const channel = supabase
+      .channel(`chat-${id}`)
+      .on('postgres_changes', {
+        event: 'INSERT',
+        schema: 'ticket_buy',
+        table: 'messages',
+        filter: `chat_id=eq.${id}`,
+      }, (payload: { new: DBMessage }) => {
+        setMessages(prev => {
+          if (prev.some(m => m.id === payload.new.id)) return prev;
+          return [...prev, payload.new];
+        });
+      })
+      .on('postgres_changes', {
+        event: 'UPDATE',
+        schema: 'ticket_buy',
+        table: 'chats',
+        filter: `id=eq.${id}`,
+      }, (payload: { new: { current_step: number; status: string } }) => {
+        setCurrentStep(payload.new.current_step);
+      })
+      .subscribe();
+
+    return () => { supabase.removeChannel(channel); };
   }, [id]);
 
   useEffect(() => {
@@ -42,17 +69,9 @@ export default function ChatRoomPage({ params }: { params: Promise<{ id: string 
   const addSystemMessage = async (content: string, type: string = 'system-action', data?: Record<string, unknown>) => {
     if (!user) return;
     try {
-      const msg = await apiSendMessage({
-        chat_id: id,
-        sender_id: null,
-        type,
-        content,
-        data: data || null,
-      });
-      setMessages(prev => [...prev, msg]);
-    } catch {
-      // silent fail for system messages
-    }
+      await apiSendMessage({ chat_id: id, sender_id: null, type, content, data: data || null });
+      // Realtime이 자동으로 메시지를 추가함
+    } catch {}
   };
 
   const handleSendMessage = async () => {
@@ -60,14 +79,8 @@ export default function ChatRoomPage({ params }: { params: Promise<{ id: string 
     const text = inputText;
     setInputText('');
     try {
-      const msg = await apiSendMessage({
-        chat_id: id,
-        sender_id: user.id,
-        type: 'message',
-        content: text,
-        data: null,
-      });
-      setMessages(prev => [...prev, msg]);
+      await apiSendMessage({ chat_id: id, sender_id: user.id, type: 'message', content: text, data: null });
+      // Realtime이 자동으로 메시지를 추가함
     } catch {
       setInputText(text);
     }
