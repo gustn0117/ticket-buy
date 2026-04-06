@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { X, FileText } from 'lucide-react';
 
 interface QuoteFormProps {
   onSubmit: (data: QuoteData) => void;
@@ -20,111 +21,76 @@ export default function QuoteForm({ onSubmit, onClose }: QuoteFormProps) {
     quantity: '1',
     pricePerUnit: '70000',
     faceValuePerUnit: '100000',
-    deliveryDate: '2026-03-25',
+    deliveryDate: new Date(Date.now() + 7 * 86400000).toISOString().slice(0, 10),
     instantDelivery: false,
   });
 
   const quantity = Number(form.quantity) || 0;
   const price = Number(form.pricePerUnit) || 0;
   const faceValue = Number(form.faceValuePerUnit) || 0;
-  const discount = faceValue > 0 ? Math.round((1 - price / faceValue) * -100) : 0;
+  const discount = faceValue > 0 ? Math.round((1 - price / faceValue) * 100) : 0;
   const totalFaceValue = faceValue * quantity;
   const totalPrice = price * quantity;
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    onSubmit({
-      quantity,
-      pricePerUnit: price,
-      faceValuePerUnit: faceValue,
-      discount,
-      deliveryDate: form.deliveryDate,
-    });
+    onSubmit({ quantity, pricePerUnit: price, faceValuePerUnit: faceValue, discount, deliveryDate: form.instantDelivery ? '즉시발송' : form.deliveryDate });
   };
 
   return (
-    <div className="card p-5">
-      <h3 className="section-title">견적 제안</h3>
-      <form onSubmit={handleSubmit} className="space-y-4">
-        <div>
-          <label className="block text-[12px] font-medium text-zinc-600 mb-1">수량 *</label>
-          <input
-            type="number"
-            value={form.quantity}
-            onChange={(e) => setForm(prev => ({ ...prev, quantity: e.target.value }))}
-            min="1"
-            className="input"
-            required
-          />
+    <div className="bg-white rounded-lg border border-zinc-200 shadow-lg overflow-hidden max-w-md w-full">
+      {/* Header */}
+      <div className="flex items-center justify-between px-5 py-3 border-b border-zinc-100">
+        <div className="flex items-center gap-2">
+          <FileText size={15} className="text-zinc-500" />
+          <h3 className="text-[14px] font-semibold">견적 제안</h3>
+        </div>
+        <button onClick={onClose} className="text-zinc-400 hover:text-zinc-600 transition-colors"><X size={18} /></button>
+      </div>
+
+      <form onSubmit={handleSubmit} className="p-5 space-y-3">
+        <div className="grid grid-cols-3 gap-3">
+          <div>
+            <label className="block text-[11px] font-medium text-zinc-500 mb-1">수량</label>
+            <input type="number" value={form.quantity} onChange={(e) => setForm(p => ({ ...p, quantity: e.target.value }))} min="1" className="input h-9 text-[13px]" required />
+          </div>
+          <div>
+            <label className="block text-[11px] font-medium text-zinc-500 mb-1">구매금액 (원)</label>
+            <input type="number" value={form.pricePerUnit} onChange={(e) => setForm(p => ({ ...p, pricePerUnit: e.target.value }))} className="input h-9 text-[13px]" required />
+          </div>
+          <div>
+            <label className="block text-[11px] font-medium text-zinc-500 mb-1">상품권 금액 (원)</label>
+            <input type="number" value={form.faceValuePerUnit} onChange={(e) => setForm(p => ({ ...p, faceValuePerUnit: e.target.value }))} className="input h-9 text-[13px]" required />
+          </div>
         </div>
 
         <div>
-          <label className="block text-[12px] font-medium text-zinc-600 mb-1">개당 구매금액 (원) *</label>
-          <input
-            type="number"
-            value={form.pricePerUnit}
-            onChange={(e) => setForm(prev => ({ ...prev, pricePerUnit: e.target.value }))}
-            className="input"
-            required
-          />
-        </div>
-
-        <div>
-          <label className="block text-[12px] font-medium text-zinc-600 mb-1">개당 상품권 금액 (원) *</label>
-          <input
-            type="number"
-            value={form.faceValuePerUnit}
-            onChange={(e) => setForm(prev => ({ ...prev, faceValuePerUnit: e.target.value }))}
-            className="input"
-            required
-          />
-        </div>
-
-        <div className="text-[13px] text-zinc-500">
-          할인율: <span className="font-semibold text-red-500">{discount}%</span>
-        </div>
-
-        <div>
-          <label className="block text-[12px] font-medium text-zinc-600 mb-1">발송 예정일 (선택)</label>
+          <label className="block text-[11px] font-medium text-zinc-500 mb-1">발송일</label>
           <div className="flex items-center gap-3">
-            <label className="flex items-center gap-1.5 text-[13px]">
-              <input
-                type="checkbox"
-                checked={form.instantDelivery}
-                onChange={(e) => setForm(prev => ({ ...prev, instantDelivery: e.target.checked }))}
-              />
+            <label className="flex items-center gap-1.5 text-[12px] text-zinc-600 cursor-pointer">
+              <input type="checkbox" checked={form.instantDelivery} onChange={(e) => setForm(p => ({ ...p, instantDelivery: e.target.checked }))} className="w-3.5 h-3.5 rounded" />
               즉시발송
             </label>
+            {!form.instantDelivery && (
+              <input type="date" value={form.deliveryDate} onChange={(e) => setForm(p => ({ ...p, deliveryDate: e.target.value }))} className="input h-9 text-[13px] flex-1" />
+            )}
           </div>
-          {!form.instantDelivery && (
-            <input
-              type="date"
-              value={form.deliveryDate}
-              onChange={(e) => setForm(prev => ({ ...prev, deliveryDate: e.target.value }))}
-              className="input mt-2"
-            />
-          )}
         </div>
 
         {/* Summary */}
-        <div className="bg-zinc-50 rounded-lg p-4 text-[13px] space-y-1">
-          <h4 className="font-medium mb-2">거래 요약</h4>
-          <div className="flex justify-between"><span>수량</span><span>{quantity}건</span></div>
-          <div className="flex justify-between"><span>개당 구매금액</span><span>{price.toLocaleString()}원</span></div>
-          <div className="flex justify-between"><span>개당 상품권 금액</span><span>{faceValue.toLocaleString()}원</span></div>
-          <div className="flex justify-between"><span>구매 금액</span><span>{totalPrice.toLocaleString()}원</span></div>
-          <div className="flex justify-between"><span>상품권 총액</span><span>{totalFaceValue.toLocaleString()}원</span></div>
-          <div className="flex justify-between"><span>할인율</span><span className="text-red-500">{discount}%</span></div>
-          <div className="flex justify-between"><span>발송</span><span>{form.instantDelivery ? '즉시' : form.deliveryDate}</span></div>
+        <div className="bg-zinc-50 border border-zinc-100 rounded-md p-3 text-[12px] space-y-1.5">
+          <div className="flex justify-between"><span className="text-zinc-500">수량</span><span className="font-medium">{quantity}건</span></div>
+          <div className="flex justify-between"><span className="text-zinc-500">구매 총액</span><span className="font-medium">{totalPrice.toLocaleString()}원</span></div>
+          <div className="flex justify-between"><span className="text-zinc-500">상품권 총액</span><span className="font-medium">{totalFaceValue.toLocaleString()}원</span></div>
+          <div className="flex justify-between border-t border-zinc-200 pt-1.5 mt-1.5">
+            <span className="text-zinc-500">할인율</span>
+            <span className="font-semibold text-red-500">{discount}%</span>
+          </div>
         </div>
 
-        <div className="flex gap-3">
-          <button type="button" onClick={onClose} className="btn-secondary flex-1 h-10">
-            취소
-          </button>
-          <button type="submit" className="btn-primary flex-1 h-10">
-            견적 제안
-          </button>
+        <div className="flex gap-2 pt-1">
+          <button type="button" onClick={onClose} className="btn-secondary flex-1 h-9 text-[12px]">취소</button>
+          <button type="submit" className="btn-primary flex-1 h-9 text-[12px]">견적 제안</button>
         </div>
       </form>
     </div>
