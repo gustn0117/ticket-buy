@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import type { Ad, AdSlot } from '@/lib/ads';
+import { AD_SLOT_LABELS, AD_SLOT_SIZES } from '@/lib/ads';
 
 interface AdBannerProps {
   slot: AdSlot;
@@ -9,17 +10,34 @@ interface AdBannerProps {
   fallback?: React.ReactNode;
 }
 
+function EmptySlot({ slot, className }: { slot: AdSlot; className: string }) {
+  return (
+    <div className={`relative overflow-hidden rounded-lg border border-dashed border-zinc-300 bg-zinc-50 ${className}`}
+      style={{ backgroundImage: 'repeating-linear-gradient(135deg, transparent, transparent 10px, rgba(0,0,0,0.03) 10px, rgba(0,0,0,0.03) 20px)' }}>
+      <div className="flex items-center justify-center h-full">
+        <div className="text-center">
+          <p className="text-[11px] font-medium text-zinc-400">{AD_SLOT_LABELS[slot]}</p>
+          <p className="text-[10px] text-zinc-300">{AD_SLOT_SIZES[slot]}</p>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export default function AdBanner({ slot, className = '', fallback }: AdBannerProps) {
   const [ad, setAd] = useState<Ad | null>(null);
+  const [loaded, setLoaded] = useState(false);
 
   useEffect(() => {
     fetch(`/api/ads?slot=${slot}&active=true`)
       .then(r => r.json())
       .then((ads: Ad[]) => { if (ads.length > 0) setAd(ads[0]); })
-      .catch(() => {});
+      .catch(() => {})
+      .finally(() => setLoaded(true));
   }, [slot]);
 
-  if (!ad) return fallback ? <>{fallback}</> : null;
+  if (!loaded) return null;
+  if (!ad) return fallback ? <>{fallback}</> : <EmptySlot slot={slot} className={className} />;
 
   const content = (
     <div className={`relative overflow-hidden rounded-lg border border-zinc-200 bg-zinc-50 group cursor-pointer ${className}`}>
