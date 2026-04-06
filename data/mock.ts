@@ -1,3 +1,14 @@
+// 카테고리 ID -> 이름 매핑
+export function getCategoryName(id: string): string {
+  return categoryMap[id] || id;
+}
+
+const categoryMap: Record<string, string> = {
+  lotte: '롯데', shinsegae: '신세계', culture: '문화상품권', cultureland: '컬쳐랜드',
+  starbucks: '스타벅스', oncash: '온캐시', googleplay: '구글플레이', teencash: '틴캐시',
+  baemin: '배민상품권', happymoney: '해피머니', etc: '기타',
+};
+
 // 상품권 카테고리
 export const categories = [
   { id: 'all', name: '전체' },

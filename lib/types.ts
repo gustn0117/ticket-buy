@@ -1,18 +1,19 @@
 export interface DBPost {
   id: string;
+  author_id: string;
   type: 'sell' | 'buy';
-  title: string;
   category: string;
-  category_name: string;
+  title: string;
   face_value: number;
   price: number;
-  discount: number;
-  views: number;
-  delivery_method: string;
+  discount: number; // generated column
   delivery: string | null;
-  author_id: string;
+  delivery_method: string;
+  region: string | null;
+  description: string | null;
   tags: string[];
-  is_new: boolean;
+  views: number;
+  is_active: boolean;
   created_at: string;
   updated_at: string;
   // joined

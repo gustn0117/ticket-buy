@@ -7,6 +7,7 @@ import { ArrowLeft, Eye, Clock, Pencil, Trash2 } from 'lucide-react';
 import { getPost, deletePost, createChat } from '@/lib/api';
 import { useAuth } from '@/contexts/AuthContext';
 import type { DBPost, DBUser } from '@/lib/types';
+import { getCategoryName } from '@/data/mock';
 
 type PostWithAuthor = DBPost & { author: DBUser };
 
@@ -91,8 +92,8 @@ export default function PostDetailPage({ params }: { params: Promise<{ id: strin
             <span className={`badge ${isSell ? 'bg-blue-50 text-blue-600' : 'bg-zinc-100 text-zinc-500'}`}>
               {isSell ? '팝니다' : '삽니다'}
             </span>
-            <span className="badge bg-zinc-100 text-zinc-500">{post.category_name}</span>
-            {post.is_new && <span className="badge bg-zinc-900 text-white">N</span>}
+            <span className="badge bg-zinc-100 text-zinc-500">{getCategoryName(post.category)}</span>
+            {(Date.now() - new Date(post.created_at).getTime() < 3 * 86400000) && <span className="badge bg-zinc-900 text-white">N</span>}
           </div>
           <h1 className="text-[15px] font-semibold mb-3">{post.title}</h1>
           <div className="flex flex-wrap items-center gap-4 text-[11px] text-zinc-400">
@@ -117,7 +118,7 @@ export default function PostDetailPage({ params }: { params: Promise<{ id: strin
             <div className="grid grid-cols-2 gap-4 text-[13px]">
               <div>
                 <span className="text-[11px] text-zinc-400">상품권 종류</span>
-                <p className="font-medium mt-0.5">{post.category_name}</p>
+                <p className="font-medium mt-0.5">{getCategoryName(post.category)}</p>
               </div>
               <div>
                 <span className="text-[11px] text-zinc-400">액면가</span>

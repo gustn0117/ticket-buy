@@ -23,7 +23,7 @@ export async function getPost(id: string) {
   return data as DBPost & { author: DBUser };
 }
 
-export async function createPost(post: Omit<DBPost, 'id' | 'views' | 'is_new' | 'created_at' | 'updated_at'>) {
+export async function createPost(post: Record<string, unknown>) {
   const { data, error } = await supabase.from('posts').insert(post).select().single();
   if (error) throw error;
   return data as DBPost;
