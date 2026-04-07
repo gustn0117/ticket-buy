@@ -1,9 +1,10 @@
+import Link from 'next/link';
 import { Phone, MapPin } from 'lucide-react';
 import type { DBPremiumBuyer } from '@/lib/types';
 
-export default function PremiumBuyerCard({ name, description, brands, phone, region }: DBPremiumBuyer) {
+export default function PremiumBuyerCard({ id, name, description, brands, phone, region }: DBPremiumBuyer) {
   return (
-    <div className="card card-hover flex flex-col p-4 h-full">
+    <Link href={`/buyer/${id}`} className="card card-hover flex flex-col p-4 h-full">
       <div className="flex items-center justify-between mb-2">
         <h3 className="text-[13px] font-semibold text-zinc-900">{name}</h3>
         <span className="badge bg-zinc-100 text-zinc-500">PRO</span>
@@ -15,14 +16,14 @@ export default function PremiumBuyerCard({ name, description, brands, phone, reg
         ))}
       </div>
       <div className="mt-auto">
-        <button className="btn-primary w-full h-[34px] text-[12px] rounded">
+        <div className="btn-primary w-full h-[34px] text-[12px] rounded">
           <Phone size={12} />{phone || '연락처 비공개'}
-        </button>
+        </div>
         <div className="flex items-center justify-between mt-2 text-[10px] text-zinc-400">
           <span>로그인 시 번호 확인</span>
           {region && <span className="flex items-center gap-0.5"><MapPin size={9} />{region}</span>}
         </div>
       </div>
-    </div>
+    </Link>
   );
 }
