@@ -78,8 +78,8 @@ export default function Home() {
           <div className="py-16 text-center text-red-400 text-[13px]">{error}</div>
         ) : (
           <div className="card overflow-hidden">
-            {posts.slice(0, 10).map((post) => (
-              <SellPostItem key={post.id} post={post} />
+            {posts.slice(0, 10).map((post, idx) => (
+              <SellPostItem key={post.id} post={post} num={idx + 1} />
             ))}
             {posts.length === 0 && (
               <div className="py-16 text-center text-zinc-400 text-[13px]">등록된 글이 없습니다.</div>
