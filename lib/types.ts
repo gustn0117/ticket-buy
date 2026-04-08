@@ -69,6 +69,7 @@ export interface DBPremiumBuyer {
   image_url: string;
   is_active: boolean;
   priority: number;
+  tier: 'premium' | 'standard' | 'basic';
   created_at: string;
   updated_at: string;
 }

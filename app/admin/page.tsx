@@ -38,7 +38,7 @@ export default function AdminPage() {
   // Premium buyer form
   const [showPremiumForm, setShowPremiumForm] = useState(false);
   const [editingPremium, setEditingPremium] = useState<DBPremiumBuyer | null>(null);
-  const [premiumForm, setPremiumForm] = useState({ name: '', description: '', phone: '', region: '', brands: '', image_url: '', user_id: '', priority: 0, is_active: true });
+  const [premiumForm, setPremiumForm] = useState({ name: '', description: '', phone: '', region: '', brands: '', image_url: '', user_id: '', priority: 0, is_active: true, tier: 'standard' as 'premium' | 'standard' | 'basic' });
 
   // Ad form
   const [showAdForm, setShowAdForm] = useState(false);
@@ -126,11 +126,11 @@ export default function AdminPage() {
   useEffect(() => { msgEndRef.current?.scrollIntoView({ behavior: 'smooth' }); }, [chatMessages]);
 
   // Premium Buyer CRUD
-  const resetPremiumForm = () => { setPremiumForm({ name: '', description: '', phone: '', region: '', brands: '', image_url: '', user_id: '', priority: 0, is_active: true }); setEditingPremium(null); setShowPremiumForm(false); };
-  const startEditPremium = (b: DBPremiumBuyer) => { setPremiumForm({ name: b.name, description: b.description, phone: b.phone, region: b.region, brands: b.brands?.join(', ') || '', image_url: b.image_url, user_id: b.user_id || '', priority: b.priority, is_active: b.is_active }); setEditingPremium(b); setShowPremiumForm(true); };
+  const resetPremiumForm = () => { setPremiumForm({ name: '', description: '', phone: '', region: '', brands: '', image_url: '', user_id: '', priority: 0, is_active: true, tier: 'standard' }); setEditingPremium(null); setShowPremiumForm(false); };
+  const startEditPremium = (b: DBPremiumBuyer) => { setPremiumForm({ name: b.name, description: b.description, phone: b.phone, region: b.region, brands: b.brands?.join(', ') || '', image_url: b.image_url, user_id: b.user_id || '', priority: b.priority, is_active: b.is_active, tier: b.tier || 'standard' }); setEditingPremium(b); setShowPremiumForm(true); };
   const savePremium = async (e: React.FormEvent) => {
     e.preventDefault();
-    const payload = { name: premiumForm.name, description: premiumForm.description, phone: premiumForm.phone, region: premiumForm.region, brands: premiumForm.brands.split(',').map(s => s.trim()).filter(Boolean), image_url: premiumForm.image_url, user_id: premiumForm.user_id || null, priority: premiumForm.priority, is_active: premiumForm.is_active };
+    const payload = { name: premiumForm.name, description: premiumForm.description, phone: premiumForm.phone, region: premiumForm.region, brands: premiumForm.brands.split(',').map(s => s.trim()).filter(Boolean), image_url: premiumForm.image_url, user_id: premiumForm.user_id || null, priority: premiumForm.priority, is_active: premiumForm.is_active, tier: premiumForm.tier };
     if (editingPremium) {
       await supabase.from('premium_buyers').update({ ...payload, updated_at: new Date().toISOString() }).eq('id', editingPremium.id);
     } else {
@@ -481,14 +481,22 @@ export default function AdminPage() {
                   <input value={premiumForm.brands} onChange={e => setPremiumForm(p => ({ ...p, brands: e.target.value }))} className="input h-9" placeholder="신세계, 롯데" />
                 </div>
               </div>
-              <div className="grid grid-cols-3 gap-3">
+              <div className="grid grid-cols-4 gap-3">
                 <div>
-                  <label className="block text-[11px] font-medium text-zinc-500 mb-1">연결 회원 ID (선택)</label>
+                  <label className="block text-[11px] font-medium text-zinc-500 mb-1">연결 회원 (선택)</label>
                   <select value={premiumForm.user_id} onChange={e => setPremiumForm(p => ({ ...p, user_id: e.target.value }))} className="input h-9">
                     <option value="">미연결</option>
                     {users.filter(u => u.type === 'business').map(u => (
                       <option key={u.id} value={u.id}>{u.name} ({u.email})</option>
                     ))}
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-[11px] font-medium text-zinc-500 mb-1">광고 등급</label>
+                  <select value={premiumForm.tier} onChange={e => setPremiumForm(p => ({ ...p, tier: e.target.value as 'premium' | 'standard' | 'basic' }))} className="input h-9">
+                    <option value="premium">프리미엄</option>
+                    <option value="standard">스탠다드</option>
+                    <option value="basic">베이직</option>
                   </select>
                 </div>
                 <div>
@@ -523,6 +531,7 @@ export default function AdminPage() {
                 <th className="table-header text-left py-2.5 px-4">브랜드</th>
                 <th className="table-header text-left py-2.5 px-4">연락처</th>
                 <th className="table-header text-left py-2.5 px-4">지역</th>
+                <th className="table-header text-center py-2.5 px-4">등급</th>
                 <th className="table-header text-center py-2.5 px-4">순위</th>
                 <th className="table-header text-center py-2.5 px-4">상태</th>
                 <th className="table-header text-center py-2.5 px-4">관리</th>
@@ -535,6 +544,11 @@ export default function AdminPage() {
                     <td className="py-2.5 px-4">{b.brands?.map(br => <span key={br} className="badge bg-zinc-100 text-zinc-600 mr-1">{br}</span>)}</td>
                     <td className="py-2.5 px-4 text-zinc-500">{b.phone || '-'}</td>
                     <td className="py-2.5 px-4 text-zinc-500">{b.region || '-'}</td>
+                    <td className="py-2.5 px-4 text-center">
+                      <span className={`badge ${b.tier === 'premium' ? 'bg-yellow-50 text-yellow-600' : b.tier === 'basic' ? 'bg-zinc-100 text-zinc-400' : 'bg-blue-50 text-blue-600'}`}>
+                        {b.tier === 'premium' ? '프리미엄' : b.tier === 'basic' ? '베이직' : '스탠다드'}
+                      </span>
+                    </td>
                     <td className="py-2.5 px-4 text-center">{b.priority}</td>
                     <td className="py-2.5 px-4 text-center">
                       <button onClick={() => togglePremiumActive(b)} className={`badge cursor-pointer ${b.is_active ? 'bg-green-50 text-green-600' : 'bg-zinc-100 text-zinc-400'}`}>
@@ -549,7 +563,7 @@ export default function AdminPage() {
                     </td>
                   </tr>
                 ))}
-                {premiumBuyers.length === 0 && <tr><td colSpan={8} className="py-8 text-center text-zinc-400">프리미엄 업체가 없습니다.</td></tr>}
+                {premiumBuyers.length === 0 && <tr><td colSpan={9} className="py-8 text-center text-zinc-400">프리미엄 업체가 없습니다.</td></tr>}
               </tbody>
             </table>
           </div>

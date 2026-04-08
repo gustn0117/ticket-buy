@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { PenSquare } from 'lucide-react';
 import HeroBanner from '@/components/home/HeroBanner';
-import PremiumBuyerCard from '@/components/home/PremiumBuyerCard';
+import PremiumBuyerSection from '@/components/home/PremiumBuyerSection';
 import SellPostItem from '@/components/home/SellPostItem';
 import AdBanner from '@/components/ads/AdBanner';
 import { getPosts, getPremiumBuyers } from '@/lib/api';
@@ -49,19 +49,7 @@ export default function Home() {
         </Link>
       </div>
 
-      {activeTab === 'buy' && buyers.length > 0 && (
-        <section className="mb-8 animate-fade-in">
-          <div className="flex items-baseline gap-2 mb-3">
-            <h2 className="section-title mb-0">프리미엄 구매 업체</h2>
-            <span className="badge bg-zinc-100 text-zinc-400">AD</span>
-          </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-            {buyers.map((buyer) => (
-              <PremiumBuyerCard key={buyer.id} {...buyer} />
-            ))}
-          </div>
-        </section>
-      )}
+      {activeTab === 'buy' && <PremiumBuyerSection buyers={buyers} />}
 
       <section>
         <div className="flex items-center justify-between mb-3">
