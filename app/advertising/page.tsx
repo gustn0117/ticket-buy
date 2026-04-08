@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { ArrowRight, Monitor, Smartphone, BarChart3, Users, Eye, Zap, Shield, Clock } from 'lucide-react';
+import { ArrowRight, Smartphone, BarChart3, Shield, Clock } from 'lucide-react';
 
 const adProducts = [
   {
@@ -90,12 +90,7 @@ const adProducts = [
   },
 ];
 
-const stats = [
-  { icon: Users, label: '월 평균 방문자', value: '10,000+', sub: 'UV 기준' },
-  { icon: Eye, label: '월 페이지뷰', value: '50,000+', sub: '전체 페이지 합산' },
-  { icon: BarChart3, label: '평균 체류시간', value: '4분 30초', sub: '세션 기준' },
-  { icon: Zap, label: '평균 CTR', value: '2.8%', sub: '배너 광고 기준' },
-];
+// stats 섹션 제거됨
 
 export default function AdvertisingPage() {
   return (
@@ -111,18 +106,6 @@ export default function AdvertisingPage() {
         <Link href="/register-business" className="btn-primary inline-flex h-10 px-6 text-[13px]">
           광고 문의하기 <ArrowRight size={14} />
         </Link>
-      </div>
-
-      {/* Stats */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-10">
-        {stats.map(s => (
-          <div key={s.label} className="card p-4 text-center">
-            <s.icon size={18} className="mx-auto mb-2 text-zinc-400" />
-            <p className="text-[18px] font-semibold text-zinc-900">{s.value}</p>
-            <p className="text-[11px] text-zinc-400 mt-0.5">{s.label}</p>
-            <p className="text-[10px] text-zinc-300">{s.sub}</p>
-          </div>
-        ))}
       </div>
 
       {/* Section Title */}
