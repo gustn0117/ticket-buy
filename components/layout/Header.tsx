@@ -17,6 +17,7 @@ export default function Header() {
         <div className="max-w-[1140px] mx-auto px-5 flex justify-end items-center h-8 gap-4 text-[11px] text-zinc-500">
           <Link href="/notice" className="hover:text-zinc-900">공지사항</Link>
           <Link href="/fraud" className="hover:text-zinc-900">안전거래</Link>
+          <Link href="/advertising" className="hover:text-zinc-900">광고문의</Link>
           <Link href="/register-business" className="hover:text-zinc-900">업체등록문의</Link>
         </div>
       </div>
