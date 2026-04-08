@@ -32,10 +32,10 @@ export async function POST(req: NextRequest) {
 
   // 같은 IP의 일일 중복 방지를 위한 간단 처리
   const ipKey = `_ips_${today}`;
-  const ips: string[] = (data as Record<string, unknown>)[ipKey] as string[] || [];
+  const ips: string[] = (data as unknown as Record<string, unknown>)[ipKey] as string[] || [];
   if (!ips.includes(ip)) {
     ips.push(ip);
-    (data as Record<string, unknown>)[ipKey] = ips;
+    (data as unknown as Record<string, unknown>)[ipKey] = ips;
     data.daily[today] = (data.daily[today] || 0) + 1;
     data.total = (data.total || 0) + 1;
     writeData(data);
