@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { X, FileText } from 'lucide-react';
+import { formatNumber, parseNumber } from '@/lib/format';
 
 interface QuoteFormProps {
   onSubmit: (data: QuoteData) => void;
@@ -56,11 +57,11 @@ export default function QuoteForm({ onSubmit, onClose }: QuoteFormProps) {
           </div>
           <div>
             <label className="block text-[11px] font-medium text-zinc-500 mb-1">구매금액 (원)</label>
-            <input type="number" value={form.pricePerUnit} onChange={(e) => setForm(p => ({ ...p, pricePerUnit: e.target.value }))} className="input h-9 text-[13px]" required />
+            <input type="text" inputMode="numeric" value={formatNumber(form.pricePerUnit)} onChange={(e) => setForm(p => ({ ...p, pricePerUnit: parseNumber(e.target.value) }))} className="input h-9 text-[13px]" required />
           </div>
           <div>
             <label className="block text-[11px] font-medium text-zinc-500 mb-1">상품권 금액 (원)</label>
-            <input type="number" value={form.faceValuePerUnit} onChange={(e) => setForm(p => ({ ...p, faceValuePerUnit: e.target.value }))} className="input h-9 text-[13px]" required />
+            <input type="text" inputMode="numeric" value={formatNumber(form.faceValuePerUnit)} onChange={(e) => setForm(p => ({ ...p, faceValuePerUnit: parseNumber(e.target.value) }))} className="input h-9 text-[13px]" required />
           </div>
         </div>
 

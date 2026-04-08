@@ -7,6 +7,7 @@ import Link from 'next/link';
 import { categories } from '@/data/mock';
 import { createPost, getPost, updatePost } from '@/lib/api';
 import { useAuth } from '@/contexts/AuthContext';
+import { formatNumber, parseNumber } from '@/lib/format';
 
 export default function WritePostPage() {
   return (
@@ -191,10 +192,11 @@ function WritePostContent() {
             <div>
               <label className="block text-[12px] font-medium text-zinc-600 mb-1">개당 상품권 금액 (원) *</label>
               <input
-                type="number"
-                value={form.faceValue}
-                onChange={(e) => handleChange('faceValue', e.target.value)}
-                placeholder="100000"
+                type="text"
+                inputMode="numeric"
+                value={formatNumber(form.faceValue)}
+                onChange={(e) => handleChange('faceValue', parseNumber(e.target.value))}
+                placeholder="100,000"
                 className="input"
                 required
               />
@@ -202,10 +204,11 @@ function WritePostContent() {
             <div>
               <label className="block text-[12px] font-medium text-zinc-600 mb-1">개당 구매금액 (원) *</label>
               <input
-                type="number"
-                value={form.price}
-                onChange={(e) => handleChange('price', e.target.value)}
-                placeholder="70000"
+                type="text"
+                inputMode="numeric"
+                value={formatNumber(form.price)}
+                onChange={(e) => handleChange('price', parseNumber(e.target.value))}
+                placeholder="70,000"
                 className="input"
                 required
               />
