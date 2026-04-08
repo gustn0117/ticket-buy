@@ -26,6 +26,11 @@ export default function LoginPage() {
         setSubmitting(false);
         return;
       }
+      if (password && user.password_hash && user.password_hash !== password) {
+        setError('비밀번호가 일치하지 않습니다.');
+        setSubmitting(false);
+        return;
+      }
       if (loginType === 'business' && user.type !== 'business') {
         setError('업체 회원이 아닙니다. 일반 회원 로그인을 이용해주세요.');
         setSubmitting(false);

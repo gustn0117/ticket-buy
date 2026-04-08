@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { createUser } from '@/lib/api';
 
 export default function RegisterBusinessPage() {
   const [form, setForm] = useState({
@@ -13,15 +14,46 @@ export default function RegisterBusinessPage() {
     password: '',
     passwordConfirm: '',
   });
+  const [error, setError] = useState<string | null>(null);
+  const [submitting, setSubmitting] = useState(false);
+  const [done, setDone] = useState(false);
 
   const handleChange = (field: string, value: string) => {
     setForm(prev => ({ ...prev, [field]: value }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    alert('업체 제휴 신청이 완료되었습니다. 승인 후 안내드리겠습니다.');
+    setError(null);
+    if (form.password !== form.passwordConfirm) { setError('비밀번호가 일치하지 않습니다.'); return; }
+    setSubmitting(true);
+    try {
+      await createUser({
+        email: `${form.businessNumber.replace(/-/g, '')}@biz.ticketbuy`,
+        name: form.businessName,
+        phone: form.phone || null,
+        type: 'business',
+        password_hash: form.password,
+      });
+      setDone(true);
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : '신청에 실패했습니다.');
+    } finally {
+      setSubmitting(false);
+    }
   };
+
+  if (done) {
+    return (
+      <div className="min-h-[60vh] flex items-center justify-center px-5">
+        <div className="text-center">
+          <h2 className="text-[16px] font-semibold mb-2">제휴 신청 완료</h2>
+          <p className="text-[13px] text-zinc-500 mb-4">승인 후 사업자번호로 로그인할 수 있습니다.</p>
+          <a href="/login" className="btn-primary inline-flex h-9 px-5 text-[12px]">로그인 페이지</a>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-[80vh] flex items-center justify-center px-5 py-6">
