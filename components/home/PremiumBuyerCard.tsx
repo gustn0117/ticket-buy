@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { Phone, MapPin } from 'lucide-react';
 import type { DBPremiumBuyer } from '@/lib/types';
+// 판매자는 비회원도 구매자 번호를 볼 수 있음
 
 export default function PremiumBuyerCard({ id, name, description, brands, phone, region }: DBPremiumBuyer) {
   return (
@@ -20,7 +21,7 @@ export default function PremiumBuyerCard({ id, name, description, brands, phone,
           <Phone size={12} />{phone || '연락처 비공개'}
         </div>
         <div className="flex items-center justify-between mt-2 text-[10px] text-zinc-400">
-          <span>로그인 시 번호 확인</span>
+          <span>클릭하여 상세 보기</span>
           {region && <span className="flex items-center gap-0.5"><MapPin size={9} />{region}</span>}
         </div>
       </div>

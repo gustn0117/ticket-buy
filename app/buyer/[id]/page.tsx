@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { ArrowLeft, Phone, MapPin, ShieldCheck } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
 import { getPosts } from '@/lib/api';
-import { useAuth } from '@/contexts/AuthContext';
+// useAuth removed - 비회원도 번호 공개
 import SellPostItem from '@/components/home/SellPostItem';
 import type { DBPremiumBuyer } from '@/lib/types';
 import type { DBPost, DBUser } from '@/lib/types';
@@ -14,7 +14,7 @@ type PostWithAuthor = DBPost & { author: DBUser };
 
 export default function BuyerDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
-  const { isLoggedIn } = useAuth();
+  // 비회원도 번호 공개
   const [buyer, setBuyer] = useState<DBPremiumBuyer | null>(null);
   const [posts, setPosts] = useState<PostWithAuthor[]>([]);
   const [loading, setLoading] = useState(true);
@@ -72,11 +72,7 @@ export default function BuyerDetailPage({ params }: { params: Promise<{ id: stri
           {buyer.phone && (
             <div className="flex items-center gap-2 text-[13px]">
               <Phone size={14} className="text-zinc-400" />
-              {isLoggedIn ? (
-                <span className="font-medium">{buyer.phone}</span>
-              ) : (
-                <span className="text-zinc-400">로그인 시 확인 가능</span>
-              )}
+              <span className="font-medium">{buyer.phone}</span>
             </div>
           )}
           {buyer.region && (

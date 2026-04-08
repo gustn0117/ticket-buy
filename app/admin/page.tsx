@@ -22,6 +22,7 @@ export default function AdminPage() {
   const [chats, setChats] = useState<DBChat[]>([]);
   const [premiumBuyers, setPremiumBuyers] = useState<DBPremiumBuyer[]>([]);
   const [ads, setAds] = useState<Ad[]>([]);
+  const [visitors, setVisitors] = useState<{ total: number; today: number; last30: { date: string; count: number }[] }>({ total: 0, today: 0, last30: [] });
   const [loading, setLoading] = useState(false);
 
   // Chat viewer
@@ -74,6 +75,9 @@ export default function AdminPage() {
       if (p.data) setPosts(p.data);
       if (n.data) setNotices(n.data);
       if (c.data) setChats(c.data);
+      // Fetch visitors
+      const vRes = await fetch('/api/visitors');
+      if (vRes.ok) setVisitors(await vRes.json());
       // Fetch premium buyers
       const pb = await getPremiumBuyers(false);
       setPremiumBuyers(pb);
@@ -219,6 +223,36 @@ export default function AdminPage() {
           </button>
         ))}
       </div>
+
+      {/* 방문자 통계 */}
+      {!loading && (
+        <div className="card p-4 mb-5">
+          <div className="flex items-center justify-between mb-3">
+            <h3 className="text-[13px] font-semibold">방문자 현황</h3>
+            <div className="flex items-center gap-4 text-[12px]">
+              <span className="text-zinc-500">오늘 <span className="font-semibold text-zinc-900">{visitors.today}</span></span>
+              <span className="text-zinc-500">누적 <span className="font-semibold text-zinc-900">{visitors.total.toLocaleString()}</span></span>
+            </div>
+          </div>
+          <div className="flex items-end gap-[3px] h-[80px]">
+            {visitors.last30.map((d, i) => {
+              const max = Math.max(...visitors.last30.map(v => v.count), 1);
+              const h = Math.max((d.count / max) * 100, 2);
+              const isToday = i === visitors.last30.length - 1;
+              return (
+                <div key={d.date} className="flex-1 flex flex-col items-center gap-0.5" title={`${d.date}: ${d.count}명`}>
+                  <div className={`w-full rounded-sm transition-all ${isToday ? 'bg-zinc-900' : 'bg-zinc-200 hover:bg-zinc-300'}`} style={{ height: `${h}%` }} />
+                </div>
+              );
+            })}
+          </div>
+          <div className="flex justify-between mt-1.5 text-[9px] text-zinc-400">
+            <span>{visitors.last30[0]?.date.slice(5)}</span>
+            <span>최근 30일</span>
+            <span>{visitors.last30[visitors.last30.length - 1]?.date.slice(5)}</span>
+          </div>
+        </div>
+      )}
 
       {loading && <div className="py-8 text-center text-zinc-400 text-[13px]">불러오는 중...</div>}
 

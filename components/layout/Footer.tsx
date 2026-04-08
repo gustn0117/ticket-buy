@@ -16,6 +16,7 @@ export default function Footer() {
             <p className="text-[12px] leading-relaxed text-zinc-400 max-w-[280px]">
               온라인 상품권 매입/매도 중개 플랫폼. 계약서 기반 안전 거래 시스템을 제공합니다.
             </p>
+            <p className="text-[11px] text-zinc-400 mt-2">사업자등록번호: 255-62-00840</p>
           </div>
           <div>
             <p className="text-[11px] font-semibold text-zinc-900 mb-3 uppercase tracking-wide">고객센터</p>
@@ -35,7 +36,7 @@ export default function Footer() {
           </div>
         </div>
         <div className="border-t border-zinc-100 mt-8 pt-4 text-[11px] text-zinc-400">
-          &copy; 2026 티켓바이. All rights reserved.
+          &copy; 2026 티켓바이. All rights reserved. | 사업자등록번호: 255-62-00840
         </div>
       </div>
       </div>
