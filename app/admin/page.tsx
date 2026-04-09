@@ -2,14 +2,13 @@
 
 import { useState, useEffect, useRef } from 'react';
 import { supabase } from '@/lib/supabase';
-import { getMessages, getPremiumBuyers } from '@/lib/api';
+import { getMessages, getPremiumBuyers, createNotice as apiCreateNotice, deleteNotice as apiDeleteNotice, deleteUser as apiDeleteUser, updateUser, deletePost as apiDeletePost, deleteChat as apiDeleteChat, createPremiumBuyer, updatePremiumBuyer, deletePremiumBuyer as apiDeletePremiumBuyer } from '@/lib/api';
 import type { DBUser, DBPost, DBNotice, DBChat, DBMessage, DBPremiumBuyer } from '@/lib/types';
 import type { Ad, AdSlot } from '@/lib/ads';
 import { AD_SLOT_LABELS, AD_SLOT_SIZES } from '@/lib/ads';
 import { Users, FileText, Bell, MessageCircle, Trash2, Shield, Megaphone, Pencil, Plus, Eye, EyeOff, ArrowLeft, Radio, Crown } from 'lucide-react';
 import { getCategoryName } from '@/data/mock';
 
-const ADMIN_PASSWORD = '1234';
 const ALL_SLOTS = Object.keys(AD_SLOT_LABELS) as AdSlot[];
 
 export default function AdminPage() {
@@ -56,10 +55,22 @@ export default function AdminPage() {
     is_active: true,
   });
 
-  const login = (e: React.FormEvent) => {
+  const [loginError, setLoginError] = useState('');
+  const login = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (pw === ADMIN_PASSWORD) setAuthed(true);
-    else alert('비밀번호가 틀렸습니다.');
+    setLoginError('');
+    try {
+      const res = await fetch('/api/admin', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ password: pw }),
+      });
+      const data = await res.json();
+      if (data.ok) setAuthed(true);
+      else setLoginError(data.error || '비밀번호가 틀렸습니다.');
+    } catch {
+      setLoginError('서버 오류가 발생했습니다.');
+    }
   };
 
   const fetchData = async () => {
@@ -90,13 +101,13 @@ export default function AdminPage() {
 
   useEffect(() => { if (authed) fetchData(); }, [authed]);
 
-  // CRUD helpers (users, posts, notices, chats - same as before)
-  const deleteUser = async (id: string) => { if (!confirm('정말 삭제하시겠습니까?')) return; await supabase.from('users').delete().eq('id', id); fetchData(); };
-  const deletePost = async (id: string) => { if (!confirm('게시글을 삭제하시겠습니까?')) return; await supabase.from('posts').delete().eq('id', id); fetchData(); };
-  const deleteNotice = async (id: string) => { if (!confirm('공지를 삭제하시겠습니까?')) return; await supabase.from('notices').delete().eq('id', id); fetchData(); };
-  const addNotice = async (e: React.FormEvent) => { e.preventDefault(); if (!noticeTitle.trim()) return; await supabase.from('notices').insert({ title: noticeTitle, is_pinned: noticePinned }); setNoticeTitle(''); setNoticePinned(false); fetchData(); };
-  const toggleUserType = async (id: string, t: string) => { await supabase.from('users').update({ type: t === 'normal' ? 'business' : 'normal' }).eq('id', id); fetchData(); };
-  const deleteChat = async (id: string) => { if (!confirm('채팅을 삭제하시겠습니까?')) return; await supabase.from('messages').delete().eq('chat_id', id); await supabase.from('chats').delete().eq('id', id); if (viewingChat?.id === id) setViewingChat(null); fetchData(); };
+  // CRUD helpers - api.ts 함수 사용
+  const deleteUser = async (id: string) => { if (!confirm('정말 삭제하시겠습니까?')) return; await apiDeleteUser(id); fetchData(); };
+  const deletePost = async (id: string) => { if (!confirm('게시글을 삭제하시겠습니까?')) return; await apiDeletePost(id); fetchData(); };
+  const deleteNotice = async (id: string) => { if (!confirm('공지를 삭제하시겠습니까?')) return; await apiDeleteNotice(id); fetchData(); };
+  const addNotice = async (e: React.FormEvent) => { e.preventDefault(); if (!noticeTitle.trim()) return; await apiCreateNotice({ title: noticeTitle, is_pinned: noticePinned }); setNoticeTitle(''); setNoticePinned(false); fetchData(); };
+  const toggleUserType = async (id: string, t: string) => { await updateUser(id, { type: t === 'normal' ? 'business' : 'normal' } as any); fetchData(); };
+  const deleteChat = async (id: string) => { if (!confirm('채팅을 삭제하시겠습니까?')) return; await apiDeleteChat(id); if (viewingChat?.id === id) setViewingChat(null); fetchData(); };
 
   // 채팅 실시간 뷰어
   const openChatViewer = async (chat: DBChat) => {
@@ -132,15 +143,15 @@ export default function AdminPage() {
     e.preventDefault();
     const payload = { name: premiumForm.name, description: premiumForm.description, phone: premiumForm.phone, region: premiumForm.region, brands: premiumForm.brands.split(',').map(s => s.trim()).filter(Boolean), image_url: premiumForm.image_url, user_id: premiumForm.user_id || null, priority: premiumForm.priority, is_active: premiumForm.is_active, tier: premiumForm.tier };
     if (editingPremium) {
-      await supabase.from('premium_buyers').update({ ...payload, updated_at: new Date().toISOString() }).eq('id', editingPremium.id);
+      await updatePremiumBuyer(editingPremium.id, payload);
     } else {
-      await supabase.from('premium_buyers').insert(payload);
+      await createPremiumBuyer(payload);
     }
     resetPremiumForm();
     fetchData();
   };
-  const deletePremium = async (id: string) => { if (!confirm('프리미엄 업체를 삭제하시겠습니까?')) return; await supabase.from('premium_buyers').delete().eq('id', id); fetchData(); };
-  const togglePremiumActive = async (b: DBPremiumBuyer) => { await supabase.from('premium_buyers').update({ is_active: !b.is_active }).eq('id', b.id); fetchData(); };
+  const deletePremium = async (id: string) => { if (!confirm('프리미엄 업체를 삭제하시겠습니까?')) return; await apiDeletePremiumBuyer(id); fetchData(); };
+  const togglePremiumActive = async (b: DBPremiumBuyer) => { await updatePremiumBuyer(b.id, { is_active: !b.is_active }); fetchData(); };
 
   // Ad CRUD
   const resetAdForm = () => {
@@ -188,6 +199,7 @@ export default function AdminPage() {
           </div>
           <form onSubmit={login} className="card p-5 space-y-4">
             <input type="password" value={pw} onChange={(e) => setPw(e.target.value)} placeholder="비밀번호" className="input" autoFocus />
+            {loginError && <p className="text-[12px] text-red-500">{loginError}</p>}
             <button type="submit" className="btn-primary w-full h-10">로그인</button>
           </form>
         </div>

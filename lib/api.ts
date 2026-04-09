@@ -150,10 +150,66 @@ export async function deletePremiumBuyer(id: string) {
   if (error) throw error;
 }
 
+// ─── Chats (additional) ───
+
+export async function deleteChat(id: string) {
+  // Delete messages first, then chat
+  await supabase.from('messages').delete().eq('chat_id', id);
+  const { error } = await supabase.from('chats').delete().eq('id', id);
+  if (error) throw error;
+}
+
+export async function updateChat(id: string, updates: Partial<DBChat>) {
+  const { error } = await supabase.from('chats').update({ ...updates, updated_at: new Date().toISOString() }).eq('id', id);
+  if (error) throw error;
+}
+
 // ─── Notices ───
 
 export async function getNotices() {
   const { data, error } = await supabase.from('notices').select('*').order('created_at', { ascending: false });
   if (error) throw error;
   return data as DBNotice[];
+}
+
+export async function getNotice(id: string) {
+  const { data, error } = await supabase.from('notices').select('*').eq('id', id).single();
+  if (error) throw error;
+  return data as DBNotice;
+}
+
+export async function createNotice(notice: { title: string; content?: string; is_pinned?: boolean }) {
+  const { data, error } = await supabase.from('notices').insert(notice).select().single();
+  if (error) throw error;
+  return data as DBNotice;
+}
+
+export async function updateNotice(id: string, updates: Partial<DBNotice>) {
+  const { data, error } = await supabase.from('notices').update(updates).eq('id', id).select().single();
+  if (error) throw error;
+  return data as DBNotice;
+}
+
+export async function deleteNotice(id: string) {
+  const { error } = await supabase.from('notices').delete().eq('id', id);
+  if (error) throw error;
+}
+
+// ─── Users (additional) ───
+
+export async function getUsers() {
+  const { data, error } = await supabase.from('users').select('*').order('created_at', { ascending: false });
+  if (error) throw error;
+  return data as DBUser[];
+}
+
+export async function updateUser(id: string, updates: Partial<DBUser>) {
+  const { data, error } = await supabase.from('users').update({ ...updates, updated_at: new Date().toISOString() }).eq('id', id).select().single();
+  if (error) throw error;
+  return data as DBUser;
+}
+
+export async function deleteUser(id: string) {
+  const { error } = await supabase.from('users').delete().eq('id', id);
+  if (error) throw error;
 }

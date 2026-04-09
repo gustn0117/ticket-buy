@@ -4,7 +4,6 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/contexts/AuthContext';
-import { getUserByEmail } from '@/lib/api';
 
 export default function LoginPage() {
   const [loginType, setLoginType] = useState<'normal' | 'business'>('normal');
@@ -20,32 +19,21 @@ export default function LoginPage() {
     setError(null);
     setSubmitting(true);
     try {
-      const user = await getUserByEmail(email);
-      if (!user) {
-        setError('등록되지 않은 이메일입니다.');
+      const res = await fetch('/api/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password, loginType }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        setError(data.error || '로그인에 실패했습니다.');
         setSubmitting(false);
         return;
       }
-      if (password && user.password_hash && user.password_hash !== password) {
-        setError('비밀번호가 일치하지 않습니다.');
-        setSubmitting(false);
-        return;
-      }
-      if (loginType === 'business' && user.type !== 'business') {
-        setError('업체 회원이 아닙니다. 일반 회원 로그인을 이용해주세요.');
-        setSubmitting(false);
-        return;
-      }
-      if (loginType === 'normal' && user.type !== 'normal') {
-        setError('일반 회원이 아닙니다. 업체 로그인을 이용해주세요.');
-        setSubmitting(false);
-        return;
-      }
-      login(user);
+      login(data.user);
       router.push('/');
-    } catch (err: unknown) {
-      const message = err instanceof Error ? err.message : '로그인에 실패했습니다.';
-      setError(message);
+    } catch {
+      setError('로그인에 실패했습니다.');
     } finally {
       setSubmitting(false);
     }
