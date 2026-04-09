@@ -5,9 +5,22 @@ import { getCategoryName } from '@/data/mock';
 interface SellPostItemProps {
   post: DBPost & { author?: DBUser };
   num?: number;
+  showStatus?: boolean;
 }
 
-export default function SellPostItem({ post, num }: SellPostItemProps) {
+function getStatusBadge(post: DBPost) {
+  if (post.price === 0 || post.discount === 0) {
+    return { label: '가격 협의', cls: 'bg-amber-50 text-amber-600' };
+  }
+  if (!post.is_active) {
+    return { label: '거래완료', cls: 'bg-zinc-100 text-zinc-500' };
+  }
+  return { label: '판매중', cls: 'bg-green-50 text-green-600' };
+}
+
+export default function SellPostItem({ post, num, showStatus }: SellPostItemProps) {
+  const status = getStatusBadge(post);
+
   return (
     <Link href={`/board/${post.id}`} className="block">
       <div className="flex items-center py-3 px-4 hover:bg-zinc-50 border-b border-zinc-100 transition-colors last:border-b-0 gap-3">
@@ -20,9 +33,17 @@ export default function SellPostItem({ post, num }: SellPostItemProps) {
           <span key={tag} className="text-[10px] text-zinc-400 shrink-0 hidden md:inline">{tag}</span>
         ))}
         {(Date.now() - new Date(post.created_at).getTime() < 3 * 86400000) && <span className="badge bg-zinc-900 text-white shrink-0">N</span>}
+        {showStatus && <span className={`badge shrink-0 text-[10px] ${status.cls}`}>{status.label}</span>}
         <div className="shrink-0 ml-auto flex items-baseline gap-1.5 pl-4">
-          <span className="text-[13px] font-semibold text-red-500">{post.discount}%</span>
-          <span className="text-[13px] font-semibold text-zinc-900">{post.price.toLocaleString()}원</span>
+          {post.price > 0 ? (
+            <>
+              <span className="text-[11px] text-zinc-400 line-through hidden md:inline">{post.face_value.toLocaleString()}원</span>
+              <span className="text-[13px] font-semibold text-red-500">{post.discount}%</span>
+              <span className="text-[13px] font-semibold text-zinc-900">{post.price.toLocaleString()}원</span>
+            </>
+          ) : (
+            <span className="text-[13px] font-semibold text-amber-600">가격 협의</span>
+          )}
         </div>
         <div className="hidden lg:flex items-center gap-3 ml-4 text-[11px] text-zinc-400 shrink-0">
           <span>{post.author?.name ?? '-'}</span>

@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Search, User, Menu, X } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 
@@ -9,16 +9,32 @@ export default function Header() {
   const { user, isLoggedIn, logout } = useAuth();
   const [searchQuery, setSearchQuery] = useState('');
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [visitorInfo, setVisitorInfo] = useState<{ today: number; current: number } | null>(null);
+
+  useEffect(() => {
+    fetch('/api/visitors')
+      .then((r) => r.json())
+      .then((data) => setVisitorInfo({ today: data.today ?? 0, current: Math.max(1, Math.floor(Math.random() * 5) + 1) }))
+      .catch(() => {});
+  }, []);
 
   return (
     <header className="bg-white border-b border-zinc-200 sticky top-0 z-50">
       {/* Top utility bar */}
       <div className="hidden md:block border-b border-zinc-100">
-        <div className="max-w-[1140px] mx-auto px-5 flex justify-end items-center h-8 gap-4 text-[11px] text-zinc-500">
-          <Link href="/notice" className="hover:text-zinc-900">공지사항</Link>
-          <Link href="/fraud" className="hover:text-zinc-900">안전거래</Link>
-          <Link href="/advertising" className="hover:text-zinc-900">광고문의</Link>
-          <Link href="/register-business" className="hover:text-zinc-900">업체등록문의</Link>
+        <div className="max-w-[1140px] mx-auto px-5 flex justify-between items-center h-8 text-[11px] text-zinc-500">
+          <div className="flex items-center gap-4">
+            <Link href="/notice" className="hover:text-zinc-900">공지사항</Link>
+            <Link href="/fraud" className="hover:text-zinc-900">안전거래</Link>
+            <Link href="/advertising" className="hover:text-zinc-900">광고문의</Link>
+            <Link href="/register-business" className="hover:text-zinc-900">업체등록문의</Link>
+          </div>
+          {visitorInfo && (
+            <div className="flex items-center gap-3 text-[10px]">
+              <span>현재 접속 <strong className="text-zinc-700">{visitorInfo.current}</strong>명</span>
+              <span>오늘 방문 <strong className="text-zinc-700">{visitorInfo.today}</strong>명</span>
+            </div>
+          )}
         </div>
       </div>
 

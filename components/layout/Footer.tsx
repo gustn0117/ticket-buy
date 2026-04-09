@@ -8,35 +8,48 @@ export default function Footer() {
       <div className="py-10">
       <div className="max-w-[1140px] mx-auto px-5">
         <div className="grid grid-cols-4 gap-8">
-          <div className="col-span-2">
+          <div>
             <div className="flex items-center gap-2 mb-3">
               <div className="h-5 px-1.5 bg-zinc-900 rounded text-white text-[8px] font-black tracking-[0.12em] flex items-center">LOGO</div>
               <span className="text-sm font-semibold text-zinc-900">티켓바이</span>
             </div>
-            <p className="text-[12px] leading-relaxed text-zinc-400 max-w-[280px]">
-              온라인 상품권 매입/매도 중개 플랫폼. 계약서 기반 안전 거래 시스템을 제공합니다.
+            <p className="text-[12px] leading-relaxed text-zinc-400 max-w-[220px]">
+              안전하고 빠른 상품권 거래 플랫폼.
+              믿을 수 있는 상품권 거래소.
             </p>
-            <p className="text-[11px] text-zinc-400 mt-2">사업자등록번호: 255-62-00840</p>
+            <p className="text-[11px] text-zinc-400 mt-2">운영 티켓바이</p>
           </div>
           <div>
-            <p className="text-[11px] font-semibold text-zinc-900 mb-3 uppercase tracking-wide">고객센터</p>
+            <p className="text-[11px] font-semibold text-zinc-900 mb-3">고객센터</p>
             <div className="text-[12px] text-zinc-400 space-y-1.5">
-              <p>1234-5678</p>
+              <Link href="/faq" className="block hover:text-zinc-600">자주 묻는 질문</Link>
               <p>support@ticketbuy.co.kr</p>
-              <p>평일 09:00 - 18:00</p>
+              <p>1234-5678</p>
             </div>
           </div>
           <div>
-            <p className="text-[11px] font-semibold text-zinc-900 mb-3 uppercase tracking-wide">Links</p>
+            <p className="text-[11px] font-semibold text-zinc-900 mb-3">이용안내</p>
             <div className="text-[12px] text-zinc-400 space-y-1.5">
-              <Link href="/notice" className="block hover:text-zinc-600">이용약관</Link>
-              <Link href="/notice" className="block hover:text-zinc-600">개인정보처리방침</Link>
+              <Link href="/register" className="block hover:text-zinc-600">회원가입</Link>
+              <Link href="/guide/trade" className="block hover:text-zinc-600">구매 및 판매방법</Link>
+              <Link href="/guide/dispute" className="block hover:text-zinc-600">분쟁정책</Link>
+              <Link href="/register-business" className="block hover:text-zinc-600">업체 프리미엄·구독 안내</Link>
+            </div>
+          </div>
+          <div>
+            <p className="text-[11px] font-semibold text-zinc-900 mb-3">약관 및 정책</p>
+            <div className="text-[12px] text-zinc-400 space-y-1.5">
+              <Link href="/terms" className="block hover:text-zinc-600">이용약관</Link>
+              <Link href="/privacy" className="block hover:text-zinc-600">개인정보처리방침</Link>
               <Link href="/fraud" className="block hover:text-zinc-600">사기예방가이드</Link>
             </div>
           </div>
         </div>
-        <div className="border-t border-zinc-100 mt-8 pt-4 text-[11px] text-zinc-400">
-          &copy; 2026 티켓바이. All rights reserved. | 사업자등록번호: 255-62-00840
+        <div className="border-t border-zinc-100 mt-8 pt-4 flex justify-between items-center">
+          <p className="text-[11px] text-zinc-400">
+            &copy; 2026 티켓바이. All rights reserved. | 사업자등록번호: 255-62-00840
+          </p>
+          <p className="text-[11px] text-zinc-300">금전거래 금지 · 상품권을 이용한 금융행위 금지 · 반복 시 제재 · 비정상 거래 감지 시 이용 제한</p>
         </div>
       </div>
       </div>
