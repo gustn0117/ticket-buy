@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 
 // 관리자 비밀번호는 환경변수에서 읽기 (클라이언트 노출 방지)
-const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || 'ticketbuy_admin_2026!';
+const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || '1234';
 
 export async function POST(req: NextRequest) {
   const { password } = await req.json();
