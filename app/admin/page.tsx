@@ -76,26 +76,24 @@ export default function AdminPage() {
   const fetchData = async () => {
     setLoading(true);
     try {
-      const [u, p, n, c] = await Promise.all([
+      // 각각 독립적으로 fetch (하나가 실패해도 나머지는 진행)
+      const [u, p, n, c] = await Promise.allSettled([
         supabase.from('users').select('*').order('created_at', { ascending: false }),
         supabase.from('posts').select('*, author:users!author_id(id, name, type)').order('created_at', { ascending: false }),
         supabase.from('notices').select('*').order('created_at', { ascending: false }),
         supabase.from('chats').select('*, post:posts(title), buyer:users!buyer_id(id, name), seller:users!seller_id(id, name)').order('updated_at', { ascending: false }),
       ]);
-      if (u.data) setUsers(u.data);
-      if (p.data) setPosts(p.data);
-      if (n.data) setNotices(n.data);
-      if (c.data) setChats(c.data);
-      // Fetch visitors
-      const vRes = await fetch('/api/visitors');
-      if (vRes.ok) setVisitors(await vRes.json());
-      // Fetch premium buyers
-      const pb = await getPremiumBuyers(false);
-      setPremiumBuyers(pb);
-      // Fetch ads
-      const adsRes = await fetch('/api/ads');
-      if (adsRes.ok) setAds(await adsRes.json());
+      if (u.status === 'fulfilled' && u.value.data) setUsers(u.value.data);
+      if (p.status === 'fulfilled' && p.value.data) setPosts(p.value.data);
+      if (n.status === 'fulfilled' && n.value.data) setNotices(n.value.data);
+      if (c.status === 'fulfilled' && c.value.data) setChats(c.value.data);
     } catch {}
+
+    // 부가 데이터 (실패해도 무시)
+    try { const vRes = await fetch('/api/visitors'); if (vRes.ok) setVisitors(await vRes.json()); } catch {}
+    try { const pb = await getPremiumBuyers(false); setPremiumBuyers(pb); } catch {}
+    try { const adsRes = await fetch('/api/ads'); if (adsRes.ok) setAds(await adsRes.json()); } catch {}
+
     setLoading(false);
   };
 
