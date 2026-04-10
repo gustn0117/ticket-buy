@@ -75,24 +75,25 @@ export default function AdminPage() {
 
   const fetchData = async () => {
     setLoading(true);
-    try {
-      // 각각 독립적으로 fetch (하나가 실패해도 나머지는 진행)
-      const [u, p, n, c] = await Promise.allSettled([
-        supabase.from('users').select('*').order('created_at', { ascending: false }),
-        supabase.from('posts').select('*, author:users!author_id(id, name, type)').order('created_at', { ascending: false }),
-        supabase.from('notices').select('*').order('created_at', { ascending: false }),
-        supabase.from('chats').select('*, post:posts(title), buyer:users!buyer_id(id, name), seller:users!seller_id(id, name)').order('updated_at', { ascending: false }),
-      ]);
-      if (u.status === 'fulfilled' && u.value.data) setUsers(u.value.data);
-      if (p.status === 'fulfilled' && p.value.data) setPosts(p.value.data);
-      if (n.status === 'fulfilled' && n.value.data) setNotices(n.value.data);
-      if (c.status === 'fulfilled' && c.value.data) setChats(c.value.data);
-    } catch {}
 
-    // 부가 데이터 (실패해도 무시)
-    try { const vRes = await fetch('/api/visitors'); if (vRes.ok) setVisitors(await vRes.json()); } catch {}
-    try { const pb = await getPremiumBuyers(false); setPremiumBuyers(pb); } catch {}
-    try { const adsRes = await fetch('/api/ads'); if (adsRes.ok) setAds(await adsRes.json()); } catch {}
+    // 모든 데이터를 동시에 병렬 요청
+    const [u, p, n, c, v, pb, ad] = await Promise.allSettled([
+      supabase.from('users').select('*').order('created_at', { ascending: false }).limit(200),
+      supabase.from('posts').select('*, author:users!author_id(id, name, type)').order('created_at', { ascending: false }).limit(200),
+      supabase.from('notices').select('*').order('created_at', { ascending: false }).limit(50),
+      supabase.from('chats').select('id, post_id, buyer_id, seller_id, status, current_step, trade_type, escrow_status, created_at, updated_at').order('updated_at', { ascending: false }).limit(200),
+      fetch('/api/visitors').then(r => r.json()),
+      getPremiumBuyers(false),
+      fetch('/api/ads').then(r => r.json()),
+    ]);
+
+    if (u.status === 'fulfilled' && u.value.data) setUsers(u.value.data);
+    if (p.status === 'fulfilled' && p.value.data) setPosts(p.value.data);
+    if (n.status === 'fulfilled' && n.value.data) setNotices(n.value.data);
+    if (c.status === 'fulfilled' && c.value.data) setChats(c.value.data);
+    if (v.status === 'fulfilled') setVisitors(v.value);
+    if (pb.status === 'fulfilled') setPremiumBuyers(pb.value);
+    if (ad.status === 'fulfilled') setAds(ad.value);
 
     setLoading(false);
   };
@@ -375,9 +376,9 @@ export default function AdminPage() {
             </div>
             <div className="divide-y divide-zinc-100 max-h-[600px] overflow-y-auto">
               {chats.map(c => {
-                const buyerName = (c.buyer as { name?: string })?.name || '-';
-                const sellerName = (c.seller as { name?: string })?.name || '-';
-                const postTitle = (c.post as { title?: string })?.title || '삭제됨';
+                const buyerName = users.find(u => u.id === c.buyer_id)?.name || '-';
+                const sellerName = users.find(u => u.id === c.seller_id)?.name || '-';
+                const postTitle = posts.find(p => p.id === c.post_id)?.title || '삭제됨';
                 const isViewing = viewingChat?.id === c.id;
                 return (
                   <div key={c.id} onClick={() => openChatViewer(c)}
@@ -411,7 +412,7 @@ export default function AdminPage() {
                   <button onClick={() => setViewingChat(null)} className="text-zinc-400 hover:text-zinc-700 lg:hidden"><ArrowLeft size={16} /></button>
                   <Radio size={12} className="text-green-500 animate-pulse" />
                   <span className="text-[12px] font-medium text-zinc-700">실시간 조회</span>
-                  <span className="text-[11px] text-zinc-400">| {(viewingChat.buyer as { name?: string })?.name} &harr; {(viewingChat.seller as { name?: string })?.name}</span>
+                  <span className="text-[11px] text-zinc-400">| {users.find(u => u.id === viewingChat.buyer_id)?.name || '?'} &harr; {users.find(u => u.id === viewingChat.seller_id)?.name || '?'}</span>
                 </div>
                 <span className="text-[11px] text-zinc-400">{chatMessages.length}건</span>
               </div>
@@ -424,7 +425,7 @@ export default function AdminPage() {
                 ) : chatMessages.map(msg => {
                   const isBuyer = msg.sender_id === viewingChat.buyer_id;
                   const isSeller = msg.sender_id === viewingChat.seller_id;
-                  const senderName = isBuyer ? (viewingChat.buyer as { name?: string })?.name : isSeller ? (viewingChat.seller as { name?: string })?.name : '시스템';
+                  const senderName = isBuyer ? users.find(u => u.id === viewingChat.buyer_id)?.name : isSeller ? users.find(u => u.id === viewingChat.seller_id)?.name : '시스템';
                   const time = new Date(msg.created_at);
                   const timeStr = `${String(time.getHours()).padStart(2, '0')}:${String(time.getMinutes()).padStart(2, '0')}`;
 
