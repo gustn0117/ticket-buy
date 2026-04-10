@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>티켓바이 - 사이트 가이드</title>
+<style>
+  @page { size: A4; margin: 18mm 22mm; }
+  @media print { .no-print { display: none; } }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; color: #18181B; line-height: 1.75; font-size: 13px; background: #fff; }
+  .page { page-break-after: always; padding: 0; }
+  .page:last-child { page-break-after: avoid; }
+
+  .cover { display: flex; flex-direction: column; justify-content: center; align-items: center; min-height: 100vh; background: #18181B; color: #fff; text-align: center; padding: 60px 40px; }
+  .cover .logo { font-size: 11px; font-weight: 900; letter-spacing: 0.15em; background: #fff; color: #18181B; padding: 8px 16px; border-radius: 6px; display: inline-block; margin-bottom: 24px; }
+  .cover h1 { font-size: 32px; font-weight: 700; margin-bottom: 8px; }
+  .cover .sub { font-size: 15px; color: #A1A1AA; margin-bottom: 40px; }
+  .cover .meta { font-size: 12px; color: #52525B; line-height: 2; }
+
+  .content { padding: 40px 50px; }
+  .section-num { font-size: 11px; color: #A1A1AA; font-weight: 700; letter-spacing: 0.1em; margin-bottom: 4px; }
+  h2 { font-size: 20px; font-weight: 700; margin-bottom: 6px; padding-bottom: 8px; border-bottom: 2px solid #18181B; }
+  h3 { font-size: 15px; font-weight: 600; margin: 24px 0 8px; }
+  p { margin-bottom: 8px; color: #3F3F46; }
+
+  table { width: 100%; border-collapse: collapse; margin: 12px 0; font-size: 12px; }
+  th { background: #F4F4F5; text-align: left; padding: 8px 12px; font-weight: 600; font-size: 11px; color: #71717A; border-bottom: 1px solid #E4E4E7; }
+  td { padding: 8px 12px; border-bottom: 1px solid #F4F4F5; }
+
+  .step-box { background: #F4F4F5; border-radius: 8px; padding: 14px 18px; margin: 10px 0; }
+  .step-box .num { display: inline-block; width: 22px; height: 22px; background: #18181B; color: #fff; border-radius: 50%; text-align: center; line-height: 22px; font-size: 11px; font-weight: 700; margin-right: 8px; }
+  .step-box .text { font-size: 13px; font-weight: 500; }
+  .step-box .desc { font-size: 11px; color: #71717A; margin-top: 4px; padding-left: 30px; }
+
+  ul { padding-left: 18px; margin: 6px 0; }
+  li { margin-bottom: 4px; color: #3F3F46; }
+
+  .tip { background: #FFFBEB; border: 1px solid #FDE68A; border-radius: 6px; padding: 10px 14px; margin: 12px 0; font-size: 12px; color: #92400E; }
+  .tip strong { display: block; font-size: 11px; margin-bottom: 2px; }
+
+  .badge { display: inline-block; padding: 2px 8px; font-size: 10px; font-weight: 600; border-radius: 4px; }
+  .badge-dark { background: #18181B; color: #fff; }
+
+  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+  .footer { margin-top: 30px; padding-top: 12px; border-top: 1px solid #E4E4E7; font-size: 11px; color: #A1A1AA; text-align: center; }
+
+  .print-btn { position: fixed; top: 20px; right: 20px; background: #18181B; color: #fff; border: none; padding: 10px 20px; border-radius: 6px; cursor: pointer; font-size: 13px; font-weight: 500; z-index: 100; }
+  .print-btn:hover { background: #3F3F46; }
+</style>
+</head>
+<body>
+
+<button class="print-btn no-print" onclick="window.print()">PDF로 저장 / 인쇄</button>
+
+<!-- COVER -->
+<div class="page cover">
+  <div class="logo">LOGO</div>
+  <h1>티켓바이</h1>
+  <p class="sub">사이트 사용 가이드</p>
+  <div style="width:50px; height:1px; background:#52525B; margin:0 auto 30px;"></div>
+  <p style="color:#71717A; font-size:13px; max-width:360px; line-height:1.9;">
+    본 문서는 티켓바이 플랫폼의<br>
+    전체 구조와 사용법을 안내합니다.
+  </p>
+  <div class="meta" style="margin-top:50px;">
+    사이트 가이드 v1.0<br>
+    2026년 4월
+  </div>
+</div>
+
+<!-- PAGE: 전체 구조 -->
+<div class="page">
+  <div class="content">
+    <div class="section-num">01</div>
+    <h2>사이트 전체 구조</h2>
+
+    <p>티켓바이는 상품권 거래 중개 플랫폼으로, 아래와 같은 페이지들로 구성되어 있습니다.</p>
+
+    <h3>일반 사용자 페이지</h3>
+    <table>
+      <thead><tr><th>페이지</th><th>경로</th><th>설명</th></tr></thead>
+      <tbody>
+        <tr><td><strong>메인</strong></td><td>/</td><td>배너, 프리미엄 업체 카드, 삽니다/팝니다 게시글 목록</td></tr>
+        <tr><td><strong>게시판</strong></td><td>/board</td><td>전체 게시글 목록 (10건씩 페이지네이션)</td></tr>
+        <tr><td><strong>게시글 상세</strong></td><td>/board/[id]</td><td>상품 정보, 구매하기(직접/중개), 수정/삭제</td></tr>
+        <tr><td><strong>글쓰기</strong></td><td>/board/write</td><td>판매/구매 게시글 등록, 수정</td></tr>
+        <tr><td><strong>업체 상세</strong></td><td>/buyer/[id]</td><td>프리미엄 업체 정보, 연락처, 해당 업체 구매글</td></tr>
+        <tr><td><strong>공지사항</strong></td><td>/notice</td><td>공지 목록 (DB 연동)</td></tr>
+        <tr><td><strong>안전거래 가이드</strong></td><td>/fraud</td><td>사기 방지 안내, 주요 사기 유형</td></tr>
+        <tr><td><strong>광고 안내</strong></td><td>/advertising</td><td>광고 상품 소개 및 가격</td></tr>
+      </tbody>
+    </table>
+
+    <h3>인증 페이지</h3>
+    <table>
+      <thead><tr><th>페이지</th><th>경로</th><th>설명</th></tr></thead>
+      <tbody>
+        <tr><td><strong>로그인</strong></td><td>/login</td><td>일반회원/업체 탭 구분, 이메일+비밀번호</td></tr>
+        <tr><td><strong>회원가입</strong></td><td>/register</td><td>이름, 이메일, 비밀번호, 연락처 입력</td></tr>
+        <tr><td><strong>업체등록문의</strong></td><td>/register-business</td><td>사업자번호 기반 업체 계정 신청</td></tr>
+      </tbody>
+    </table>
+
+    <h3>관리 페이지</h3>
+    <table>
+      <thead><tr><th>페이지</th><th>경로</th><th>설명</th></tr></thead>
+      <tbody>
+        <tr><td><strong>업체 대시보드</strong></td><td>/dashboard</td><td>거래 현황, 스케줄, 통계, 업체 정보 관리</td></tr>
+        <tr><td><strong>관리자 패널</strong></td><td>/admin</td><td>전체 시스템 관리 (비밀번호: 1234)</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- PAGE: 관리자 패널 사용법 -->
+<div class="page">
+  <div class="content">
+    <div class="section-num">02</div>
+    <h2>관리자 패널 사용법</h2>
+
+    <p><strong>/admin</strong> 접속 후 비밀번호 <strong>1234</strong>를 입력하면 관리자 패널에 진입합니다.</p>
+
+    <h3>방문자 통계</h3>
+    <p>상단에 오늘 방문자 수, 누적 방문자 수, 최근 30일 바 그래프가 표시됩니다.</p>
+
+    <h3>회원관리</h3>
+    <ul>
+      <li>전체 회원 목록 확인 (이름, 이메일, 연락처, 가입일)</li>
+      <li><strong>유형 전환</strong>: "일반" 또는 "업체" 뱃지를 클릭하면 유형이 전환됩니다</li>
+      <li>회원 삭제 (휴지통 아이콘)</li>
+    </ul>
+
+    <h3>게시글관리</h3>
+    <ul>
+      <li>전체 게시글 목록 (판매/구매 구분, 카테고리, 가격, 작성자, 조회수)</li>
+      <li>게시글 삭제</li>
+    </ul>
+
+    <h3>공지관리</h3>
+    <ul>
+      <li>상단 입력란에 공지 제목 입력 후 "등록" 클릭</li>
+      <li>"고정" 체크 시 공지 목록 최상단에 고정 표시</li>
+      <li>공지 삭제</li>
+    </ul>
+
+    <h3>거래관리 (채팅)</h3>
+    <ul>
+      <li>전체 채팅/거래 목록 (게시글, 구매자, 판매자, 단계, 상태)</li>
+      <li>채팅 클릭 시 <strong>우측에 실시간 메시지 뷰어</strong>가 열립니다</li>
+      <li>"중개" 뱃지가 표시된 거래는 중개 거래입니다</li>
+      <li>채팅 삭제 (관련 메시지도 함께 삭제됨)</li>
+    </ul>
+
+    <div class="tip">
+      <strong>TIP</strong>
+      실시간 뷰어에서 새 메시지가 자동으로 갱신됩니다. 분쟁 발생 시 거래 내역을 즉시 확인할 수 있습니다.
+    </div>
+  </div>
+</div>
+
+<!-- PAGE: 프리미엄 업체 + 광고 관리 -->
+<div class="page">
+  <div class="content">
+    <div class="section-num">03</div>
+    <h2>프리미엄 업체 관리</h2>
+
+    <p>관리자 패널 > <strong>프리미엄</strong> 탭에서 프리미엄 구매 업체를 관리합니다.</p>
+
+    <h3>업체 등록 방법</h3>
+    <div class="step-box">
+      <span class="num">1</span><span class="text">"새 업체" 버튼 클릭</span>
+      <div class="desc">등록 폼이 나타납니다.</div>
+    </div>
+    <div class="step-box">
+      <span class="num">2</span><span class="text">업체 정보 입력</span>
+      <div class="desc">업체명(필수), 소개글, 연락처, 지역, 취급 브랜드(쉼표로 구분), 업체 이미지(업로드)</div>
+    </div>
+    <div class="step-box">
+      <span class="num">3</span><span class="text">광고 등급 선택</span>
+      <div class="desc"><strong>프리미엄</strong> (최상위 노출) / <strong>스탠다드</strong> (일반) / <strong>베이직</strong> (기본)</div>
+    </div>
+    <div class="step-box">
+      <span class="num">4</span><span class="text">연결 회원 선택 (선택사항)</span>
+      <div class="desc">업체 회원을 연결하면 해당 회원의 구매글이 업체 상세 페이지에 표시됩니다.</div>
+    </div>
+    <div class="step-box">
+      <span class="num">5</span><span class="text">"등록" 클릭</span>
+      <div class="desc">메인 페이지와 게시판의 "삽니다" 탭에 즉시 노출됩니다.</div>
+    </div>
+
+    <h3>노출 위치</h3>
+    <ul>
+      <li>메인 페이지 > 삽니다 탭 > 상단 2열 카드 영역</li>
+      <li>게시판 페이지 > 삽니다 탭 > 상단 2열 카드 영역</li>
+      <li>등급별 탭 필터 (전체/프리미엄/스탠다드/베이직)</li>
+      <li>카드 클릭 시 업체 전용 상세 페이지로 이동</li>
+    </ul>
+
+    <div style="margin-top:30px;"></div>
+    <div class="section-num">04</div>
+    <h2>광고 관리</h2>
+
+    <p>관리자 패널 > <strong>광고</strong> 탭에서 배너 광고를 관리합니다.</p>
+
+    <h3>광고 등록 방법</h3>
+    <div class="step-box">
+      <span class="num">1</span><span class="text">"새 광고" 버튼 클릭</span>
+    </div>
+    <div class="step-box">
+      <span class="num">2</span><span class="text">슬롯 위치 선택</span>
+      <div class="desc">메인 히어로 배너, 메인 상단, 게시판 상단, 게시글 하단, 푸터, 팝업 등</div>
+    </div>
+    <div class="step-box">
+      <span class="num">3</span><span class="text">광고 정보 입력</span>
+      <div class="desc">제목, 설명, 광고주명, 이미지(업로드), 클릭 시 이동 URL</div>
+    </div>
+    <div class="step-box">
+      <span class="num">4</span><span class="text">기간 및 우선순위 설정</span>
+      <div class="desc">시작일/종료일, 같은 슬롯에 여러 광고가 있으면 우선순위가 높은 것이 표시됩니다.</div>
+    </div>
+
+    <div class="tip">
+      <strong>TIP</strong>
+      광고가 등록되지 않은 슬롯에는 빗금 패턴과 슬롯명/사이즈가 표시됩니다. 이를 통해 어떤 위치에 광고를 넣을 수 있는지 직관적으로 확인할 수 있습니다.
+    </div>
+  </div>
+</div>
+
+<!-- PAGE: 거래 흐름 -->
+<div class="page">
+  <div class="content">
+    <div class="section-num">05</div>
+    <h2>거래 흐름</h2>
+
+    <h3>직접 거래 (6단계)</h3>
+    <p>구매자와 판매자가 직접 거래합니다. 플랫폼이 단계를 안내합니다.</p>
+    <div class="step-box"><span class="num">1</span><span class="text">견적</span><div class="desc">구매자가 수량, 금액, 발송일을 제안합니다.</div></div>
+    <div class="step-box"><span class="num">2</span><span class="text">기본정보</span><div class="desc">판매자가 기본정보를 제출하고, 구매자가 확인합니다.</div></div>
+    <div class="step-box"><span class="num">3</span><span class="text">계약서</span><div class="desc">전자 계약서를 작성합니다.</div></div>
+    <div class="step-box"><span class="num">4</span><span class="text">입금</span><div class="desc">구매자가 판매자에게 직접 입금합니다.</div></div>
+    <div class="step-box"><span class="num">5</span><span class="text">배송</span><div class="desc">판매자가 상품권을 전달합니다.</div></div>
+    <div class="step-box"><span class="num">6</span><span class="text">완료</span><div class="desc">구매자가 수령을 확인하면 거래가 완료됩니다.</div></div>
+
+    <h3>중개 거래 (8단계)</h3>
+    <p>티켓바이가 중간에서 대행합니다. 게시글 상세에서 <strong>"중개거래로 안전하게"</strong> 버튼으로 시작합니다.</p>
+    <div class="step-box"><span class="num">1~3</span><span class="text">견적 &rarr; 기본정보 &rarr; 중개 계약서</span></div>
+    <div class="step-box"><span class="num">4</span><span class="text">구매자 &rarr; 중개업체 송금</span></div>
+    <div class="step-box"><span class="num">5</span><span class="text">중개업체 &rarr; 판매자 송금</span></div>
+    <div class="step-box"><span class="num">6</span><span class="text">판매자 상품권 &rarr; 중개업체 수령</span></div>
+    <div class="step-box"><span class="num">7</span><span class="text">중개업체 &rarr; 구매자 전달</span></div>
+    <div class="step-box"><span class="num">8</span><span class="text">거래 완료</span></div>
+
+    <h3>채팅</h3>
+    <p>PC에서는 <strong>우측 하단 플로팅 위젯</strong>으로, 모바일에서는 하단 "채팅" 버튼으로 이용합니다. 게시글에서 구매하기를 누르면 채팅이 자동 생성되고 위젯이 열립니다.</p>
+  </div>
+</div>
+
+<!-- PAGE: 기타 안내 -->
+<div class="page">
+  <div class="content">
+    <div class="section-num">06</div>
+    <h2>기타 안내</h2>
+
+    <h3>테스트 계정</h3>
+    <table>
+      <thead><tr><th>유형</th><th>이메일</th><th>비밀번호</th></tr></thead>
+      <tbody>
+        <tr><td>일반 회원</td><td>user1@test.com</td><td>1234</td></tr>
+        <tr><td>일반 회원</td><td>user2@test.com</td><td>1234</td></tr>
+        <tr><td>업체 회원</td><td>biz1@test.com</td><td>1234</td></tr>
+        <tr><td>관리자</td><td>/admin 접속</td><td>1234</td></tr>
+      </tbody>
+    </table>
+
+    <h3>글쓰기</h3>
+    <ul>
+      <li>로그인 후 메인 또는 게시판의 "글쓰기" 버튼 클릭</li>
+      <li>글 유형 (판매/구매), 상품권 종류, 제목, 금액 입력</li>
+      <li>금액 입력 시 자동으로 쉼표(,)가 붙습니다</li>
+      <li>자신의 글은 상세 페이지에서 수정/삭제 가능</li>
+    </ul>
+
+    <h3>회원 유형</h3>
+    <div class="two-col">
+      <div>
+        <strong>일반 회원</strong>
+        <p>회원가입 페이지(/register)에서 가입. 판매/구매 글 작성 및 채팅 이용 가능.</p>
+      </div>
+      <div>
+        <strong>업체 회원</strong>
+        <p>업체등록문의(/register-business) 신청 후 관리자가 승인. 사업자번호 기반 로그인.</p>
+      </div>
+    </div>
+
+    <h3>비회원</h3>
+    <p>회원가입 없이도 게시글 열람, 프리미엄 업체 연락처 확인이 가능합니다. 글 작성과 채팅은 로그인이 필요합니다.</p>
+
+    <h3>사업자 정보</h3>
+    <table>
+      <tr><td style="width:130px; font-weight:600;">사업자등록번호</td><td>255-62-00840</td></tr>
+      <tr><td style="font-weight:600;">서비스명</td><td>티켓바이</td></tr>
+    </table>
+
+    <div class="footer">
+      <p>티켓바이 &copy; 2026 | 본 문서는 사이트 사용 안내 목적으로 작성되었습니다.</p>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>
