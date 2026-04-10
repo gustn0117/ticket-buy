@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { supabase } from '@/lib/supabase';
 import { getMessages, getPremiumBuyers, createNotice as apiCreateNotice, deleteNotice as apiDeleteNotice, deleteUser as apiDeleteUser, updateUser, deletePost as apiDeletePost, deleteChat as apiDeleteChat, createPremiumBuyer, updatePremiumBuyer, deletePremiumBuyer as apiDeletePremiumBuyer } from '@/lib/api';
+import ImageUpload from '@/components/ImageUpload';
 import type { DBUser, DBPost, DBNotice, DBChat, DBMessage, DBPremiumBuyer } from '@/lib/types';
 import type { Ad, AdSlot } from '@/lib/ads';
 import { AD_SLOT_LABELS, AD_SLOT_SIZES } from '@/lib/ads';
@@ -492,6 +493,9 @@ export default function AdminPage() {
                   <input value={premiumForm.brands} onChange={e => setPremiumForm(p => ({ ...p, brands: e.target.value }))} className="input h-9" placeholder="신세계, 롯데" />
                 </div>
               </div>
+              <div>
+                <ImageUpload label="업체 이미지" value={premiumForm.image_url} onChange={(url) => setPremiumForm(p => ({ ...p, image_url: url }))} />
+              </div>
               <div className="grid grid-cols-4 gap-3">
                 <div>
                   <label className="block text-[11px] font-medium text-zinc-500 mb-1">연결 회원 (선택)</label>
@@ -613,13 +617,12 @@ export default function AdminPage() {
                 <label className="block text-[12px] font-medium text-zinc-600 mb-1">설명</label>
                 <input value={adForm.description} onChange={e => setAdForm(p => ({ ...p, description: e.target.value }))} className="input" placeholder="짧은 설명" />
               </div>
-              <div className="grid grid-cols-2 gap-4">
+              <div>
+                <ImageUpload label="광고 이미지" value={adForm.image_url} onChange={(url) => setAdForm(p => ({ ...p, image_url: url }))} />
+              </div>
+              <div className="grid grid-cols-1 gap-4">
                 <div>
-                  <label className="block text-[12px] font-medium text-zinc-600 mb-1">이미지 URL</label>
-                  <input value={adForm.image_url} onChange={e => setAdForm(p => ({ ...p, image_url: e.target.value }))} className="input" placeholder="https://..." />
-                </div>
-                <div>
-                  <label className="block text-[12px] font-medium text-zinc-600 mb-1">링크 URL</label>
+                  <label className="block text-[12px] font-medium text-zinc-600 mb-1">클릭 시 이동 URL</label>
                   <input value={adForm.link_url} onChange={e => setAdForm(p => ({ ...p, link_url: e.target.value }))} className="input" placeholder="https://..." />
                 </div>
               </div>
