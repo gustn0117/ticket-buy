@@ -7,7 +7,7 @@ import HeroBanner from '@/components/home/HeroBanner';
 import PremiumBuyerSection from '@/components/home/PremiumBuyerSection';
 import SellPostItem from '@/components/home/SellPostItem';
 import AdBanner from '@/components/ads/AdBanner';
-import Sidebar from '@/components/home/Sidebar';
+// Sidebar removed
 import { getPosts, getPremiumBuyers } from '@/lib/api';
 import type { DBPost, DBUser, DBPremiumBuyer } from '@/lib/types';
 
@@ -124,8 +124,7 @@ export default function Home() {
           </section>
         </div>
 
-        {/* Right sidebar */}
-        <Sidebar />
+        {/* Sidebar removed */}
       </div>
     </div>
   );
