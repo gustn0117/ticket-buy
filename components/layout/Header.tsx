@@ -26,6 +26,7 @@ export default function Header() {
         <div className="max-w-[1140px] mx-auto px-5 flex justify-between items-center h-8 text-[11px] text-zinc-500">
           <div className="flex items-center gap-4">
             <Link href="/notice" className="hover:text-zinc-900">공지사항</Link>
+            <Link href="/guide" className="hover:text-zinc-900">이용방법</Link>
             <Link href="/fraud" className="hover:text-zinc-900">안전거래</Link>
             <Link href="/advertising" className="hover:text-zinc-900">광고문의</Link>
             <Link href="/register-business" className="hover:text-zinc-900">업체등록문의</Link>
@@ -43,7 +44,7 @@ export default function Header() {
       <div className="max-w-[1140px] mx-auto px-5">
         <div className="flex items-center justify-between h-[52px]">
           <Link href="/" className="flex items-center shrink-0">
-            <Image src="/logo.png" alt="티켓바이" width={120} height={32} className="h-8 w-auto object-contain" priority />
+            <Image src="/logo-dark.png" alt="티켓바이" width={160} height={35} className="h-7 w-auto object-contain" priority />
           </Link>
 
           <div className="flex-1 max-w-[360px] mx-6 hidden md:block">

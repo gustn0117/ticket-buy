@@ -480,8 +480,11 @@ export default function AdminPage() {
                 </div>
               </div>
               <div>
-                <label className="block text-[11px] font-medium text-zinc-500 mb-1">소개글</label>
-                <input value={premiumForm.description} onChange={e => setPremiumForm(p => ({ ...p, description: e.target.value }))} className="input h-9" placeholder="업체 소개 문구" />
+                <label className="block text-[11px] font-medium text-zinc-500 mb-1">업체 소개 (2~3줄)</label>
+                <textarea value={premiumForm.description} onChange={e => setPremiumForm(p => ({ ...p, description: e.target.value }))}
+                  className="input" rows={2} placeholder="예: 간편한 비대면 상품권 매입 / 당일 입금 OK"
+                  style={{ height: 'auto', minHeight: '60px', padding: '8px 12px' }} />
+                <p className="text-[10px] text-zinc-400 mt-1">카드에 간략히 표시됩니다. 핵심 혜택만 짧게 작성하세요.</p>
               </div>
               <div className="grid grid-cols-2 gap-3">
                 <div>

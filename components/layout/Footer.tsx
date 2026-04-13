@@ -10,8 +10,8 @@ export default function Footer() {
       <div className="max-w-[1140px] mx-auto px-5">
         <div className="grid grid-cols-4 gap-8">
           <div>
-            <div className="mb-3">
-              <Image src="/logo.png" alt="티켓바이" width={100} height={28} className="h-7 w-auto object-contain" />
+            <div className="mb-3 inline-block px-3 py-2 rounded" style={{ background: '#1C1D3E' }}>
+              <Image src="/logo.png" alt="티켓바이" width={120} height={26} className="h-6 w-auto object-contain" />
             </div>
             <p className="text-[12px] leading-relaxed text-zinc-400 max-w-[220px]">
               안전하고 빠른 상품권 거래 플랫폼.
