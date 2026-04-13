@@ -1,7 +1,6 @@
 'use client';
 
 import { useState } from 'react';
-import { ChevronLeft, ChevronRight } from 'lucide-react';
 import PremiumBuyerCard from './PremiumBuyerCard';
 import type { DBPremiumBuyer } from '@/lib/types';
 
@@ -12,7 +11,7 @@ const TIER_LABELS: Record<string, string> = {
 };
 
 const TIER_ORDER = ['premium', 'standard', 'basic'] as const;
-const PER_PAGE = 6; // 2열 x 3행
+const MAX_CARDS = 50;
 
 interface PremiumBuyerSectionProps {
   buyers: DBPremiumBuyer[];
@@ -20,19 +19,11 @@ interface PremiumBuyerSectionProps {
 
 export default function PremiumBuyerSection({ buyers }: PremiumBuyerSectionProps) {
   const [activeTier, setActiveTier] = useState<string>('all');
-  const [page, setPage] = useState(1);
 
   const filtered = activeTier === 'all' ? buyers : buyers.filter(b => b.tier === activeTier);
-  const totalPages = Math.ceil(filtered.length / PER_PAGE);
-  const paged = filtered.slice((page - 1) * PER_PAGE, page * PER_PAGE);
+  const visible = filtered.slice(0, MAX_CARDS);
 
-  // 존재하는 티어만 탭에 표시
   const availableTiers = TIER_ORDER.filter(t => buyers.some(b => b.tier === t));
-
-  const changeTier = (tier: string) => {
-    setActiveTier(tier);
-    setPage(1);
-  };
 
   if (buyers.length === 0) return null;
 
@@ -44,15 +35,14 @@ export default function PremiumBuyerSection({ buyers }: PremiumBuyerSectionProps
           <span className="badge bg-zinc-100 text-zinc-400">AD</span>
         </div>
 
-        {/* 티어 탭 */}
         {availableTiers.length > 1 && (
           <div className="flex items-center gap-1">
-            <button onClick={() => changeTier('all')}
+            <button onClick={() => setActiveTier('all')}
               className={`text-[11px] px-2.5 py-1 rounded transition-colors ${activeTier === 'all' ? 'bg-zinc-900 text-white' : 'text-zinc-400 hover:text-zinc-700'}`}>
               전체
             </button>
             {availableTiers.map(t => (
-              <button key={t} onClick={() => changeTier(t)}
+              <button key={t} onClick={() => setActiveTier(t)}
                 className={`text-[11px] px-2.5 py-1 rounded transition-colors ${activeTier === t ? 'bg-zinc-900 text-white' : 'text-zinc-400 hover:text-zinc-700'}`}>
                 {TIER_LABELS[t]}
               </button>
@@ -61,33 +51,15 @@ export default function PremiumBuyerSection({ buyers }: PremiumBuyerSectionProps
         )}
       </div>
 
-      {/* 카드 그리드 2열 */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-        {paged.map((buyer) => (
+      {/* 모바일 2열, 태블릿 3열, 데스크탑 4열 - 최대 50개 */}
+      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2.5 md:gap-3">
+        {visible.map((buyer) => (
           <PremiumBuyerCard key={buyer.id} {...buyer} />
         ))}
       </div>
 
-      {/* 페이지네이션 */}
-      {totalPages > 1 && (
-        <div className="flex items-center justify-center gap-1.5 mt-3">
-          <button onClick={() => setPage(p => Math.max(1, p - 1))} disabled={page === 1}
-            className="w-7 h-7 flex items-center justify-center rounded text-zinc-400 hover:bg-zinc-100 disabled:opacity-30 transition-colors">
-            <ChevronLeft size={14} />
-          </button>
-          {Array.from({ length: totalPages }, (_, i) => i + 1).map(p => (
-            <button key={p} onClick={() => setPage(p)}
-              className={`w-7 h-7 flex items-center justify-center rounded text-[11px] font-medium transition-colors ${
-                p === page ? 'bg-zinc-900 text-white' : 'text-zinc-400 hover:bg-zinc-100'
-              }`}>
-              {p}
-            </button>
-          ))}
-          <button onClick={() => setPage(p => Math.min(totalPages, p + 1))} disabled={page === totalPages}
-            className="w-7 h-7 flex items-center justify-center rounded text-zinc-400 hover:bg-zinc-100 disabled:opacity-30 transition-colors">
-            <ChevronRight size={14} />
-          </button>
-        </div>
+      {filtered.length > MAX_CARDS && (
+        <p className="text-[11px] text-zinc-400 text-center mt-3">{filtered.length}개 중 {MAX_CARDS}개 표시</p>
       )}
     </section>
   );

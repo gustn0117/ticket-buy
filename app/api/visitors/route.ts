@@ -96,5 +96,22 @@ export async function GET() {
     const d = new Date(Date.now() - i * 86400000).toISOString().slice(0, 10);
     last30.push({ date: d, count: data.daily[d] || 0 });
   }
-  return NextResponse.json({ total: data.total, today: todayCount, last30 });
+  // 오버라이드 값이 있으면 적용
+  const override = (data as unknown as Record<string, unknown>)._override as { today?: number; total?: number; trades?: number } | undefined;
+  return NextResponse.json({
+    total: override?.total ?? data.total,
+    today: override?.today ?? todayCount,
+    trades: override?.trades ?? 0,
+    last30
+  });
+}
+
+// PUT: 수치 수동 설정 (관리자용)
+export async function PUT(req: NextRequest) {
+  const { today, total, trades } = await req.json();
+  const data = readData();
+  const override = { today, total, trades };
+  (data as unknown as Record<string, unknown>)._override = override;
+  writeData(data);
+  return NextResponse.json({ ok: true, override });
 }
