@@ -30,10 +30,10 @@ export default function Footer() {
           <div>
             <p className="text-[11px] font-semibold text-zinc-900 mb-3">이용안내</p>
             <div className="text-[12px] text-zinc-400 space-y-1.5">
-              <Link href="/register" className="block hover:text-zinc-600">회원가입</Link>
-              <Link href="/guide/trade" className="block hover:text-zinc-600">구매 및 판매방법</Link>
-              <Link href="/guide/dispute" className="block hover:text-zinc-600">분쟁정책</Link>
-              <Link href="/register-business" className="block hover:text-zinc-600">업체 프리미엄·구독 안내</Link>
+              <Link href="/guide" className="block hover:text-zinc-600">이용방법</Link>
+              <Link href="/board?tab=sell" className="block hover:text-zinc-600">상품권 팝니다</Link>
+              <Link href="/advertising" className="block hover:text-zinc-600">광고 안내</Link>
+              <Link href="/register-business" className="block hover:text-zinc-600">업체 회원가입</Link>
             </div>
           </div>
           <div>

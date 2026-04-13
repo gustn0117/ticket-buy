@@ -25,11 +25,9 @@ export default function Header() {
       <div className="hidden md:block border-b border-zinc-100">
         <div className="max-w-[1140px] mx-auto px-5 flex justify-between items-center h-8 text-[11px] text-zinc-500">
           <div className="flex items-center gap-4">
-            <Link href="/notice" className="hover:text-zinc-900">공지사항</Link>
-            <Link href="/guide" className="hover:text-zinc-900">이용방법</Link>
-            <Link href="/fraud" className="hover:text-zinc-900">안전거래</Link>
-            <Link href="/advertising" className="hover:text-zinc-900">광고문의</Link>
-            <Link href="/register-business" className="hover:text-zinc-900">업체등록문의</Link>
+            <Link href="/board?tab=sell" className="hover:text-zinc-900">상품권 팝니다</Link>
+            <Link href="/guide" className="hover:text-zinc-900">이용안내</Link>
+            <Link href="/faq" className="hover:text-zinc-900">고객센터</Link>
           </div>
           {visitorInfo && (
             <div className="flex items-center gap-3 text-[10px]">
@@ -66,8 +64,8 @@ export default function Header() {
               </>
             ) : (
               <>
-                <Link href="/login" className="px-3 py-1.5 text-[13px] text-zinc-600 hover:text-zinc-900 font-medium">로그인</Link>
-                <Link href="/register" className="btn-accent h-[30px] text-[12px] px-3 rounded">회원가입</Link>
+                <Link href="/login" className="px-3 py-1.5 text-[13px] text-zinc-600 hover:text-zinc-900 font-medium">업체 로그인</Link>
+                <Link href="/register-business" className="btn-accent h-[30px] text-[12px] px-3 rounded">업체 회원가입</Link>
               </>
             )}
           </div>
@@ -88,9 +86,9 @@ export default function Header() {
 
       {mobileMenuOpen && (
         <div className="md:hidden border-t border-zinc-100 px-5 py-2 bg-white">
-          <Link href="/notice" className="block text-[13px] text-zinc-600 py-2" onClick={() => setMobileMenuOpen(false)}>공지사항</Link>
-          <Link href="/fraud" className="block text-[13px] text-zinc-600 py-2" onClick={() => setMobileMenuOpen(false)}>안전거래</Link>
-          <Link href="/register-business" className="block text-[13px] text-zinc-600 py-2" onClick={() => setMobileMenuOpen(false)}>업체등록문의</Link>
+          <Link href="/board?tab=sell" className="block text-[13px] text-zinc-600 py-2" onClick={() => setMobileMenuOpen(false)}>상품권 팝니다</Link>
+          <Link href="/guide" className="block text-[13px] text-zinc-600 py-2" onClick={() => setMobileMenuOpen(false)}>이용안내</Link>
+          <Link href="/faq" className="block text-[13px] text-zinc-600 py-2" onClick={() => setMobileMenuOpen(false)}>고객센터</Link>
           <div className="border-t border-zinc-100 mt-1 pt-1">
             {isLoggedIn ? (
               <>
@@ -98,7 +96,10 @@ export default function Header() {
                 <button onClick={() => { logout(); setMobileMenuOpen(false); }} className="text-[13px] text-red-500 py-2">로그아웃</button>
               </>
             ) : (
-              <Link href="/login" className="block text-[13px] font-medium text-zinc-900 py-2" onClick={() => setMobileMenuOpen(false)}>로그인 / 회원가입</Link>
+              <>
+                <Link href="/login" className="block text-[13px] text-zinc-600 py-2" onClick={() => setMobileMenuOpen(false)}>업체 로그인</Link>
+                <Link href="/register-business" className="block text-[13px] font-medium text-zinc-900 py-2" onClick={() => setMobileMenuOpen(false)}>업체 회원가입</Link>
+              </>
             )}
           </div>
         </div>

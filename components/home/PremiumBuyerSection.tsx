@@ -1,65 +1,71 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useRef } from 'react';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
 import PremiumBuyerCard from './PremiumBuyerCard';
 import type { DBPremiumBuyer } from '@/lib/types';
-
-const TIER_LABELS: Record<string, string> = {
-  premium: '프리미엄',
-  standard: '스탠다드',
-  basic: '베이직',
-};
-
-const TIER_ORDER = ['premium', 'standard', 'basic'] as const;
-const MAX_CARDS = 50;
 
 interface PremiumBuyerSectionProps {
   buyers: DBPremiumBuyer[];
 }
 
 export default function PremiumBuyerSection({ buyers }: PremiumBuyerSectionProps) {
-  const [activeTier, setActiveTier] = useState<string>('all');
-
-  const filtered = activeTier === 'all' ? buyers : buyers.filter(b => b.tier === activeTier);
-  const visible = filtered.slice(0, MAX_CARDS);
-
-  const availableTiers = TIER_ORDER.filter(t => buyers.some(b => b.tier === t));
+  const scrollRef = useRef<HTMLDivElement>(null);
+  const [scrollIdx, setScrollIdx] = useState(0);
 
   if (buyers.length === 0) return null;
+
+  const scrollTo = (dir: 'left' | 'right') => {
+    if (!scrollRef.current) return;
+    const container = scrollRef.current;
+    const cardWidth = 240; // card + gap
+    const newScroll = dir === 'left' ? container.scrollLeft - cardWidth : container.scrollLeft + cardWidth;
+    container.scrollTo({ left: newScroll, behavior: 'smooth' });
+    const newIdx = Math.round(newScroll / cardWidth);
+    setScrollIdx(Math.max(0, Math.min(buyers.length - 1, newIdx)));
+  };
 
   return (
     <section className="mb-6">
       <div className="flex items-center justify-between mb-3">
         <div className="flex items-baseline gap-2">
-          <h2 className="section-title mb-0">프리미엄 구매 업체</h2>
+          <h2 className="section-title mb-0">프리미엄 업체</h2>
           <span className="badge bg-zinc-100 text-zinc-400">AD</span>
         </div>
-
-        {availableTiers.length > 1 && (
-          <div className="flex items-center gap-1">
-            <button onClick={() => setActiveTier('all')}
-              className={`text-[11px] px-2.5 py-1 rounded transition-colors ${activeTier === 'all' ? 'bg-zinc-900 text-white' : 'text-zinc-400 hover:text-zinc-700'}`}>
-              전체
-            </button>
-            {availableTiers.map(t => (
-              <button key={t} onClick={() => setActiveTier(t)}
-                className={`text-[11px] px-2.5 py-1 rounded transition-colors ${activeTier === t ? 'bg-zinc-900 text-white' : 'text-zinc-400 hover:text-zinc-700'}`}>
-                {TIER_LABELS[t]}
-              </button>
-            ))}
-          </div>
-        )}
+        <div className="flex items-center gap-1">
+          <button onClick={() => scrollTo('left')} disabled={scrollIdx === 0}
+            className="w-7 h-7 flex items-center justify-center rounded border border-zinc-200 text-zinc-500 hover:bg-zinc-50 disabled:opacity-30 transition-colors">
+            <ChevronLeft size={14} />
+          </button>
+          <button onClick={() => scrollTo('right')} disabled={scrollIdx >= buyers.length - 1}
+            className="w-7 h-7 flex items-center justify-center rounded border border-zinc-200 text-zinc-500 hover:bg-zinc-50 disabled:opacity-30 transition-colors">
+            <ChevronRight size={14} />
+          </button>
+        </div>
       </div>
 
-      {/* 모바일 2열, 태블릿 3열, 데스크탑 4열 - 최대 50개 */}
-      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2.5 md:gap-3">
-        {visible.map((buyer) => (
-          <PremiumBuyerCard key={buyer.id} {...buyer} />
+      {/* 가로 스크롤 캐러셀 */}
+      <div ref={scrollRef}
+        className="flex gap-3 overflow-x-auto scrollbar-hide pb-2 snap-x snap-mandatory"
+        onScroll={(e) => {
+          const idx = Math.round(e.currentTarget.scrollLeft / 240);
+          setScrollIdx(idx);
+        }}>
+        {buyers.map((buyer) => (
+          <div key={buyer.id} className="shrink-0 w-[220px] snap-start">
+            <PremiumBuyerCard {...buyer} />
+          </div>
         ))}
       </div>
 
-      {filtered.length > MAX_CARDS && (
-        <p className="text-[11px] text-zinc-400 text-center mt-3">{filtered.length}개 중 {MAX_CARDS}개 표시</p>
+      {/* 진행 인디케이터 */}
+      {buyers.length > 1 && (
+        <div className="flex items-center justify-center gap-1 mt-1">
+          {buyers.map((_, i) => (
+            <div key={i}
+              className={`h-1 rounded-full transition-all ${i === scrollIdx ? 'bg-zinc-900 w-4' : 'bg-zinc-300 w-1'}`} />
+          ))}
+        </div>
       )}
     </section>
   );
