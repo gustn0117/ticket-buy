@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import Image from 'next/image';
 import { useState, useEffect } from 'react';
 import { Search, User, Menu, X } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
@@ -41,9 +42,8 @@ export default function Header() {
       {/* Main header */}
       <div className="max-w-[1140px] mx-auto px-5">
         <div className="flex items-center justify-between h-[52px]">
-          <Link href="/" className="flex items-center gap-2.5 shrink-0">
-            <div className="h-7 px-2 bg-zinc-900 rounded flex items-center text-white text-[9px] font-black tracking-[0.15em]">LOGO</div>
-            <span className="text-[15px] font-semibold text-zinc-900 hidden sm:block">티켓바이</span>
+          <Link href="/" className="flex items-center shrink-0">
+            <Image src="/logo.png" alt="티켓바이" width={120} height={32} className="h-8 w-auto object-contain" priority />
           </Link>
 
           <div className="flex-1 max-w-[360px] mx-6 hidden md:block">
@@ -66,7 +66,7 @@ export default function Header() {
             ) : (
               <>
                 <Link href="/login" className="px-3 py-1.5 text-[13px] text-zinc-600 hover:text-zinc-900 font-medium">로그인</Link>
-                <Link href="/register" className="btn-primary h-[30px] text-[12px] px-3 rounded">회원가입</Link>
+                <Link href="/register" className="btn-accent h-[30px] text-[12px] px-3 rounded">회원가입</Link>
               </>
             )}
           </div>

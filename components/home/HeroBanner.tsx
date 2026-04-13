@@ -18,12 +18,13 @@ export default function HeroBanner() {
   }, []);
 
   return (
-    <div className="relative bg-zinc-900 rounded-lg overflow-hidden mb-8">
+    <div className="relative rounded-lg overflow-hidden mb-8" style={{ background: 'linear-gradient(135deg, #1C1D3E 0%, #2A2B55 100%)' }}>
+      <div className="absolute top-0 right-0 w-1/2 h-full opacity-20" style={{ background: 'radial-gradient(circle at 70% 50%, rgba(240,78,81,0.3), transparent 60%)' }} />
       {banners.map((b, idx) => (
         <div key={b.id}
           className={`transition-opacity duration-500 ${idx === current ? 'opacity-100' : 'opacity-0 absolute inset-0'}`}>
-          <div className="px-8 md:px-12 py-12 md:py-16">
-            <p className="text-zinc-500 text-[12px] mb-2">{b.desc}</p>
+          <div className="px-8 md:px-12 py-12 md:py-16 relative z-10">
+            <p className="text-[12px] mb-2" style={{ color: 'rgba(255,255,255,0.6)' }}>{b.desc}</p>
             <h2 className="text-white text-[20px] md:text-[26px] font-semibold leading-tight">{b.title}</h2>
           </div>
         </div>

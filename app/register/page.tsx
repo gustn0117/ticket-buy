@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { createUser } from '@/lib/api';
 
@@ -55,7 +56,7 @@ export default function RegisterPage() {
     <div className="min-h-[80vh] flex items-center justify-center px-5 py-6">
       <div className="w-full max-w-[640px]">
         <div className="text-center mb-6">
-          <div className="px-3 h-10 bg-zinc-900 rounded-md inline-flex items-center justify-center text-white font-black text-[10px] tracking-[0.15em] mb-3">LOGO</div>
+          <Image src="/logo.png" alt="티켓바이" width={140} height={40} className="h-10 w-auto object-contain mx-auto mb-3" priority />
           <h1 className="text-[15px] font-semibold text-zinc-900">회원가입</h1>
           <p className="text-[12px] text-zinc-500 mt-1">안전한 상품권 거래 플랫폼</p>
         </div>

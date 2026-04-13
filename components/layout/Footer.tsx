@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import Image from 'next/image';
 import AdBanner from '@/components/ads/AdBanner';
 
 export default function Footer() {
@@ -9,9 +10,8 @@ export default function Footer() {
       <div className="max-w-[1140px] mx-auto px-5">
         <div className="grid grid-cols-4 gap-8">
           <div>
-            <div className="flex items-center gap-2 mb-3">
-              <div className="h-5 px-1.5 bg-zinc-900 rounded text-white text-[8px] font-black tracking-[0.12em] flex items-center">LOGO</div>
-              <span className="text-sm font-semibold text-zinc-900">티켓바이</span>
+            <div className="mb-3">
+              <Image src="/logo.png" alt="티켓바이" width={100} height={28} className="h-7 w-auto object-contain" />
             </div>
             <p className="text-[12px] leading-relaxed text-zinc-400 max-w-[220px]">
               안전하고 빠른 상품권 거래 플랫폼.
