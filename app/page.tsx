@@ -3,21 +3,19 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { PenSquare, Lightbulb, Megaphone, ShieldCheck, ChevronRight } from 'lucide-react';
-import HeroBanner from '@/components/home/HeroBanner';
 import PremiumBuyerSection from '@/components/home/PremiumBuyerSection';
 import MainAdsSection from '@/components/home/MainAdsSection';
 import LineAdsSection from '@/components/home/LineAdsSection';
 import SellPostItem from '@/components/home/SellPostItem';
-import AdBanner from '@/components/ads/AdBanner';
 import { getPosts, getPremiumBuyers, getNotices } from '@/lib/api';
 import type { DBPost, DBUser, DBPremiumBuyer, DBNotice } from '@/lib/types';
 
 type PostWithAuthor = DBPost & { author: DBUser };
 
 const TIPS = [
-  { title: '계약서 없이 입금 금지', desc: '모든 거래는 반드시 전자 계약서를 먼저 작성한 뒤 진행하세요. 플랫폼을 벗어난 거래는 보호받을 수 없습니다.' },
-  { title: '너무 높은 할인율은 의심', desc: '시세보다 비정상적으로 높은 할인율은 사기의 신호입니다. 정상 시세 범위를 벗어나면 거래를 중단하세요.' },
-  { title: '신원 확인은 필수', desc: '거래 전 상대방의 거래 이력과 평점을 확인하세요. 업체 거래 시 사업자등록번호를 반드시 확인하세요.' },
+  { title: '계약서 없이 입금 금지', desc: '모든 거래는 반드시 전자 계약서를 먼저 작성한 뒤 진행하세요.' },
+  { title: '너무 높은 할인율은 의심', desc: '시세보다 비정상적으로 높은 할인율은 사기의 신호일 수 있습니다.' },
+  { title: '신원 확인은 필수', desc: '거래 전 상대방의 거래 이력과 평점을 확인하세요.' },
 ];
 
 export default function Home() {
@@ -47,40 +45,10 @@ export default function Home() {
 
   return (
     <div className="max-w-[1140px] mx-auto px-5 py-6">
-      <AdBanner slot="hero_banner" className="h-[200px] mb-6" fallback={<HeroBanner />} />
-
-      {/* 1. 메인 광고 (2열, 새로고침 시 랜덤 순서) */}
+      {/* 1. 메인 광고 (2열 그리드, 새로고침 시 랜덤) */}
       <MainAdsSection />
 
-      {/* 2. 프리미엄 업체 (1개씩 옆으로 넘김) */}
-      <PremiumBuyerSection buyers={buyers} />
-
-      {/* TIP 배너 */}
-      <div className="card overflow-hidden mb-6 flex items-stretch">
-        <div className="shrink-0 flex items-center justify-center w-[90px]" style={{ background: 'linear-gradient(135deg, #F04E51 0%, #F26A4B 100%)' }}>
-          <div className="text-center">
-            <Lightbulb size={18} className="text-white mx-auto mb-0.5" />
-            <p className="text-white text-[10px] font-bold tracking-wider">TIP</p>
-          </div>
-        </div>
-        <div className="flex-1 p-4 min-w-0">
-          <p className="text-[13px] font-semibold text-zinc-900 mb-0.5">{TIPS[tipIdx].title}</p>
-          <p className="text-[12px] text-zinc-500 leading-relaxed">{TIPS[tipIdx].desc}</p>
-          <div className="flex items-center justify-between mt-2">
-            <div className="flex gap-1">
-              {TIPS.map((_, i) => (
-                <button key={i} onClick={() => setTipIdx(i)}
-                  className={`w-1.5 h-1.5 rounded-full transition-all ${i === tipIdx ? 'bg-zinc-900 w-4' : 'bg-zinc-300'}`} />
-              ))}
-            </div>
-            <Link href="/guide" className="text-[11px] text-zinc-500 hover:text-zinc-900 flex items-center gap-0.5">
-              이용방법 더보기 <ChevronRight size={11} />
-            </Link>
-          </div>
-        </div>
-      </div>
-
-      {/* 공지사항 */}
+      {/* 2. 공지사항 */}
       {notices.length > 0 && (
         <div className="card overflow-hidden mb-6">
           <div className="flex items-center justify-between px-4 py-2.5 border-b border-zinc-100 bg-zinc-50">
@@ -109,10 +77,38 @@ export default function Home() {
         </div>
       )}
 
-      {/* 3. 줄 광고 (매입업체 구매글) */}
+      {/* TIP 배너 */}
+      <div className="card overflow-hidden mb-6 flex items-stretch">
+        <div className="shrink-0 flex items-center justify-center w-[90px]" style={{ background: 'linear-gradient(135deg, #F04E51 0%, #F26A4B 100%)' }}>
+          <div className="text-center">
+            <Lightbulb size={18} className="text-white mx-auto mb-0.5" />
+            <p className="text-white text-[10px] font-bold tracking-wider">TIP</p>
+          </div>
+        </div>
+        <div className="flex-1 p-4 min-w-0">
+          <p className="text-[13px] font-semibold text-zinc-900 mb-0.5">{TIPS[tipIdx].title}</p>
+          <p className="text-[12px] text-zinc-500 leading-relaxed">{TIPS[tipIdx].desc}</p>
+          <div className="flex items-center justify-between mt-2">
+            <div className="flex gap-1">
+              {TIPS.map((_, i) => (
+                <button key={i} onClick={() => setTipIdx(i)}
+                  className={`w-1.5 h-1.5 rounded-full transition-all ${i === tipIdx ? 'bg-zinc-900 w-4' : 'bg-zinc-300'}`} />
+              ))}
+            </div>
+            <Link href="/guide" className="text-[11px] text-zinc-500 hover:text-zinc-900 flex items-center gap-0.5">
+              이용방법 더보기 <ChevronRight size={11} />
+            </Link>
+          </div>
+        </div>
+      </div>
+
+      {/* 3. 프리미엄 업체 캐러셀 */}
+      <PremiumBuyerSection buyers={buyers} />
+
+      {/* 4. 줄 광고 (매입업체 구매글) */}
       <LineAdsSection posts={buyPosts} />
 
-      {/* 4. 판매글 (개인 판매) */}
+      {/* 5. 판매글 게시판 */}
       <section>
         <div className="flex items-center justify-between mb-3">
           <h2 className="section-title mb-0">상품권 팝니다</h2>

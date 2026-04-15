@@ -3,7 +3,6 @@
 import { useEffect, useState } from 'react';
 import type { Ad } from '@/lib/ads';
 
-// Fisher-Yates 셔플
 function shuffle<T>(arr: T[]): T[] {
   const a = [...arr];
   for (let i = a.length - 1; i > 0; i--) {
@@ -13,18 +12,43 @@ function shuffle<T>(arr: T[]): T[] {
   return a;
 }
 
+// 광고 미등록 슬롯 placeholder
+function Placeholder({ n }: { n: number }) {
+  return (
+    <div className="relative aspect-[16/10] rounded-lg overflow-hidden bg-zinc-50 border border-dashed border-zinc-300"
+      style={{ backgroundImage: 'repeating-linear-gradient(135deg, transparent, transparent 8px, rgba(0,0,0,0.03) 8px, rgba(0,0,0,0.03) 16px)' }}>
+      <div className="flex items-center justify-center h-full">
+        <div className="text-center">
+          <p className="text-[11px] font-medium text-zinc-400">메인 광고 {n}</p>
+          <p className="text-[10px] text-zinc-300 mt-0.5">준비 중입니다</p>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export default function MainAdsSection() {
   const [ads, setAds] = useState<Ad[]>([]);
+  const [loaded, setLoaded] = useState(false);
 
   useEffect(() => {
-    // main_top 슬롯을 메인 광고 영역으로 사용, 새로고침마다 랜덤 순서
-    fetch('/api/ads?slot=main_top&active=true')
-      .then(r => r.json())
-      .then((data: Ad[]) => setAds(shuffle(data)))
-      .catch(() => {});
+    // hero_banner + main_top + main_middle 다 긁어서 섞기
+    Promise.all([
+      fetch('/api/ads?slot=hero_banner&active=true').then(r => r.json()).catch(() => []),
+      fetch('/api/ads?slot=main_top&active=true').then(r => r.json()).catch(() => []),
+      fetch('/api/ads?slot=main_middle&active=true').then(r => r.json()).catch(() => []),
+    ]).then(([a1, a2, a3]) => {
+      const all = [...(a1 || []), ...(a2 || []), ...(a3 || [])];
+      setAds(shuffle(all));
+      setLoaded(true);
+    });
   }, []);
 
-  if (ads.length === 0) return null;
+  if (!loaded) return null;
+
+  // 광고가 2개 미만이면 placeholder로 채움 (최소 4개 보이도록)
+  const minCount = 4;
+  const fillers = Math.max(0, minCount - ads.length);
 
   return (
     <section className="mb-6">
@@ -32,17 +56,17 @@ export default function MainAdsSection() {
         <h2 className="section-title mb-0">메인 광고</h2>
         <span className="badge bg-zinc-100 text-zinc-400">AD</span>
       </div>
-      <div className="grid grid-cols-2 gap-2.5">
+      <div className="grid grid-cols-2 gap-2.5 md:gap-3">
         {ads.map((ad) => {
-          const content = (
-            <div className="relative aspect-[16/9] rounded-lg overflow-hidden bg-zinc-100 border border-zinc-200 hover:border-zinc-400 transition-colors">
+          const card = (
+            <div className="relative aspect-[16/10] rounded-lg overflow-hidden bg-zinc-100 border border-zinc-200 hover:border-zinc-400 transition-colors">
               {ad.image_url ? (
                 <img src={ad.image_url} alt={ad.title} className="w-full h-full object-cover" />
               ) : (
-                <div className="w-full h-full flex items-center justify-center p-3">
+                <div className="w-full h-full flex items-center justify-center p-3" style={{ background: 'linear-gradient(135deg, #1C1D3E 0%, #2A2B55 100%)' }}>
                   <div className="text-center">
-                    <p className="text-[12px] font-semibold text-zinc-700">{ad.title}</p>
-                    {ad.description && <p className="text-[10px] text-zinc-500 mt-1 line-clamp-2">{ad.description}</p>}
+                    <p className="text-white text-[13px] font-semibold">{ad.title}</p>
+                    {ad.description && <p className="text-white/60 text-[10px] mt-1 line-clamp-2">{ad.description}</p>}
                   </div>
                 </div>
               )}
@@ -50,11 +74,14 @@ export default function MainAdsSection() {
             </div>
           );
           return ad.link_url ? (
-            <a key={ad.id} href={ad.link_url} target="_blank" rel="noopener noreferrer">{content}</a>
+            <a key={ad.id} href={ad.link_url} target="_blank" rel="noopener noreferrer">{card}</a>
           ) : (
-            <div key={ad.id}>{content}</div>
+            <div key={ad.id}>{card}</div>
           );
         })}
+        {Array.from({ length: fillers }, (_, i) => (
+          <Placeholder key={`filler-${i}`} n={ads.length + i + 1} />
+        ))}
       </div>
     </section>
   );

@@ -29,7 +29,16 @@ export default function PostDetailPage({ params }: { params: Promise<{ id: strin
   }, [id]);
 
   const handleDelete = async () => {
-    if (!confirm('정말 삭제하시겠습니까?')) return;
+    // 비회원 글은 비밀번호 확인
+    if (post && !post.author_id) {
+      const pwd = prompt('삭제하려면 작성 시 설정한 비밀번호를 입력하세요.');
+      if (!pwd) return;
+      if (pwd !== post.guest_password) {
+        alert('비밀번호가 일치하지 않습니다.');
+        return;
+      }
+    } else if (!confirm('정말 삭제하시겠습니까?')) return;
+
     setDeleting(true);
     try {
       await deletePost(id);
@@ -42,11 +51,22 @@ export default function PostDetailPage({ params }: { params: Promise<{ id: strin
   };
 
   const handleContact = async (tradeType: 'direct' | 'escrow' = 'direct') => {
+    if (!post) return;
+    // 비회원 글: 채팅 기능 대신 연락처 표시
+    if (!post.author_id) {
+      if (post.guest_phone) {
+        if (confirm(`판매자 연락처: ${post.guest_phone}\n\n전화를 거시겠습니까?`)) {
+          window.location.href = `tel:${post.guest_phone}`;
+        }
+      } else {
+        alert('판매자가 연락처를 등록하지 않았습니다. 직접 연락할 수 없습니다.');
+      }
+      return;
+    }
     if (!isLoggedIn || !user) {
       router.push('/login');
       return;
     }
-    if (!post) return;
     try {
       const isSell = post.type === 'sell';
       const chat = await createChat({
@@ -80,7 +100,9 @@ export default function PostDetailPage({ params }: { params: Promise<{ id: strin
   }
 
   const isSell = post.type === 'sell';
-  const isAuthor = isLoggedIn && user?.id === post.author_id;
+  const isGuestPost = !post.author_id;
+  const isAuthor = (isLoggedIn && user?.id === post.author_id) || isGuestPost;
+  const authorName = post.author?.name || post.guest_name || '알 수 없음';
 
   return (
     <div className="max-w-[740px] mx-auto px-5 py-6">
@@ -99,7 +121,9 @@ export default function PostDetailPage({ params }: { params: Promise<{ id: strin
           </div>
           <h1 className="text-[15px] font-semibold mb-3">{post.title}</h1>
           <div className="flex flex-wrap items-center gap-4 text-[11px] text-zinc-400">
-            <span className="text-zinc-600 font-medium">{post.author?.name ?? '알 수 없음'}</span>
+            <span className="text-zinc-600 font-medium">
+              {authorName}{isGuestPost && <span className="ml-1 text-zinc-400 font-normal text-[10px]">개인판매자</span>}
+            </span>
             <span className="flex items-center gap-1"><Clock size={12} />{new Date(post.created_at).toLocaleDateString('ko-KR')}</span>
             <span className="flex items-center gap-1"><Eye size={12} />조회 {post.views}</span>
           </div>

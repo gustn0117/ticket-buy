@@ -1,6 +1,9 @@
 export interface DBPost {
   id: string;
-  author_id: string;
+  author_id: string | null;
+  guest_name?: string | null;
+  guest_password?: string | null;
+  guest_phone?: string | null;
   type: 'sell' | 'buy';
   category: string;
   title: string;
