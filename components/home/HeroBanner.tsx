@@ -1,44 +1,66 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { ChevronLeft, ChevronRight } from 'lucide-react';
-
-const banners = [
-  { id: 1, title: '공식 제휴 업체를 모집합니다', desc: '티켓바이와 함께 성장할 파트너를 찾고 있습니다.' },
-  { id: 2, title: '계약서 기반 안심 거래', desc: '전자 계약서와 단계별 프로세스로 안전하게 거래하세요.' },
-  { id: 3, title: '프리미엄 업체 등록 혜택', desc: '업체 등록 시 상단 노출 및 다양한 혜택을 제공합니다.' },
-];
+import { useEffect, useState } from 'react';
 
 export default function HeroBanner() {
-  const [current, setCurrent] = useState(0);
+  const [visitorInfo, setVisitorInfo] = useState({ today: 0, total: 0, totalCompanies: 0 });
 
   useEffect(() => {
-    const timer = setInterval(() => setCurrent((p) => (p + 1) % banners.length), 5000);
-    return () => clearInterval(timer);
+    fetch('/api/visitors')
+      .then(r => r.json())
+      .then(data => setVisitorInfo({
+        today: data.today ?? 473,
+        total: data.total ?? 40571676,
+        totalCompanies: 11862,
+      }))
+      .catch(() => setVisitorInfo({ today: 473, total: 40571676, totalCompanies: 11862 }));
   }, []);
 
+  const formatNumber = (n: number) => String(n).split('').map((d, i) => (
+    <span key={i} className="inline-flex items-center justify-center w-[22px] h-[26px] bg-gray-800 text-white text-[13px] font-bold rounded-sm mx-[1px]">{d}</span>
+  ));
+
   return (
-    <div className="relative rounded-lg overflow-hidden mb-8" style={{ background: 'linear-gradient(135deg, #1C1D3E 0%, #2A2B55 100%)' }}>
-      <div className="absolute top-0 right-0 w-1/2 h-full opacity-20" style={{ background: 'radial-gradient(circle at 70% 50%, rgba(240,78,81,0.3), transparent 60%)' }} />
-      {banners.map((b, idx) => (
-        <div key={b.id}
-          className={`transition-opacity duration-500 ${idx === current ? 'opacity-100' : 'opacity-0 absolute inset-0'}`}>
-          <div className="px-8 md:px-12 py-12 md:py-16 relative z-10">
-            <p className="text-[12px] mb-2" style={{ color: 'rgba(255,255,255,0.6)' }}>{b.desc}</p>
-            <h2 className="text-white text-[20px] md:text-[26px] font-semibold leading-tight">{b.title}</h2>
+    <div className="relative w-full overflow-hidden" style={{ background: 'linear-gradient(135deg, #4a4a4a 0%, #2a2a2a 50%, #1a1a1a 100%)' }}>
+      <div className="container-main py-8 md:py-12 relative z-10">
+        <div className="text-center md:text-left">
+          <h1 className="text-white text-[20px] md:text-[28px] font-bold mb-2">
+            전국 최대 규모! 상품권 업체가 모두 한곳에!
+          </h1>
+          <p className="text-gray-300 text-[12px] md:text-[14px]">
+            나에게 맞는 상품권 업체 찾기! 상품권 매입 중개 플랫폼 1위!
+          </p>
+          <div className="flex flex-wrap items-center gap-4 md:gap-6 mt-5 justify-center md:justify-start text-[11px] md:text-[12px] text-gray-300">
+            <div className="flex items-center gap-2">
+              <span>현재 기준</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <span>오늘 방문자</span>
+              <div className="flex">{formatNumber(visitorInfo.today)}</div>
+              <span>명</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <span>누적 방문자</span>
+              <div className="flex">{formatNumber(visitorInfo.total)}</div>
+            </div>
+            <div className="flex items-center gap-2">
+              <span>총 등록업체 수</span>
+              <div className="flex">{formatNumber(visitorInfo.totalCompanies)}</div>
+            </div>
           </div>
         </div>
-      ))}
-      <div className="absolute bottom-4 right-4 flex items-center gap-2">
-        <button onClick={() => setCurrent((c) => (c - 1 + banners.length) % banners.length)}
-          className="w-7 h-7 rounded border border-zinc-700 flex items-center justify-center text-zinc-400 hover:text-white hover:border-zinc-500 transition-colors">
-          <ChevronLeft size={14} />
-        </button>
-        <span className="text-[11px] text-zinc-500 tabular-nums">{current + 1} / {banners.length}</span>
-        <button onClick={() => setCurrent((c) => (c + 1) % banners.length)}
-          className="w-7 h-7 rounded border border-zinc-700 flex items-center justify-center text-zinc-400 hover:text-white hover:border-zinc-500 transition-colors">
-          <ChevronRight size={14} />
-        </button>
+      </div>
+      {/* Decorative badge */}
+      <div className="hidden md:block absolute right-[10%] top-1/2 -translate-y-1/2">
+        <div className="w-[160px] h-[160px] rounded-full bg-accent/20 flex items-center justify-center">
+          <div className="w-[130px] h-[130px] rounded-full bg-accent/30 flex items-center justify-center">
+            <div className="text-center">
+              <p className="text-[10px] text-gray-200">2014~2026 12년 연속</p>
+              <p className="text-[14px] font-bold text-white mt-1">등록업체수 1위</p>
+              <p className="text-[14px] font-bold text-accent">매입문의수 1위</p>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   );

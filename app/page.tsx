@@ -2,28 +2,24 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { PenSquare, Lightbulb, Megaphone, ShieldCheck, ChevronRight } from 'lucide-react';
-import PremiumBuyerSection from '@/components/home/PremiumBuyerSection';
+import { ChevronRight, Phone, MapPin, Lightbulb } from 'lucide-react';
+import HeroBanner from '@/components/home/HeroBanner';
+import CategorySearch from '@/components/home/CategorySearch';
+import CompanyCard from '@/components/home/CompanyCard';
+import LeftSidebar from '@/components/layout/LeftSidebar';
+import RightSidebar from '@/components/layout/RightSidebar';
+import BottomSections from '@/components/home/BottomSections';
 import MainAdsSection from '@/components/home/MainAdsSection';
-import LineAdsSection from '@/components/home/LineAdsSection';
-import SellPostItem from '@/components/home/SellPostItem';
 import { getPosts, getPremiumBuyers, getNotices } from '@/lib/api';
 import type { DBPost, DBUser, DBPremiumBuyer, DBNotice } from '@/lib/types';
 
 type PostWithAuthor = DBPost & { author: DBUser };
-
-const TIPS = [
-  { title: '계약서 없이 입금 금지', desc: '모든 거래는 반드시 전자 계약서를 먼저 작성한 뒤 진행하세요.' },
-  { title: '너무 높은 할인율은 의심', desc: '시세보다 비정상적으로 높은 할인율은 사기의 신호일 수 있습니다.' },
-  { title: '신원 확인은 필수', desc: '거래 전 상대방의 거래 이력과 평점을 확인하세요.' },
-];
 
 export default function Home() {
   const [sellPosts, setSellPosts] = useState<PostWithAuthor[]>([]);
   const [buyPosts, setBuyPosts] = useState<PostWithAuthor[]>([]);
   const [buyers, setBuyers] = useState<DBPremiumBuyer[]>([]);
   const [notices, setNotices] = useState<DBNotice[]>([]);
-  const [tipIdx, setTipIdx] = useState(0);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -36,111 +32,219 @@ export default function Home() {
       if (s.status === 'fulfilled') setSellPosts(s.value);
       if (b.status === 'fulfilled') setBuyPosts(b.value);
       if (pb.status === 'fulfilled') setBuyers(pb.value);
-      if (n.status === 'fulfilled') setNotices(n.value.slice(0, 5));
+      if (n.status === 'fulfilled') setNotices(n.value.slice(0, 10));
     }).finally(() => setLoading(false));
-
-    const timer = setInterval(() => setTipIdx((i) => (i + 1) % TIPS.length), 5000);
-    return () => clearInterval(timer);
   }, []);
 
   return (
-    <div className="max-w-[1140px] mx-auto px-5 py-6">
-      {/* 1. 메인 광고 (2열 그리드, 새로고침 시 랜덤) */}
-      <MainAdsSection />
+    <div>
+      {/* Hero Banner */}
+      <HeroBanner />
 
-      {/* 2. 공지사항 */}
-      {notices.length > 0 && (
-        <div className="card overflow-hidden mb-6">
-          <div className="flex items-center justify-between px-4 py-2.5 border-b border-zinc-100 bg-zinc-50">
-            <div className="flex items-center gap-2">
-              <Megaphone size={13} className="text-zinc-500" />
-              <span className="text-[12px] font-semibold">공지사항</span>
-            </div>
-            <Link href="/notice" className="text-[11px] text-zinc-500 hover:text-zinc-900 flex items-center gap-0.5">
-              더보기 <ChevronRight size={11} />
-            </Link>
-          </div>
-          <div>
-            {notices.map((n) => (
-              <Link key={n.id} href="/notice"
-                className="flex items-center justify-between px-4 py-2 hover:bg-zinc-50 border-b border-zinc-100 last:border-b-0 transition-colors">
-                <div className="flex items-center gap-2 min-w-0 flex-1">
-                  {n.is_pinned && <ShieldCheck size={11} className="text-red-500 shrink-0" />}
-                  <span className="text-[12px] text-zinc-700 truncate">{n.title}</span>
+      {/* Main Content - 3 column layout */}
+      <div className="container-main py-4">
+        <div className="flex gap-3">
+          {/* Left Sidebar */}
+          <LeftSidebar />
+
+          {/* Center Content */}
+          <div className="flex-1 min-w-0">
+            {/* Premium Banner + Category Search */}
+            <div className="flex flex-col md:flex-row gap-3 mb-4">
+              {/* Premium Banner Slider */}
+              <div className="w-full md:w-[280px] shrink-0">
+                <div className="bg-white border border-gray-200 h-full">
+                  <div className="px-3 py-2 border-b border-gray-200">
+                    <span className="text-[12px] font-bold text-accent">Premium Banner</span>
+                  </div>
+                  <div className="p-4">
+                    {buyers.length > 0 ? (
+                      <div>
+                        <p className="text-[13px] font-bold text-gray-800">{buyers[0]?.name}</p>
+                        <p className="text-[11px] text-gray-500 mt-1 line-clamp-2">{buyers[0]?.description}</p>
+                        <div className="flex items-center gap-2 mt-3">
+                          <span className="text-[10px] bg-accent/10 text-accent px-2 py-0.5 rounded-sm font-bold">{buyers[0]?.region}</span>
+                          <span className="text-[11px] text-gray-500">{buyers[0]?.name}</span>
+                        </div>
+                        <Link href={`/buyer/${buyers[0]?.id}`} className="flex items-center gap-1 mt-2 text-[11px] text-gray-600 hover:text-accent">
+                          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+                          상세보기
+                        </Link>
+                      </div>
+                    ) : (
+                      <div className="text-center py-6">
+                        <p className="text-[12px] text-gray-400">프리미엄 업체를 모집합니다</p>
+                        <Link href="/register-business" className="text-[11px] text-accent font-bold mt-1 inline-block">문의하기</Link>
+                      </div>
+                    )}
+                  </div>
                 </div>
-                <span className="text-[10px] text-zinc-400 shrink-0 ml-3">
-                  {new Date(n.created_at).toLocaleDateString('ko-KR')}
-                </span>
-              </Link>
-            ))}
-          </div>
-        </div>
-      )}
+              </div>
 
-      {/* TIP 배너 */}
-      <div className="card overflow-hidden mb-6 flex items-stretch">
-        <div className="shrink-0 flex items-center justify-center w-[90px]" style={{ background: 'linear-gradient(135deg, #F04E51 0%, #F26A4B 100%)' }}>
-          <div className="text-center">
-            <Lightbulb size={18} className="text-white mx-auto mb-0.5" />
-            <p className="text-white text-[10px] font-bold tracking-wider">TIP</p>
-          </div>
-        </div>
-        <div className="flex-1 p-4 min-w-0">
-          <p className="text-[13px] font-semibold text-zinc-900 mb-0.5">{TIPS[tipIdx].title}</p>
-          <p className="text-[12px] text-zinc-500 leading-relaxed">{TIPS[tipIdx].desc}</p>
-          <div className="flex items-center justify-between mt-2">
-            <div className="flex gap-1">
-              {TIPS.map((_, i) => (
-                <button key={i} onClick={() => setTipIdx(i)}
-                  className={`w-1.5 h-1.5 rounded-full transition-all ${i === tipIdx ? 'bg-zinc-900 w-4' : 'bg-zinc-300'}`} />
-              ))}
+              {/* Category Search */}
+              <div className="flex-1">
+                <CategorySearch />
+              </div>
             </div>
-            <Link href="/guide" className="text-[11px] text-zinc-500 hover:text-zinc-900 flex items-center gap-0.5">
-              이용방법 더보기 <ChevronRight size={11} />
-            </Link>
+
+            {/* Scrolling notice text */}
+            <div className="bg-white border border-gray-200 px-4 py-2 mb-4 text-[11px] text-gray-500 overflow-hidden">
+              <span className="text-gray-400">* 배너위치는 실시간으로 랜덤 배치됩니다.</span>
+            </div>
+
+            {/* 메인 등록업체 */}
+            <div className="mb-6">
+              <div className="flex items-center justify-between mb-3">
+                <h2 className="text-[16px] font-bold text-gray-800">
+                  메인 등록업체
+                </h2>
+                <div className="flex items-center gap-2">
+                  <span className="text-[11px] text-gray-400">광고문의</span>
+                  <Link href="/register-business" className="text-[11px] text-accent hover:underline">스폰서링크</Link>
+                </div>
+              </div>
+
+              {loading ? (
+                <div className="py-16 text-center text-gray-400 text-[13px]">불러오는 중...</div>
+              ) : buyers.length > 0 ? (
+                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-2.5">
+                  {buyers.map((company, i) => (
+                    <CompanyCard key={company.id} company={company} isNew={i < 3} />
+                  ))}
+                </div>
+              ) : (
+                /* 업체가 없을 때 데모 카드 */
+                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-2.5">
+                  {Array.from({ length: 10 }, (_, i) => (
+                    <div key={i} className="company-card">
+                      <div className="company-card-image">
+                        <h3>상품권 매입 업체 {i + 1}</h3>
+                      </div>
+                      <div className="company-card-body">
+                        <p>빠르고 안전한 상품권 매입<br />신속한 입금 처리</p>
+                        <div className="company-card-phone">
+                          <Phone size={13} className="text-gray-500" />
+                          <span>010-{String(1000 + i * 111).slice(0, 4)}-{String(5000 + i * 222).slice(0, 4)}</span>
+                        </div>
+                      </div>
+                      <div className="company-card-footer">
+                        <span className="text-accent font-bold flex items-center gap-1">
+                          <MapPin size={10} />
+                          매입업체{i + 1}
+                        </span>
+                        <span className="text-gray-500">전국</span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            {/* 추가 등록업체 rows (2차) */}
+            {buyers.length > 0 && (
+              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-2.5 mb-6">
+                {buyers.slice(0, Math.min(5, buyers.length)).map((company) => (
+                  <CompanyCard key={`second-${company.id}`} company={company} />
+                ))}
+              </div>
+            )}
+
+            {/* 인기 클릭 통계 바 */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-0 mb-6">
+              <div className="bg-gradient-to-r from-accent to-accent-light text-white p-4">
+                <p className="text-[13px] font-bold">
+                  지역별 업체찾기에서 <span className="text-[18px]">경기지역</span>이 가장 클릭수가 많았어요!
+                </p>
+                <div className="flex items-center gap-4 mt-3">
+                  {['경남 2,337', '인천 2,418', '부산 3,260', '서울 3,745', '경기 4,323'].map((item, i) => (
+                    <div key={i} className="flex items-center gap-1">
+                      <div className="w-2 h-2 rounded-full bg-white/50" />
+                      <span className="text-[10px]">{item}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+              <div className="bg-gradient-to-r from-accent-light to-accent text-white p-4">
+                <p className="text-[13px] font-bold">
+                  상품별 업체찾기에서 <span className="text-[18px]">모바일상품권</span>이 가장 클릭수가 많았어요!
+                </p>
+                <div className="flex items-center gap-4 mt-3">
+                  {['비상금 2,002', '소액 2,701', '당일 3,168', '직장인 4,055', '무직자 4,412'].map((item, i) => (
+                    <div key={i} className="flex items-center gap-1">
+                      <div className="w-2 h-2 rounded-full bg-white/50" />
+                      <span className="text-[10px]">{item}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            {/* 전국 업체 등록현황 + 오늘의 추천업체 */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-6">
+              <div className="bg-white border border-gray-200">
+                <div className="flex items-center justify-between px-4 py-3 border-b border-gray-200">
+                  <h3 className="text-[14px] font-bold">
+                    전국 상품권업체 등록현황
+                    <span className="text-[12px] text-accent ml-2">257개</span>
+                  </h3>
+                  <Link href="/board" className="text-[11px] text-gray-500 hover:text-accent flex items-center gap-0.5">
+                    더보기 <ChevronRight size={10} />
+                  </Link>
+                </div>
+                <div className="divide-y divide-gray-100">
+                  <div className="grid grid-cols-3 gap-0 px-4 py-2 text-[11px] text-gray-500 bg-gray-50">
+                    <span>지역</span>
+                    <span>제목</span>
+                    <span className="text-right">업체명</span>
+                  </div>
+                  {(sellPosts.length > 0 ? sellPosts.slice(0, 8) : Array.from({ length: 8 })).map((post, i) => (
+                    <Link key={i} href={post ? `/board/${(post as PostWithAuthor).id}` : '/board'} className="grid grid-cols-3 gap-0 px-4 py-2 text-[11px] hover:bg-gray-50 transition-colors">
+                      <span className="text-accent font-bold">{post ? ((post as PostWithAuthor).region || '전국') : '전국'}</span>
+                      <span className="text-gray-600 truncate flex items-center gap-1">
+                        {post ? (post as PostWithAuthor).title : `상품권 매입 업체 등록 ${i + 1}`}
+                        <span className="text-[9px] text-white bg-red-500 px-1 rounded-sm shrink-0">N</span>
+                      </span>
+                      <span className="text-right text-gray-500">{post ? ((post as PostWithAuthor).author?.name || '-') : `업체${i + 1}`}</span>
+                    </Link>
+                  ))}
+                </div>
+              </div>
+
+              <div className="bg-white border border-gray-200">
+                <div className="flex items-center justify-between px-4 py-3 border-b border-gray-200">
+                  <h3 className="text-[14px] font-bold">오늘의 추천업체</h3>
+                  <Link href="/board" className="text-[11px] text-accent hover:underline flex items-center gap-0.5">
+                    추천업체 더보기 <ChevronRight size={10} />
+                  </Link>
+                </div>
+                <div className="divide-y divide-gray-100">
+                  <div className="grid grid-cols-3 gap-0 px-4 py-2 text-[11px] text-gray-500 bg-gray-50">
+                    <span>지역</span>
+                    <span>제목</span>
+                    <span className="text-right">업체명</span>
+                  </div>
+                  {(buyPosts.length > 0 ? buyPosts.slice(0, 8) : Array.from({ length: 8 })).map((post, i) => (
+                    <Link key={i} href={post ? `/board/${(post as PostWithAuthor).id}` : '/board'} className="grid grid-cols-3 gap-0 px-4 py-2 text-[11px] hover:bg-gray-50 transition-colors">
+                      <span className="text-accent font-bold">{post ? ((post as PostWithAuthor).region || '전국') : '전국'}</span>
+                      <span className="text-gray-600 truncate flex items-center gap-1">
+                        {post ? (post as PostWithAuthor).title : `추천 업체 ${i + 1}`}
+                        <span className="text-[9px] text-white bg-red-500 px-1 rounded-sm shrink-0">N</span>
+                      </span>
+                      <span className="text-right text-gray-500">{post ? ((post as PostWithAuthor).author?.name || '-') : `업체${i + 1}`}</span>
+                    </Link>
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            {/* Bottom sections */}
+            <BottomSections notices={notices} />
           </div>
+
+          {/* Right Sidebar */}
+          <RightSidebar />
         </div>
       </div>
-
-      {/* 3. 프리미엄 업체 캐러셀 */}
-      <PremiumBuyerSection buyers={buyers} />
-
-      {/* 4. 줄 광고 (매입업체 구매글) */}
-      <LineAdsSection posts={buyPosts} />
-
-      {/* 5. 판매글 게시판 */}
-      <section>
-        <div className="flex items-center justify-between mb-3">
-          <h2 className="section-title mb-0">상품권 팝니다</h2>
-          <div className="flex items-center gap-3">
-            {!loading && <span className="text-[12px] text-zinc-400">{sellPosts.length}건</span>}
-            <Link href="/board?tab=sell" className="text-[12px] text-zinc-500 hover:text-zinc-900 flex items-center gap-0.5">
-              전체보기 <ChevronRight size={11} />
-            </Link>
-            <Link href="/board/write?type=sell" className="btn-primary text-[12px] h-[30px] px-3 rounded">
-              <PenSquare size={12} />판매글 작성
-            </Link>
-          </div>
-        </div>
-
-        {loading ? (
-          <div className="py-16 text-center text-zinc-400 text-[13px]">불러오는 중...</div>
-        ) : (
-          <div className="card overflow-hidden">
-            {sellPosts.slice(0, 10).map((post, idx) => (
-              <SellPostItem key={post.id} post={post} num={idx + 1} showStatus />
-            ))}
-            {sellPosts.length === 0 && (
-              <div className="py-16 text-center text-zinc-400 text-[13px]">등록된 판매글이 없습니다.</div>
-            )}
-            {sellPosts.length > 10 && (
-              <Link href="/board?tab=sell" className="block py-3 text-center text-[12px] text-zinc-500 hover:text-zinc-900 hover:bg-zinc-50 border-t border-zinc-100 transition-colors">
-                + {sellPosts.length - 10}건 더보기
-              </Link>
-            )}
-          </div>
-        )}
-      </section>
     </div>
   );
 }
