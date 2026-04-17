@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import type { DBPost, DBUser } from '@/lib/types';
 import { getCategoryName } from '@/data/mock';
+import { BRAND_STYLES, normalizeBrandKey } from '@/components/BrandLogo';
 
 interface SellPostItemProps {
   post: DBPost & { author?: DBUser };
@@ -55,10 +56,19 @@ export default function SellPostItem({ post, num, showStatus }: SellPostItemProp
           <span className="text-[12px] text-zinc-400 w-6 text-center shrink-0 tabular-nums hidden md:inline-block">{num}</span>
         )}
 
-        {/* 카테고리 뱃지 */}
-        <span className="shrink-0 inline-flex items-center px-2 py-0.5 text-[11px] font-semibold rounded bg-emerald-50 text-emerald-600">
-          {categoryName}
-        </span>
+        {/* 카테고리 뱃지 (브랜드 색상 적용) */}
+        {(() => {
+          const brandKey = normalizeBrandKey(categoryName);
+          const bs = BRAND_STYLES[brandKey];
+          return (
+            <span
+              className="shrink-0 inline-flex items-center px-2 py-0.5 text-[11px] font-semibold rounded"
+              style={{ background: bs.bg, color: bs.fg }}
+            >
+              {categoryName}
+            </span>
+          );
+        })()}
 
         {/* 제목 */}
         <span className="text-[13px] text-zinc-800 truncate shrink-0 max-w-[180px] md:max-w-[260px]">

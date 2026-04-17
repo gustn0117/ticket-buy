@@ -3,26 +3,27 @@
 import { useState, useEffect, Suspense } from 'react';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
-import { LayoutGrid, Gift, CreditCard, Smartphone, Coffee, ShoppingBag, Film, Book } from 'lucide-react';
+import { LayoutGrid } from 'lucide-react';
 import LeftSidebar from '@/components/layout/LeftSidebar';
 import RightSidebar from '@/components/layout/RightSidebar';
 import CompanyCard from '@/components/home/CompanyCard';
+import { BrandLogo } from '@/components/BrandLogo';
 import { getPremiumBuyers } from '@/lib/api';
 import type { DBPremiumBuyer } from '@/lib/types';
 
-const productTypes = [
-  { name: '전체', Icon: LayoutGrid },
-  { name: '롯데', Icon: Gift },
-  { name: '신세계', Icon: ShoppingBag },
-  { name: '문화상품권', Icon: Film },
-  { name: '컬쳐랜드', Icon: Book },
-  { name: '스타벅스', Icon: Coffee },
-  { name: '온캐시', Icon: CreditCard },
-  { name: '구글플레이', Icon: Smartphone },
-  { name: '틴캐시', Icon: CreditCard },
-  { name: '배민상품권', Icon: ShoppingBag },
-  { name: '해피머니', Icon: Gift },
-  { name: '기타', Icon: LayoutGrid },
+const productTypes: { name: string; useBrandLogo: boolean }[] = [
+  { name: '전체', useBrandLogo: false },
+  { name: '롯데', useBrandLogo: true },
+  { name: '신세계', useBrandLogo: true },
+  { name: '문화상품권', useBrandLogo: true },
+  { name: '컬쳐랜드', useBrandLogo: true },
+  { name: '스타벅스', useBrandLogo: true },
+  { name: '온캐시', useBrandLogo: true },
+  { name: '구글플레이', useBrandLogo: true },
+  { name: '틴캐시', useBrandLogo: true },
+  { name: '배민상품권', useBrandLogo: true },
+  { name: '해피머니', useBrandLogo: true },
+  { name: '기타', useBrandLogo: true },
 ];
 
 function ProductContent() {
@@ -85,18 +86,22 @@ function ProductContent() {
             <div className="flex-1 bg-white border border-gray-200">
               <div className="grid grid-cols-4 md:grid-cols-6 gap-0">
                 {productTypes.map((type) => {
-                  const IconComp = type.Icon;
                   const count = typeCounts[type.name] || 0;
+                  const isActive = selectedType === type.name;
                   return (
                     <button
                       key={type.name}
                       onClick={() => setSelectedType(type.name)}
-                      className={`category-icon ${selectedType === type.name ? 'active' : ''}`}
+                      className={`category-icon ${isActive ? 'active' : ''}`}
                     >
-                      <div className="icon-circle">
-                        <IconComp size={16} strokeWidth={1.5} />
-                      </div>
-                      <span className="icon-label">{type.name}</span>
+                      {type.useBrandLogo ? (
+                        <BrandLogo name={type.name} size="sm" />
+                      ) : (
+                        <div className="icon-circle">
+                          <LayoutGrid size={16} strokeWidth={1.5} />
+                        </div>
+                      )}
+                      <span className="icon-label mt-1">{type.name}</span>
                       <span className="icon-count">{count}</span>
                     </button>
                   );

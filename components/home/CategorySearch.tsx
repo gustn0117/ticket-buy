@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { Plus } from 'lucide-react';
-import { categories } from '@/data/mock';
+import { BrandLogo } from '@/components/BrandLogo';
 
 const regions = [
   '전체', '서울', '경기', '인천', '대전', '대구',
@@ -10,10 +10,10 @@ const regions = [
   '충남', '전북', '전남', '경북', '경남', '제주'
 ];
 
-const productCategories = [
-  '전체', '직장인', '무직자', '여성', '비상금',
-  '모바일', '소액', '무방문', '자영업', '당일',
-  '사업자', '전문직', '자산용', '신용'
+// 메인에 빠르게 보이는 대표 브랜드 8개 (+ 전체)
+const productBrands = [
+  '전체', '롯데', '신세계', '문화상품권', '컬쳐랜드',
+  '스타벅스', '온캐시', '구글플레이', '해피머니'
 ];
 
 export default function CategorySearch() {
@@ -50,21 +50,22 @@ export default function CategorySearch() {
             <Plus size={14} />
           </Link>
         </div>
-        <div className="p-4 flex-1 flex flex-col">
-          <div className="flex flex-wrap gap-x-0.5 gap-y-1.5 flex-1">
-            {productCategories.map((cat, i) => (
-              <span key={cat} className="flex items-center">
-                <Link href={`/category/product?type=${cat}`}
-                  className="px-2 py-1 text-[12px] text-gray-600 hover:text-accent transition-colors">
-                  {cat}
-                </Link>
-                {i < productCategories.length - 1 && <span className="text-gray-200 text-[10px]">·</span>}
-              </span>
+        <div className="p-3 flex-1 flex flex-col">
+          <div className="grid grid-cols-5 gap-1 flex-1">
+            {productBrands.map((brand) => (
+              <Link
+                key={brand}
+                href={`/category/product?type=${brand}`}
+                className="flex flex-col items-center gap-1 py-1.5 hover:bg-accent/5 rounded transition-colors"
+              >
+                <BrandLogo name={brand} size="sm" />
+                <span className="text-[10px] text-gray-600 truncate max-w-full">{brand}</span>
+              </Link>
             ))}
           </div>
           <div className="flex justify-end mt-2">
             <Link href="/category/product" className="text-[11px] text-accent font-bold hover:underline">
-              더보기+
+              전체 브랜드 보기+
             </Link>
           </div>
         </div>
