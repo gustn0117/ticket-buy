@@ -7,11 +7,13 @@ function hashPassword(password: string): string {
 }
 
 export async function POST(req: NextRequest) {
-  const { name, email, password, phone } = await req.json();
+  const { name, email, password, phone, type } = await req.json();
 
   if (!name || !email || !password) {
     return NextResponse.json({ error: '필수 항목을 입력해주세요.' }, { status: 400 });
   }
+
+  const userType = type === 'business' ? 'business' : 'normal';
 
   const supabase = createServiceClient();
 
@@ -30,7 +32,7 @@ export async function POST(req: NextRequest) {
 
   const { data: user, error } = await supabase
     .from('users')
-    .insert({ name, email, password_hash, phone: phone || null, type: 'normal' })
+    .insert({ name, email, password_hash, phone: phone || null, type: userType })
     .select('id, name, email, phone, type, created_at, updated_at')
     .single();
 

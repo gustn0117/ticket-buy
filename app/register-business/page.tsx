@@ -2,7 +2,6 @@
 
 import { useState } from 'react';
 import Image from 'next/image';
-import { createUser } from '@/lib/api';
 
 export default function RegisterBusinessPage() {
   const [form, setForm] = useState({
@@ -29,13 +28,19 @@ export default function RegisterBusinessPage() {
     if (form.password !== form.passwordConfirm) { setError('비밀번호가 일치하지 않습니다.'); return; }
     setSubmitting(true);
     try {
-      await createUser({
-        email: `${form.businessNumber.replace(/-/g, '')}@biz.ticketbuy`,
-        name: form.businessName,
-        phone: form.phone || null,
-        type: 'business',
-        password_hash: form.password,
+      const res = await fetch('/api/auth/register', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: form.businessName,
+          email: `${form.businessNumber.replace(/-/g, '')}@biz.ticketbuy`,
+          password: form.password,
+          phone: form.phone || null,
+          type: 'business',
+        }),
       });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || '신청에 실패했습니다.');
       setDone(true);
     } catch (err: unknown) {
       setError(err instanceof Error ? err.message : '신청에 실패했습니다.');

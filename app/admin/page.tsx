@@ -7,7 +7,8 @@ import ImageUpload from '@/components/ImageUpload';
 import type { DBUser, DBPost, DBNotice, DBChat, DBMessage, DBPremiumBuyer } from '@/lib/types';
 import type { Ad, AdSlot } from '@/lib/ads';
 import { AD_SLOT_LABELS, AD_SLOT_SIZES } from '@/lib/ads';
-import { Users, FileText, Bell, MessageCircle, Trash2, Shield, Megaphone, Pencil, Plus, Eye, EyeOff, ArrowLeft, Radio, Crown } from 'lucide-react';
+import Link from 'next/link';
+import { Users, FileText, Bell, MessageCircle, Trash2, Shield, Megaphone, Pencil, Plus, Eye, EyeOff, ArrowLeft, Radio, Crown, LayoutDashboard, TrendingUp, ExternalLink, Activity } from 'lucide-react';
 import { getCategoryName } from '@/data/mock';
 
 const ALL_SLOTS = Object.keys(AD_SLOT_LABELS) as AdSlot[];
@@ -15,7 +16,14 @@ const ALL_SLOTS = Object.keys(AD_SLOT_LABELS) as AdSlot[];
 export default function AdminPage() {
   const [authed, setAuthed] = useState(false);
   const [pw, setPw] = useState('');
-  const [tab, setTab] = useState<'users' | 'posts' | 'notices' | 'chats' | 'premium' | 'ads'>('users');
+  const [tab, setTab] = useState<'overview' | 'users' | 'posts' | 'notices' | 'chats' | 'premium' | 'ads'>('overview');
+  const [stats, setStats] = useState<{
+    users: { total: number; business: number; normal: number; todayNew: number };
+    posts: { total: number; sell: number; buy: number; active: number; todayNew: number };
+    chats: { total: number; completed: number; inProgress: number; escrow: number; todayNew: number };
+    premium: { total: number; active: number; premium: number };
+    notices: { total: number; pinned: number };
+  } | null>(null);
   const [users, setUsers] = useState<DBUser[]>([]);
   const [posts, setPosts] = useState<(DBPost & { author?: DBUser })[]>([]);
   const [notices, setNotices] = useState<DBNotice[]>([]);
@@ -66,6 +74,17 @@ export default function AdminPage() {
   });
 
   const [loginError, setLoginError] = useState('');
+  const [sessionChecked, setSessionChecked] = useState(false);
+
+  // 세션 상태 확인
+  useEffect(() => {
+    fetch('/api/admin', { credentials: 'include' })
+      .then(r => r.json())
+      .then(data => { if (data.ok) setAuthed(true); })
+      .catch(() => {})
+      .finally(() => setSessionChecked(true));
+  }, []);
+
   const login = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoginError('');
@@ -73,6 +92,7 @@ export default function AdminPage() {
       const res = await fetch('/api/admin', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
         body: JSON.stringify({ password: pw }),
       });
       const data = await res.json();
@@ -83,11 +103,17 @@ export default function AdminPage() {
     }
   };
 
+  const logout = async () => {
+    await fetch('/api/admin', { method: 'DELETE', credentials: 'include' });
+    setAuthed(false);
+    setPw('');
+  };
+
   const fetchData = async () => {
     setLoading(true);
 
     // 모든 데이터를 동시에 병렬 요청
-    const [u, p, n, c, v, pb, ad] = await Promise.allSettled([
+    const [u, p, n, c, v, pb, ad, st] = await Promise.allSettled([
       supabase.from('users').select('*').order('created_at', { ascending: false }).limit(200),
       supabase.from('posts').select('*, author:users!author_id(id, name, type)').order('created_at', { ascending: false }).limit(200),
       supabase.from('notices').select('*').order('created_at', { ascending: false }).limit(50),
@@ -95,6 +121,7 @@ export default function AdminPage() {
       fetch('/api/visitors').then(r => r.json()),
       getPremiumBuyers(false),
       fetch('/api/ads').then(r => r.json()),
+      fetch('/api/admin/stats', { credentials: 'include' }).then(r => r.json()),
     ]);
 
     if (u.status === 'fulfilled' && u.value.data) setUsers(u.value.data);
@@ -104,6 +131,7 @@ export default function AdminPage() {
     if (v.status === 'fulfilled') setVisitors(v.value);
     if (pb.status === 'fulfilled') setPremiumBuyers(pb.value);
     if (ad.status === 'fulfilled') setAds(ad.value);
+    if (st.status === 'fulfilled' && st.value?.users) setStats(st.value);
 
     setLoading(false);
   };
@@ -198,6 +226,12 @@ export default function AdminPage() {
     fetchData();
   };
 
+  if (!sessionChecked) {
+    return (
+      <div className="min-h-[50vh] flex items-center justify-center text-[13px] text-zinc-400">세션 확인 중...</div>
+    );
+  }
+
   if (!authed) {
     return (
       <div className="min-h-[80vh] flex items-center justify-center px-5">
@@ -217,6 +251,7 @@ export default function AdminPage() {
   }
 
   const tabs = [
+    { key: 'overview' as const, label: '대시보드', icon: LayoutDashboard, count: null as number | null },
     { key: 'users' as const, label: '회원', icon: Users, count: users.length },
     { key: 'posts' as const, label: '게시글', icon: FileText, count: posts.length },
     { key: 'notices' as const, label: '공지', icon: Bell, count: notices.length },
@@ -229,10 +264,10 @@ export default function AdminPage() {
     <div className="max-w-[1140px] mx-auto px-5 py-6">
       <div className="flex items-center justify-between mb-5">
         <h1 className="section-title mb-0">관리자 패널</h1>
-        <button onClick={() => setAuthed(false)} className="btn-secondary text-[12px] h-8">로그아웃</button>
+        <button onClick={logout} className="btn-secondary text-[12px] h-8">로그아웃</button>
       </div>
 
-      <div className="grid grid-cols-6 gap-3 mb-5">
+      <div className="grid grid-cols-4 md:grid-cols-7 gap-2 mb-5">
         {tabs.map(t => (
           <button key={t.key} onClick={() => setTab(t.key)}
             className={`card card-hover p-3 text-left ${tab === t.key ? 'border-zinc-900' : ''}`}>
@@ -240,7 +275,7 @@ export default function AdminPage() {
               <t.icon size={14} className="text-zinc-400" />
               <span className="text-[11px] text-zinc-500">{t.label}</span>
             </div>
-            <p className="text-xl font-semibold">{t.count}</p>
+            <p className="text-xl font-semibold">{t.count ?? '—'}</p>
           </button>
         ))}
       </div>
@@ -315,6 +350,181 @@ export default function AdminPage() {
       )}
 
       {loading && <div className="py-8 text-center text-zinc-400 text-[13px]">불러오는 중...</div>}
+
+      {/* ─── Overview (종합 대시보드) ─── */}
+      {!loading && tab === 'overview' && (
+        <div className="space-y-4">
+          {/* 주요 지표 */}
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+            <div className="card p-4">
+              <div className="flex items-center gap-2 mb-1">
+                <Users size={13} className="text-zinc-400" />
+                <span className="text-[11px] text-zinc-500">회원</span>
+              </div>
+              <p className="text-xl font-semibold">{stats?.users.total ?? 0}</p>
+              <p className="text-[11px] text-zinc-400 mt-1">
+                업체 {stats?.users.business ?? 0} · 일반 {stats?.users.normal ?? 0}
+              </p>
+              <p className="text-[11px] text-emerald-600 mt-0.5">오늘 +{stats?.users.todayNew ?? 0}</p>
+            </div>
+            <div className="card p-4">
+              <div className="flex items-center gap-2 mb-1">
+                <FileText size={13} className="text-zinc-400" />
+                <span className="text-[11px] text-zinc-500">게시글</span>
+              </div>
+              <p className="text-xl font-semibold">{stats?.posts.total ?? 0}</p>
+              <p className="text-[11px] text-zinc-400 mt-1">
+                판매 {stats?.posts.sell ?? 0} · 구매 {stats?.posts.buy ?? 0}
+              </p>
+              <p className="text-[11px] text-emerald-600 mt-0.5">오늘 +{stats?.posts.todayNew ?? 0}</p>
+            </div>
+            <div className="card p-4">
+              <div className="flex items-center gap-2 mb-1">
+                <MessageCircle size={13} className="text-zinc-400" />
+                <span className="text-[11px] text-zinc-500">거래</span>
+              </div>
+              <p className="text-xl font-semibold">{stats?.chats.total ?? 0}</p>
+              <p className="text-[11px] text-zinc-400 mt-1">
+                완료 {stats?.chats.completed ?? 0} · 진행 {stats?.chats.inProgress ?? 0}
+              </p>
+              <p className="text-[11px] text-emerald-600 mt-0.5">오늘 +{stats?.chats.todayNew ?? 0}</p>
+            </div>
+            <div className="card p-4">
+              <div className="flex items-center gap-2 mb-1">
+                <TrendingUp size={13} className="text-zinc-400" />
+                <span className="text-[11px] text-zinc-500">방문자</span>
+              </div>
+              <p className="text-xl font-semibold">{(visitors.today || 0).toLocaleString()}</p>
+              <p className="text-[11px] text-zinc-400 mt-1">누적 {(visitors.total || 0).toLocaleString()}</p>
+              <p className="text-[11px] text-zinc-400 mt-0.5">거래량 {(visitors.trades || 0).toLocaleString()}</p>
+            </div>
+          </div>
+
+          {/* 빠른 이동 */}
+          <div className="card p-4">
+            <div className="flex items-center justify-between mb-3">
+              <h3 className="text-[13px] font-semibold flex items-center gap-1.5"><Activity size={13} /> 빠른 이동</h3>
+            </div>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
+              <Link href="/" target="_blank" className="btn-secondary h-9 text-[12px] justify-between">
+                메인 페이지 <ExternalLink size={12} />
+              </Link>
+              <Link href="/category/area" target="_blank" className="btn-secondary h-9 text-[12px] justify-between">
+                지역별 업체찾기 <ExternalLink size={12} />
+              </Link>
+              <Link href="/category/product" target="_blank" className="btn-secondary h-9 text-[12px] justify-between">
+                상품별 업체찾기 <ExternalLink size={12} />
+              </Link>
+              <Link href="/community" target="_blank" className="btn-secondary h-9 text-[12px] justify-between">
+                커뮤니티 <ExternalLink size={12} />
+              </Link>
+              <Link href="/notice" target="_blank" className="btn-secondary h-9 text-[12px] justify-between">
+                공지사항 <ExternalLink size={12} />
+              </Link>
+              <Link href="/board" target="_blank" className="btn-secondary h-9 text-[12px] justify-between">
+                게시판 <ExternalLink size={12} />
+              </Link>
+              <Link href="/guide" target="_blank" className="btn-secondary h-9 text-[12px] justify-between">
+                이용안내 <ExternalLink size={12} />
+              </Link>
+              <Link href="/faq" target="_blank" className="btn-secondary h-9 text-[12px] justify-between">
+                고객센터 <ExternalLink size={12} />
+              </Link>
+            </div>
+          </div>
+
+          {/* 최근 활동 */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+            <div className="card p-4">
+              <div className="flex items-center justify-between mb-3">
+                <h3 className="text-[13px] font-semibold">최근 가입 회원</h3>
+                <button onClick={() => setTab('users')} className="text-[11px] text-zinc-500 hover:text-zinc-900">전체 보기</button>
+              </div>
+              <div className="divide-y divide-zinc-100">
+                {users.slice(0, 5).map(u => (
+                  <div key={u.id} className="flex items-center justify-between py-2">
+                    <div className="min-w-0">
+                      <p className="text-[12px] font-medium truncate">{u.name}</p>
+                      <p className="text-[11px] text-zinc-400 truncate">{u.email}</p>
+                    </div>
+                    <span className={`badge shrink-0 ${u.type === 'business' ? 'bg-blue-50 text-blue-600' : 'bg-zinc-100 text-zinc-500'}`}>
+                      {u.type === 'business' ? '업체' : '일반'}
+                    </span>
+                  </div>
+                ))}
+                {users.length === 0 && <p className="py-6 text-center text-[12px] text-zinc-400">회원이 없습니다.</p>}
+              </div>
+            </div>
+
+            <div className="card p-4">
+              <div className="flex items-center justify-between mb-3">
+                <h3 className="text-[13px] font-semibold">최근 게시글</h3>
+                <button onClick={() => setTab('posts')} className="text-[11px] text-zinc-500 hover:text-zinc-900">전체 보기</button>
+              </div>
+              <div className="divide-y divide-zinc-100">
+                {posts.slice(0, 5).map(p => (
+                  <div key={p.id} className="flex items-center justify-between py-2 gap-2">
+                    <div className="min-w-0 flex-1">
+                      <p className="text-[12px] font-medium truncate">{p.title}</p>
+                      <p className="text-[11px] text-zinc-400 truncate">{p.author?.name || '-'} · {getCategoryName(p.category)}</p>
+                    </div>
+                    <span className={`badge shrink-0 ${p.type === 'sell' ? 'bg-blue-50 text-blue-600' : 'bg-zinc-100 text-zinc-500'}`}>
+                      {p.type === 'sell' ? '판매' : '구매'}
+                    </span>
+                  </div>
+                ))}
+                {posts.length === 0 && <p className="py-6 text-center text-[12px] text-zinc-400">게시글이 없습니다.</p>}
+              </div>
+            </div>
+
+            <div className="card p-4">
+              <div className="flex items-center justify-between mb-3">
+                <h3 className="text-[13px] font-semibold">최근 거래</h3>
+                <button onClick={() => setTab('chats')} className="text-[11px] text-zinc-500 hover:text-zinc-900">전체 보기</button>
+              </div>
+              <div className="divide-y divide-zinc-100">
+                {chats.slice(0, 5).map(c => {
+                  const postTitle = posts.find(p => p.id === c.post_id)?.title || '삭제된 게시글';
+                  return (
+                    <div key={c.id} className="flex items-center justify-between py-2 gap-2">
+                      <div className="min-w-0 flex-1">
+                        <p className="text-[12px] font-medium truncate">{postTitle}</p>
+                        <p className="text-[11px] text-zinc-400">단계 {c.current_step}/{c.trade_type === 'escrow' ? 8 : 6}</p>
+                      </div>
+                      {c.trade_type === 'escrow' && <span className="badge shrink-0 bg-blue-50 text-blue-600">중개</span>}
+                    </div>
+                  );
+                })}
+                {chats.length === 0 && <p className="py-6 text-center text-[12px] text-zinc-400">거래가 없습니다.</p>}
+              </div>
+            </div>
+
+            <div className="card p-4">
+              <div className="flex items-center justify-between mb-3">
+                <h3 className="text-[13px] font-semibold">프리미엄 업체 현황</h3>
+                <button onClick={() => setTab('premium')} className="text-[11px] text-zinc-500 hover:text-zinc-900">전체 보기</button>
+              </div>
+              <div className="grid grid-cols-3 gap-2 mb-3">
+                <div className="text-center p-2 bg-zinc-50 rounded">
+                  <p className="text-[10px] text-zinc-400 mb-0.5">전체</p>
+                  <p className="text-[16px] font-semibold">{stats?.premium.total ?? 0}</p>
+                </div>
+                <div className="text-center p-2 bg-emerald-50 rounded">
+                  <p className="text-[10px] text-zinc-400 mb-0.5">활성</p>
+                  <p className="text-[16px] font-semibold text-emerald-600">{stats?.premium.active ?? 0}</p>
+                </div>
+                <div className="text-center p-2 bg-yellow-50 rounded">
+                  <p className="text-[10px] text-zinc-400 mb-0.5">프리미엄</p>
+                  <p className="text-[16px] font-semibold text-yellow-600">{stats?.premium.premium ?? 0}</p>
+                </div>
+              </div>
+              <button onClick={() => { setTab('premium'); setShowPremiumForm(true); }} className="btn-primary w-full h-9 text-[12px]">
+                <Plus size={13} /> 새 업체 등록
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* ─── Users ─── */}
       {!loading && tab === 'users' && (

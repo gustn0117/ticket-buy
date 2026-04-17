@@ -86,6 +86,7 @@ export default function Footer() {
             </p>
             <p className="text-[10px] text-gray-400 mt-2">
               COPYRIGHT &copy; 2026. 티켓바이 ALL RIGHTS RESERVED.
+              <Link href="/admin" className="ml-2 text-gray-300 hover:text-accent">· 관리자</Link>
             </p>
           </div>
         </div>
