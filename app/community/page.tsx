@@ -110,20 +110,7 @@ function CommunityContent() {
             {loading ? (
               <div className="py-20 text-center text-gray-400 text-[13px]">불러오는 중...</div>
             ) : setupRequired ? (
-              <div className="py-12 px-6">
-                <div className="max-w-[500px] mx-auto bg-amber-50 border border-amber-200 p-5 text-center">
-                  <p className="text-[13px] font-bold text-amber-800 mb-2">커뮤니티 테이블 초기 설정이 필요합니다</p>
-                  <p className="text-[12px] text-amber-700 mb-3">
-                    Supabase SQL Editor에서 아래 파일을 실행하면 커뮤니티 기능이 활성화됩니다.
-                  </p>
-                  <code className="inline-block bg-white border border-amber-200 px-3 py-1 text-[11px] text-amber-900 font-mono">
-                    /supabase/migrations/20260418_community.sql
-                  </code>
-                  <p className="text-[11px] text-amber-600 mt-3">
-                    (community_posts, community_comments 테이블과 조회수 RPC를 생성합니다.)
-                  </p>
-                </div>
-              </div>
+              <CommunitySetupBanner />
             ) : posts.length === 0 ? (
               <div className="py-20 text-center">
                 <p className="text-[13px] text-gray-500 mb-2">아직 등록된 게시글이 없습니다.</p>
@@ -221,6 +208,90 @@ function CommunityContent() {
         </div>
 
         <RightSidebar />
+      </div>
+    </div>
+  );
+}
+
+function CommunitySetupBanner() {
+  const [copied, setCopied] = useState(false);
+  const [sql, setSql] = useState<string | null>(null);
+  const [showSql, setShowSql] = useState(false);
+
+  useEffect(() => {
+    fetch('/api/community/setup')
+      .then(r => r.text())
+      .then(setSql)
+      .catch(() => {});
+  }, []);
+
+  const handleCopy = async () => {
+    if (!sql) return;
+    try {
+      await navigator.clipboard.writeText(sql);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch {
+      setShowSql(true);
+    }
+  };
+
+  return (
+    <div className="py-10 px-6">
+      <div className="max-w-[720px] mx-auto bg-amber-50 border border-amber-200 p-6">
+        <div className="text-center mb-5">
+          <div className="w-12 h-12 mx-auto mb-3 rounded-full bg-amber-100 flex items-center justify-center">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#D97706" strokeWidth="2">
+              <path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/>
+              <line x1="12" y1="9" x2="12" y2="13"/>
+              <line x1="12" y1="17" x2="12.01" y2="17"/>
+            </svg>
+          </div>
+          <p className="text-[14px] font-bold text-amber-900 mb-1">커뮤니티 테이블 초기 설정이 필요합니다</p>
+          <p className="text-[12px] text-amber-700">
+            한 번만 실행하면 됩니다. 아래 단계를 따라주세요.
+          </p>
+        </div>
+
+        <ol className="space-y-2 mb-5 text-[12px] text-amber-900 list-decimal list-inside">
+          <li>아래 <strong>SQL 복사</strong> 버튼을 눌러 마이그레이션 SQL을 클립보드로 복사</li>
+          <li><strong>Supabase 대시보드 → SQL Editor</strong> 메뉴 열기</li>
+          <li>에디터에 붙여넣기 후 <strong>Run</strong> 실행</li>
+          <li>이 페이지로 돌아와 새로고침하면 즉시 활성화</li>
+        </ol>
+
+        <div className="flex flex-wrap items-center justify-center gap-2 mb-3">
+          <button
+            onClick={handleCopy}
+            disabled={!sql}
+            className="btn-accent h-10 px-4 text-[13px] disabled:opacity-50"
+          >
+            {copied ? '✓ 복사됨' : sql ? 'SQL 복사' : '불러오는 중...'}
+          </button>
+          <a
+            href="/api/community/setup"
+            download="community_migration.sql"
+            className="btn-secondary h-10 px-4 text-[13px]"
+          >
+            SQL 파일 다운로드
+          </a>
+          <button
+            onClick={() => setShowSql(s => !s)}
+            className="btn-secondary h-10 px-4 text-[13px]"
+          >
+            {showSql ? 'SQL 숨기기' : 'SQL 미리보기'}
+          </button>
+        </div>
+
+        {showSql && sql && (
+          <div className="mt-4 bg-gray-900 border border-gray-800 rounded p-4 max-h-[400px] overflow-auto">
+            <pre className="text-[11px] text-gray-100 font-mono whitespace-pre-wrap leading-relaxed">{sql}</pre>
+          </div>
+        )}
+
+        <p className="text-[11px] text-amber-600 text-center mt-4">
+          community_posts · community_comments 테이블, 조회수 RPC 함수, 기본 RLS 정책을 생성합니다.
+        </p>
       </div>
     </div>
   );
