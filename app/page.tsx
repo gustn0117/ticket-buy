@@ -2,18 +2,25 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { ChevronRight, Phone, MapPin, Lightbulb } from 'lucide-react';
+import { ChevronRight, PenSquare, ShoppingCart, Tag, Megaphone, Lightbulb, ShieldCheck } from 'lucide-react';
 import HeroBanner from '@/components/home/HeroBanner';
-import CategorySearch from '@/components/home/CategorySearch';
-import CompanyCard from '@/components/home/CompanyCard';
 import LeftSidebar from '@/components/layout/LeftSidebar';
 import RightSidebar from '@/components/layout/RightSidebar';
-import BottomSections from '@/components/home/BottomSections';
-import MainAdsSection from '@/components/home/MainAdsSection';
+import SellPostItem from '@/components/home/SellPostItem';
+import PremiumBuyerCard from '@/components/home/PremiumBuyerCard';
+import { BrandLogo } from '@/components/BrandLogo';
 import { getPosts, getPremiumBuyers, getNotices } from '@/lib/api';
 import type { DBPost, DBUser, DBPremiumBuyer, DBNotice } from '@/lib/types';
 
 type PostWithAuthor = DBPost & { author: DBUser };
+
+const BRANDS = ['전체', '롯데', '신세계', '문화상품권', '컬쳐랜드', '스타벅스', '온캐시', '구글플레이', '해피머니'];
+
+const TIPS = [
+  { title: '계약서 없이 입금 금지', desc: '모든 거래는 반드시 전자 계약서 작성 후 진행하세요.' },
+  { title: '너무 높은 할인율은 의심', desc: '시세보다 비정상적으로 높은 할인율은 사기 신호일 수 있어요.' },
+  { title: '신원 확인은 필수', desc: '거래 전 상대방의 거래 이력과 평점을 꼭 확인하세요.' },
+];
 
 export default function Home() {
   const [sellPosts, setSellPosts] = useState<PostWithAuthor[]>([]);
@@ -21,6 +28,7 @@ export default function Home() {
   const [buyers, setBuyers] = useState<DBPremiumBuyer[]>([]);
   const [notices, setNotices] = useState<DBNotice[]>([]);
   const [loading, setLoading] = useState(true);
+  const [tipIdx, setTipIdx] = useState(0);
 
   useEffect(() => {
     Promise.allSettled([
@@ -32,215 +40,218 @@ export default function Home() {
       if (s.status === 'fulfilled') setSellPosts(s.value);
       if (b.status === 'fulfilled') setBuyPosts(b.value);
       if (pb.status === 'fulfilled') setBuyers(pb.value);
-      if (n.status === 'fulfilled') setNotices(n.value.slice(0, 10));
+      if (n.status === 'fulfilled') setNotices(n.value.slice(0, 5));
     }).finally(() => setLoading(false));
+
+    const timer = setInterval(() => setTipIdx(i => (i + 1) % TIPS.length), 5000);
+    return () => clearInterval(timer);
   }, []);
 
   return (
     <div>
-      {/* Hero Banner */}
       <HeroBanner />
 
-      {/* Main Content - 3 column layout */}
       <div className="container-main py-6">
         <div className="flex gap-4">
-          {/* Left Sidebar */}
           <LeftSidebar />
 
-          {/* Center Content */}
           <div className="flex-1 min-w-0">
-            {/* Premium Banner + Category Search */}
-            <div className="flex flex-col md:flex-row gap-3 mb-5">
-              {/* Premium Banner Slider */}
-              <div className="w-full md:w-[300px] shrink-0">
-                <div className="bg-white border border-gray-200 h-full flex flex-col min-h-[180px]">
-                  <div className="px-4 py-2.5 border-b border-gray-200 bg-gray-50">
-                    <span className="text-[12px] font-bold text-accent">Premium Banner</span>
+            {/* 빠른 액션 배너 */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-5">
+              <Link href="/board/write?type=sell" className="flex items-center gap-4 p-5 bg-gradient-to-r from-accent to-accent-light text-white hover:opacity-90 transition-opacity">
+                <div className="w-12 h-12 rounded-full bg-white/20 flex items-center justify-center shrink-0">
+                  <Tag size={22} />
+                </div>
+                <div className="flex-1">
+                  <p className="text-[15px] font-bold">상품권 팝니다</p>
+                  <p className="text-[12px] opacity-90">남는 상품권을 빠르게 판매하세요</p>
+                </div>
+                <PenSquare size={18} />
+              </Link>
+              <Link href="/board/write?type=buy" className="flex items-center gap-4 p-5 bg-gradient-to-r from-gray-800 to-gray-900 text-white hover:opacity-90 transition-opacity">
+                <div className="w-12 h-12 rounded-full bg-white/15 flex items-center justify-center shrink-0">
+                  <ShoppingCart size={22} />
+                </div>
+                <div className="flex-1">
+                  <p className="text-[15px] font-bold">상품권 삽니다</p>
+                  <p className="text-[12px] opacity-80">원하는 상품권을 직접 구매하세요</p>
+                </div>
+                <PenSquare size={18} />
+              </Link>
+            </div>
+
+            {/* 브랜드 바로가기 */}
+            <div className="bg-white border border-gray-200 mb-5">
+              <div className="flex items-center justify-between px-4 py-3 border-b border-gray-200">
+                <h3 className="text-[14px] font-bold text-gray-800">브랜드별 바로가기</h3>
+                <Link href="/category/product" className="text-[11px] text-gray-500 hover:text-accent flex items-center gap-0.5">
+                  전체 브랜드 <ChevronRight size={11} />
+                </Link>
+              </div>
+              <div className="grid grid-cols-5 md:grid-cols-9 gap-0 p-2">
+                {BRANDS.map(b => (
+                  <Link key={b} href={`/category/product?type=${b}`} className="flex flex-col items-center gap-1 py-2 hover:bg-accent/5 rounded transition-colors">
+                    <BrandLogo name={b} size="sm" />
+                    <span className="text-[10px] text-gray-600 truncate max-w-full">{b}</span>
+                  </Link>
+                ))}
+              </div>
+            </div>
+
+            {/* 공지 + TIP */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-5">
+              {/* 공지사항 */}
+              <div className="bg-white border border-gray-200">
+                <div className="flex items-center justify-between px-4 py-2.5 border-b border-gray-200 bg-gray-50">
+                  <div className="flex items-center gap-1.5">
+                    <Megaphone size={13} className="text-gray-500" />
+                    <span className="text-[12px] font-bold">공지사항</span>
                   </div>
-                  <div className="p-4 flex-1 flex items-center justify-center">
-                    {buyers.length > 0 ? (
-                      <div className="w-full">
-                        <p className="text-[13px] font-bold text-gray-800 truncate">{buyers[0]?.name}</p>
-                        <p className="text-[11px] text-gray-500 mt-1 line-clamp-2">{buyers[0]?.description}</p>
-                        <div className="flex items-center gap-1.5 mt-2">
-                          {buyers[0]?.region && <span className="text-[10px] bg-accent/10 text-accent px-1.5 py-0.5 rounded-sm font-bold">{buyers[0]?.region}</span>}
-                        </div>
-                        <Link href={`/buyer/${buyers[0]?.id}`} className="flex items-center gap-1 mt-2 text-[11px] text-gray-600 hover:text-accent">
-                          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
-                          상세보기
-                        </Link>
+                  <Link href="/notice" className="text-[11px] text-gray-500 hover:text-accent flex items-center gap-0.5">
+                    더보기 <ChevronRight size={11} />
+                  </Link>
+                </div>
+                <div>
+                  {notices.length === 0 ? (
+                    <p className="py-6 text-center text-[12px] text-gray-400">등록된 공지가 없습니다.</p>
+                  ) : notices.map(n => (
+                    <Link key={n.id} href="/notice" className="flex items-center justify-between px-4 py-2 hover:bg-gray-50 border-b border-gray-100 last:border-b-0 transition-colors">
+                      <div className="flex items-center gap-1.5 min-w-0 flex-1">
+                        {n.is_pinned && <ShieldCheck size={11} className="text-accent shrink-0" />}
+                        <span className="text-[12px] text-gray-700 truncate">{n.title}</span>
                       </div>
-                    ) : (
-                      <div className="text-center py-4">
-                        <p className="text-[12px] text-gray-400">프리미엄 업체 모집 중</p>
-                        <Link href="/register-business" className="text-[11px] text-accent font-bold mt-1 inline-block">문의하기</Link>
-                      </div>
-                    )}
-                  </div>
+                      <span className="text-[10px] text-gray-400 shrink-0 ml-3">
+                        {new Date(n.created_at).toLocaleDateString('ko-KR')}
+                      </span>
+                    </Link>
+                  ))}
                 </div>
               </div>
 
-              {/* Category Search */}
-              <div className="flex-1">
-                <CategorySearch />
+              {/* TIP */}
+              <div className="bg-white border border-gray-200 flex items-stretch overflow-hidden">
+                <div className="shrink-0 flex items-center justify-center w-[90px]" style={{ background: 'linear-gradient(135deg, #E63946 0%, #F26A4B 100%)' }}>
+                  <div className="text-center">
+                    <Lightbulb size={18} className="text-white mx-auto mb-0.5" />
+                    <p className="text-white text-[10px] font-bold tracking-wider">TIP</p>
+                  </div>
+                </div>
+                <div className="flex-1 p-4 min-w-0">
+                  <p className="text-[13px] font-bold text-gray-800 mb-0.5">{TIPS[tipIdx].title}</p>
+                  <p className="text-[11px] text-gray-500 leading-relaxed">{TIPS[tipIdx].desc}</p>
+                  <div className="flex items-center justify-between mt-2">
+                    <div className="flex gap-1">
+                      {TIPS.map((_, i) => (
+                        <button key={i} onClick={() => setTipIdx(i)}
+                          className={`h-1 rounded-full transition-all ${i === tipIdx ? 'bg-accent w-4' : 'bg-gray-300 w-1.5'}`} />
+                      ))}
+                    </div>
+                    <Link href="/guide" className="text-[10px] text-gray-500 hover:text-accent flex items-center gap-0.5">
+                      이용방법 <ChevronRight size={10} />
+                    </Link>
+                  </div>
+                </div>
               </div>
             </div>
 
-            {/* Scrolling notice text */}
-            <div className="bg-white border border-gray-200 px-4 py-2 mb-5 text-[11px] text-gray-500 overflow-hidden">
-              <span className="text-gray-400">* 배너위치는 실시간으로 랜덤 배치됩니다.</span>
-            </div>
-
-            {/* 메인 등록업체 */}
-            <div className="mb-6">
+            {/* 상품권 팝니다 (최신 판매글) */}
+            <section className="mb-6">
               <div className="flex items-center justify-between mb-3">
-                <h2 className="text-[17px] font-bold text-gray-800">
-                  메인 등록업체
+                <h2 className="text-[16px] font-bold text-gray-800 flex items-center gap-2">
+                  <Tag size={15} className="text-accent" />
+                  상품권 팝니다
+                  {!loading && <span className="text-[12px] text-gray-400 font-normal">{sellPosts.length}건</span>}
                 </h2>
                 <div className="flex items-center gap-2">
-                  <span className="text-[11px] text-gray-400">광고문의</span>
-                  <Link href="/register-business" className="text-[11px] text-accent hover:underline">스폰서링크</Link>
+                  <Link href="/board?tab=sell" className="text-[12px] text-gray-500 hover:text-accent flex items-center gap-0.5">
+                    전체보기 <ChevronRight size={11} />
+                  </Link>
+                  <Link href="/board/write?type=sell" className="btn-accent h-8 px-3 text-[12px]">
+                    <PenSquare size={12} /> 판매글 작성
+                  </Link>
                 </div>
               </div>
 
               {loading ? (
-                <div className="py-16 text-center text-gray-400 text-[13px]">불러오는 중...</div>
-              ) : buyers.length > 0 ? (
-                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-2.5">
-                  {buyers.map((company, i) => (
-                    <CompanyCard key={company.id} company={company} isNew={i < 3} />
-                  ))}
+                <div className="py-10 text-center text-gray-400 text-[13px]">불러오는 중...</div>
+              ) : sellPosts.length === 0 ? (
+                <div className="bg-white border border-dashed border-gray-200 py-10 text-center">
+                  <p className="text-[13px] text-gray-500 mb-2">아직 등록된 판매글이 없습니다.</p>
+                  <Link href="/board/write?type=sell" className="text-[12px] text-accent font-bold hover:underline">
+                    첫 판매글 작성하기 →
+                  </Link>
                 </div>
               ) : (
-                /* 업체가 없을 때 데모 카드 */
-                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-2.5">
-                  {Array.from({ length: 10 }, (_, i) => (
-                    <div key={i} className="company-card">
-                      <div className="company-card-image">
-                        <h3>상품권 매입 업체 {i + 1}</h3>
-                      </div>
-                      <div className="company-card-body">
-                        <p>빠르고 안전한 상품권 매입<br />신속한 입금 처리</p>
-                        <div className="company-card-phone">
-                          <Phone size={13} className="text-gray-500" />
-                          <span>010-{String(1000 + i * 111).slice(0, 4)}-{String(5000 + i * 222).slice(0, 4)}</span>
-                        </div>
-                      </div>
-                      <div className="company-card-footer">
-                        <span className="text-accent font-bold flex items-center gap-1">
-                          <MapPin size={10} />
-                          매입업체{i + 1}
-                        </span>
-                        <span className="text-gray-500">전국</span>
-                      </div>
-                    </div>
+                <div className="bg-white border border-gray-200 overflow-hidden">
+                  {sellPosts.slice(0, 10).map((post, idx) => (
+                    <SellPostItem key={post.id} post={post} num={idx + 1} showStatus />
                   ))}
+                  {sellPosts.length > 10 && (
+                    <Link href="/board?tab=sell" className="block py-3 text-center text-[12px] text-gray-500 hover:text-accent hover:bg-gray-50 border-t border-gray-100 transition-colors">
+                      + {sellPosts.length - 10}건 더보기
+                    </Link>
+                  )}
                 </div>
               )}
-            </div>
+            </section>
 
-            {/* 추가 등록업체 rows (2차) */}
+            {/* 상품권 삽니다 (최신 구매글) */}
+            <section className="mb-6">
+              <div className="flex items-center justify-between mb-3">
+                <h2 className="text-[16px] font-bold text-gray-800 flex items-center gap-2">
+                  <ShoppingCart size={15} className="text-accent" />
+                  상품권 삽니다
+                  {!loading && <span className="text-[12px] text-gray-400 font-normal">{buyPosts.length}건</span>}
+                </h2>
+                <div className="flex items-center gap-2">
+                  <Link href="/board?tab=buy" className="text-[12px] text-gray-500 hover:text-accent flex items-center gap-0.5">
+                    전체보기 <ChevronRight size={11} />
+                  </Link>
+                  <Link href="/board/write?type=buy" className="btn-primary h-8 px-3 text-[12px]">
+                    <PenSquare size={12} /> 구매글 작성
+                  </Link>
+                </div>
+              </div>
+
+              {loading ? (
+                <div className="py-10 text-center text-gray-400 text-[13px]">불러오는 중...</div>
+              ) : buyPosts.length === 0 ? (
+                <div className="bg-white border border-dashed border-gray-200 py-10 text-center">
+                  <p className="text-[13px] text-gray-500 mb-2">아직 등록된 구매글이 없습니다.</p>
+                  <Link href="/board/write?type=buy" className="text-[12px] text-accent font-bold hover:underline">
+                    첫 구매글 작성하기 →
+                  </Link>
+                </div>
+              ) : (
+                <div className="bg-white border border-gray-200 overflow-hidden">
+                  {buyPosts.slice(0, 10).map((post, idx) => (
+                    <SellPostItem key={post.id} post={post} num={idx + 1} />
+                  ))}
+                  {buyPosts.length > 10 && (
+                    <Link href="/board?tab=buy" className="block py-3 text-center text-[12px] text-gray-500 hover:text-accent hover:bg-gray-50 border-t border-gray-100 transition-colors">
+                      + {buyPosts.length - 10}건 더보기
+                    </Link>
+                  )}
+                </div>
+              )}
+            </section>
+
+            {/* 매입 업체 (추가 노출) */}
             {buyers.length > 0 && (
-              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-2.5 mb-6">
-                {buyers.slice(0, Math.min(5, buyers.length)).map((company) => (
-                  <CompanyCard key={`second-${company.id}`} company={company} />
-                ))}
-              </div>
+              <section className="mb-6">
+                <div className="flex items-center justify-between mb-3">
+                  <h2 className="text-[16px] font-bold text-gray-800">매입 업체</h2>
+                  <Link href="/recommended" className="text-[12px] text-gray-500 hover:text-accent flex items-center gap-0.5">
+                    전체 업체 <ChevronRight size={11} />
+                  </Link>
+                </div>
+                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2.5">
+                  {buyers.slice(0, 4).map(b => <PremiumBuyerCard key={b.id} {...b} />)}
+                </div>
+              </section>
             )}
-
-            {/* 인기 클릭 통계 바 */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-6">
-              <div className="bg-gradient-to-r from-accent to-accent-light text-white p-4">
-                <p className="text-[13px] font-bold">
-                  지역별 업체찾기에서 <span className="text-[18px]">경기지역</span>이 가장 클릭수가 많았어요!
-                </p>
-                <div className="flex items-center gap-4 mt-3">
-                  {['경남 2,337', '인천 2,418', '부산 3,260', '서울 3,745', '경기 4,323'].map((item, i) => (
-                    <div key={i} className="flex items-center gap-1">
-                      <div className="w-2 h-2 rounded-full bg-white/50" />
-                      <span className="text-[10px]">{item}</span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-              <div className="bg-gradient-to-r from-accent-light to-accent text-white p-4">
-                <p className="text-[13px] font-bold">
-                  상품별 업체찾기에서 <span className="text-[18px]">모바일상품권</span>이 가장 클릭수가 많았어요!
-                </p>
-                <div className="flex items-center gap-4 mt-3">
-                  {['비상금 2,002', '소액 2,701', '당일 3,168', '직장인 4,055', '무직자 4,412'].map((item, i) => (
-                    <div key={i} className="flex items-center gap-1">
-                      <div className="w-2 h-2 rounded-full bg-white/50" />
-                      <span className="text-[10px]">{item}</span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </div>
-
-            {/* 전국 업체 등록현황 + 오늘의 추천업체 */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-6">
-              <div className="bg-white border border-gray-200">
-                <div className="flex items-center justify-between px-4 py-3 border-b border-gray-200">
-                  <h3 className="text-[14px] font-bold">
-                    전국 상품권업체 등록현황
-                    <span className="text-[12px] text-accent ml-2">257개</span>
-                  </h3>
-                  <Link href="/board" className="text-[11px] text-gray-500 hover:text-accent flex items-center gap-0.5">
-                    더보기 <ChevronRight size={10} />
-                  </Link>
-                </div>
-                <div className="divide-y divide-gray-100">
-                  <div className="grid grid-cols-3 gap-0 px-4 py-2 text-[11px] text-gray-500 bg-gray-50">
-                    <span>지역</span>
-                    <span>제목</span>
-                    <span className="text-right">업체명</span>
-                  </div>
-                  {(sellPosts.length > 0 ? sellPosts.slice(0, 8) : Array.from({ length: 8 })).map((post, i) => (
-                    <Link key={i} href={post ? `/board/${(post as PostWithAuthor).id}` : '/board'} className="grid grid-cols-3 gap-0 px-4 py-2 text-[11px] hover:bg-gray-50 transition-colors">
-                      <span className="text-accent font-bold">{post ? ((post as PostWithAuthor).region || '전국') : '전국'}</span>
-                      <span className="text-gray-600 truncate flex items-center gap-1">
-                        {post ? (post as PostWithAuthor).title : `상품권 매입 업체 등록 ${i + 1}`}
-                        <span className="text-[9px] text-white bg-red-500 px-1 rounded-sm shrink-0">N</span>
-                      </span>
-                      <span className="text-right text-gray-500">{post ? ((post as PostWithAuthor).author?.name || '-') : `업체${i + 1}`}</span>
-                    </Link>
-                  ))}
-                </div>
-              </div>
-
-              <div className="bg-white border border-gray-200">
-                <div className="flex items-center justify-between px-4 py-3 border-b border-gray-200">
-                  <h3 className="text-[14px] font-bold">오늘의 추천업체</h3>
-                  <Link href="/board" className="text-[11px] text-accent hover:underline flex items-center gap-0.5">
-                    추천업체 더보기 <ChevronRight size={10} />
-                  </Link>
-                </div>
-                <div className="divide-y divide-gray-100">
-                  <div className="grid grid-cols-3 gap-0 px-4 py-2 text-[11px] text-gray-500 bg-gray-50">
-                    <span>지역</span>
-                    <span>제목</span>
-                    <span className="text-right">업체명</span>
-                  </div>
-                  {(buyPosts.length > 0 ? buyPosts.slice(0, 8) : Array.from({ length: 8 })).map((post, i) => (
-                    <Link key={i} href={post ? `/board/${(post as PostWithAuthor).id}` : '/board'} className="grid grid-cols-3 gap-0 px-4 py-2 text-[11px] hover:bg-gray-50 transition-colors">
-                      <span className="text-accent font-bold">{post ? ((post as PostWithAuthor).region || '전국') : '전국'}</span>
-                      <span className="text-gray-600 truncate flex items-center gap-1">
-                        {post ? (post as PostWithAuthor).title : `추천 업체 ${i + 1}`}
-                        <span className="text-[9px] text-white bg-red-500 px-1 rounded-sm shrink-0">N</span>
-                      </span>
-                      <span className="text-right text-gray-500">{post ? ((post as PostWithAuthor).author?.name || '-') : `업체${i + 1}`}</span>
-                    </Link>
-                  ))}
-                </div>
-              </div>
-            </div>
-
-            {/* Bottom sections */}
-            <BottomSections notices={notices} />
           </div>
 
-          {/* Right Sidebar */}
           <RightSidebar />
         </div>
       </div>

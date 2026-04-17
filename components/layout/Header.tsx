@@ -123,29 +123,26 @@ export default function Header() {
           <div className="flex items-center justify-between">
             {/* Primary nav */}
             <div className="flex items-center">
-              <Link href="/category/area" className="flex items-center gap-1 px-4 py-3 text-[13px] font-bold text-gray-800 hover:text-accent transition-colors border-b-2 border-transparent hover:border-accent">
-                지역별 업체찾기 <span className="text-[10px] text-white bg-accent px-1 rounded-sm">N</span>
+              <Link href="/board?tab=sell" className="flex items-center gap-1 px-4 py-3 text-[13px] font-bold text-gray-800 hover:text-accent transition-colors border-b-2 border-transparent hover:border-accent">
+                상품권 팝니다 <span className="text-[10px] text-white bg-accent px-1 rounded-sm">HOT</span>
               </Link>
-              <Link href="/category/product" className="flex items-center gap-1 px-4 py-3 text-[13px] font-bold text-gray-800 hover:text-accent transition-colors border-b-2 border-transparent hover:border-accent">
-                상품별 업체찾기 <span className="text-[10px] text-white bg-accent px-1 rounded-sm">N</span>
+              <Link href="/board?tab=buy" className="flex items-center gap-1 px-4 py-3 text-[13px] font-bold text-gray-800 hover:text-accent transition-colors border-b-2 border-transparent hover:border-accent">
+                상품권 삽니다 <span className="text-[10px] text-white bg-accent px-1 rounded-sm">HOT</span>
               </Link>
               <Link href="/recommended" className="flex items-center gap-1 px-4 py-3 text-[13px] font-bold text-gray-800 hover:text-accent transition-colors border-b-2 border-transparent hover:border-accent">
-                오늘의 추천업체 <span className="text-[10px] text-white bg-accent px-1 rounded-sm">N</span>
+                매입업체 <span className="text-[10px] text-white bg-green-600 px-1 rounded-sm">N</span>
               </Link>
-              <Link href="/custom-search" className="flex items-center gap-1 px-4 py-3 text-[13px] font-bold text-gray-800 hover:text-accent transition-colors border-b-2 border-transparent hover:border-accent">
-                맞춤검색 <span className="text-[10px] text-white bg-green-600 px-1 rounded-sm">N</span>
+              <Link href="/community" className="flex items-center gap-1 px-4 py-3 text-[13px] font-bold text-gray-800 hover:text-accent transition-colors border-b-2 border-transparent hover:border-accent">
+                커뮤니티
               </Link>
             </div>
             {/* Secondary nav */}
             <div className="flex items-center gap-1">
+              <Link href="/custom-search" className="flex items-center gap-1 px-3 py-3 text-[12px] text-gray-600 hover:text-accent transition-colors">
+                <Search size={12} /> 상세검색
+              </Link>
               <Link href="/fraud" className="flex items-center gap-1 px-3 py-3 text-[12px] text-gray-600 hover:text-accent transition-colors">
-                <Search size={12} /> 사기번호검색
-              </Link>
-              <Link href="/board" className="flex items-center gap-1 px-3 py-3 text-[12px] text-gray-600 hover:text-accent transition-colors">
-                <ShieldAlert size={12} /> 정식업체조회
-              </Link>
-              <Link href="/community" className="flex items-center gap-1 px-3 py-3 text-[12px] text-gray-600 hover:text-accent transition-colors">
-                커뮤니티
+                <ShieldAlert size={12} /> 사기방지
               </Link>
               <Link href="/guide" className="flex items-center gap-1 px-3 py-3 text-[12px] text-gray-600 hover:text-accent transition-colors">
                 이용안내
@@ -162,20 +159,20 @@ export default function Header() {
       {mobileMenuOpen && (
         <div className="md:hidden border-t border-gray-200 bg-white shadow-lg">
           <div className="px-4 py-2">
-            <Link href="/category/area" className="block py-2.5 text-[13px] text-gray-700 font-medium border-b border-gray-100" onClick={() => setMobileMenuOpen(false)}>
-              지역별 업체찾기
+            <Link href="/board?tab=sell" className="block py-2.5 text-[13px] text-gray-700 font-bold border-b border-gray-100" onClick={() => setMobileMenuOpen(false)}>
+              상품권 팝니다
             </Link>
-            <Link href="/category/product" className="block py-2.5 text-[13px] text-gray-700 font-medium border-b border-gray-100" onClick={() => setMobileMenuOpen(false)}>
-              상품별 업체찾기
+            <Link href="/board?tab=buy" className="block py-2.5 text-[13px] text-gray-700 font-bold border-b border-gray-100" onClick={() => setMobileMenuOpen(false)}>
+              상품권 삽니다
             </Link>
             <Link href="/recommended" className="block py-2.5 text-[13px] text-gray-700 font-medium border-b border-gray-100" onClick={() => setMobileMenuOpen(false)}>
-              오늘의 추천업체
-            </Link>
-            <Link href="/custom-search" className="block py-2.5 text-[13px] text-gray-700 font-medium border-b border-gray-100" onClick={() => setMobileMenuOpen(false)}>
-              맞춤검색
+              매입업체
             </Link>
             <Link href="/community" className="block py-2.5 text-[13px] text-gray-700 font-medium border-b border-gray-100" onClick={() => setMobileMenuOpen(false)}>
               커뮤니티
+            </Link>
+            <Link href="/custom-search" className="block py-2.5 text-[13px] text-gray-700 font-medium border-b border-gray-100" onClick={() => setMobileMenuOpen(false)}>
+              상세검색
             </Link>
             <Link href="/guide" className="block py-2.5 text-[13px] text-gray-700 font-medium border-b border-gray-100" onClick={() => setMobileMenuOpen(false)}>
               이용안내
@@ -184,7 +181,7 @@ export default function Header() {
               고객센터
             </Link>
             <Link href="/fraud" className="block py-2.5 text-[13px] text-gray-700 font-medium border-b border-gray-100" onClick={() => setMobileMenuOpen(false)}>
-              사기번호검색
+              사기방지 가이드
             </Link>
             <div className="border-t border-gray-200 mt-1 pt-2">
               {isLoggedIn ? (
