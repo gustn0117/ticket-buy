@@ -41,7 +41,7 @@ export default function AreaCategoryPage() {
   const [selectedRegion, setSelectedRegion] = useState('전체');
 
   return (
-    <div className="container-main py-4">
+    <div className="container-main py-6">
       {/* Breadcrumb */}
       <div className="flex items-center justify-between mb-4">
         <h1 className="text-[18px] font-bold text-gray-800">지역별 업체찾기</h1>
@@ -50,7 +50,7 @@ export default function AreaCategoryPage() {
         </div>
       </div>
 
-      <div className="flex gap-3">
+      <div className="flex gap-4">
         <LeftSidebar />
 
         <div className="flex-1 min-w-0">

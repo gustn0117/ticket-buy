@@ -42,22 +42,22 @@ export default function Home() {
       <HeroBanner />
 
       {/* Main Content - 3 column layout */}
-      <div className="container-main py-3">
-        <div className="flex gap-2">
+      <div className="container-main py-6">
+        <div className="flex gap-4">
           {/* Left Sidebar */}
           <LeftSidebar />
 
           {/* Center Content */}
           <div className="flex-1 min-w-0">
             {/* Premium Banner + Category Search */}
-            <div className="flex flex-col md:flex-row gap-2 mb-2">
+            <div className="flex flex-col md:flex-row gap-3 mb-5">
               {/* Premium Banner Slider */}
-              <div className="w-full md:w-[260px] shrink-0">
-                <div className="bg-white border border-gray-200 h-full flex flex-col">
-                  <div className="px-3 py-1.5 border-b border-gray-200 bg-gray-50">
-                    <span className="text-[11px] font-bold text-accent">Premium Banner</span>
+              <div className="w-full md:w-[300px] shrink-0">
+                <div className="bg-white border border-gray-200 h-full flex flex-col min-h-[180px]">
+                  <div className="px-4 py-2.5 border-b border-gray-200 bg-gray-50">
+                    <span className="text-[12px] font-bold text-accent">Premium Banner</span>
                   </div>
-                  <div className="p-3 flex-1 flex items-center justify-center">
+                  <div className="p-4 flex-1 flex items-center justify-center">
                     {buyers.length > 0 ? (
                       <div className="w-full">
                         <p className="text-[13px] font-bold text-gray-800 truncate">{buyers[0]?.name}</p>
@@ -87,14 +87,14 @@ export default function Home() {
             </div>
 
             {/* Scrolling notice text */}
-            <div className="bg-white border border-gray-200 px-3 py-1.5 mb-2 text-[11px] text-gray-500 overflow-hidden">
+            <div className="bg-white border border-gray-200 px-4 py-2 mb-5 text-[11px] text-gray-500 overflow-hidden">
               <span className="text-gray-400">* 배너위치는 실시간으로 랜덤 배치됩니다.</span>
             </div>
 
             {/* 메인 등록업체 */}
-            <div className="mb-3">
-              <div className="flex items-center justify-between mb-2">
-                <h2 className="text-[16px] font-bold text-gray-800">
+            <div className="mb-6">
+              <div className="flex items-center justify-between mb-3">
+                <h2 className="text-[17px] font-bold text-gray-800">
                   메인 등록업체
                 </h2>
                 <div className="flex items-center gap-2">
@@ -106,14 +106,14 @@ export default function Home() {
               {loading ? (
                 <div className="py-16 text-center text-gray-400 text-[13px]">불러오는 중...</div>
               ) : buyers.length > 0 ? (
-                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-1.5">
+                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-2.5">
                   {buyers.map((company, i) => (
                     <CompanyCard key={company.id} company={company} isNew={i < 3} />
                   ))}
                 </div>
               ) : (
                 /* 업체가 없을 때 데모 카드 */
-                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-1.5">
+                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-2.5">
                   {Array.from({ length: 10 }, (_, i) => (
                     <div key={i} className="company-card">
                       <div className="company-card-image">
@@ -141,7 +141,7 @@ export default function Home() {
 
             {/* 추가 등록업체 rows (2차) */}
             {buyers.length > 0 && (
-              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-1.5 mb-3">
+              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-2.5 mb-6">
                 {buyers.slice(0, Math.min(5, buyers.length)).map((company) => (
                   <CompanyCard key={`second-${company.id}`} company={company} />
                 ))}
@@ -149,7 +149,7 @@ export default function Home() {
             )}
 
             {/* 인기 클릭 통계 바 */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-0 mb-3">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-6">
               <div className="bg-gradient-to-r from-accent to-accent-light text-white p-4">
                 <p className="text-[13px] font-bold">
                   지역별 업체찾기에서 <span className="text-[18px]">경기지역</span>이 가장 클릭수가 많았어요!

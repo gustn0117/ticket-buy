@@ -26,7 +26,7 @@ export default function BottomSections({ notices }: BottomSectionsProps) {
   return (
     <>
       {/* 3-column info section */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mb-6">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mb-5">
         {/* 거래 TIP */}
         <div className="bg-white border border-gray-200">
           <div className="flex items-center justify-between px-4 py-3 border-b border-gray-200">
@@ -98,7 +98,7 @@ export default function BottomSections({ notices }: BottomSectionsProps) {
       </div>
 
       {/* 공지사항 + 바로가기 */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mb-6">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mb-5">
         <div className="md:col-span-2 bg-white border border-gray-200">
           <div className="flex items-center justify-between px-4 py-3 border-b border-gray-200">
             <h3 className="text-[14px] font-bold">

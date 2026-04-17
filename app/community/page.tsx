@@ -39,7 +39,7 @@ const industryNews = [
 
 export default function CommunityPage() {
   return (
-    <div className="container-main py-4">
+    <div className="container-main py-6">
       {/* Breadcrumb */}
       <div className="flex items-center justify-between mb-4">
         <h1 className="text-[18px] font-bold text-gray-800">커뮤니티</h1>
@@ -48,7 +48,7 @@ export default function CommunityPage() {
         </div>
       </div>
 
-      <div className="flex gap-3">
+      <div className="flex gap-4">
         <LeftSidebar />
 
         <div className="flex-1 min-w-0">
