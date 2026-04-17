@@ -66,7 +66,7 @@ export default function Header() {
               <div className="relative flex-1">
                 <input type="text" placeholder="통합검색" value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)}
                   className="w-full h-[38px] pl-3 pr-9 border border-gray-300 text-[13px] focus:border-accent focus:outline-none" />
-                <button className="absolute right-0 top-0 h-full w-[38px] flex items-center justify-center bg-accent text-white hover:bg-[#e06d00] transition-colors">
+                <button className="absolute right-0 top-0 h-full w-[38px] flex items-center justify-center bg-accent text-white hover:opacity-90 transition-colors">
                   <Search size={16} />
                 </button>
               </div>

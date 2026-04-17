@@ -4,9 +4,9 @@
   --primary: #1C1D3E;
   --primary-dark: #14152E;
   --primary-light: #2A2B55;
-  --accent: #F07B00;
-  --accent-light: #FF9A2E;
-  --accent-bg: #FFF8F0;
+  --accent: #E63946;
+  --accent-light: #F26A4B;
+  --accent-bg: #FEF2F2;
   --background: #F5F5F5;
   --foreground: #333333;
   --card-bg: #FFFFFF;
@@ -129,16 +129,16 @@ a { color: inherit; text-decoration: none; }
   gap: 6px;
   height: 36px;
   padding: 0 16px;
-  background: var(--accent);
+  background: linear-gradient(135deg, var(--accent) 0%, var(--accent-light) 100%);
   color: white;
   border: none;
   border-radius: 0;
   font-size: 13px;
   font-weight: 500;
   cursor: pointer;
-  transition: background 0.15s;
+  transition: opacity 0.15s;
 }
-.btn-accent:hover { background: #e06d00; }
+.btn-accent:hover { opacity: 0.9; }
 
 .btn-secondary {
   display: inline-flex;

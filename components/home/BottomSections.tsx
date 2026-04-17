@@ -42,7 +42,7 @@ export default function BottomSections({ notices }: BottomSectionsProps) {
                 {item.isNew && <span className="text-[9px] text-white bg-red-500 px-1 rounded-sm shrink-0">N</span>}
               </Link>
             ))}
-            <Link href="/guide" className="flex items-center justify-center gap-1 mt-2 py-2 bg-accent text-white text-[12px] font-bold hover:bg-[#e06d00] transition-colors">
+            <Link href="/guide" className="flex items-center justify-center gap-1 mt-2 py-2 bg-accent text-white text-[12px] font-bold hover:opacity-90 transition-colors">
               거래TIP 더보기 <Plus size={12} />
             </Link>
           </div>
