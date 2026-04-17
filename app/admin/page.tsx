@@ -4,7 +4,7 @@ import { useState, useEffect, useRef } from 'react';
 import { supabase } from '@/lib/supabase';
 import { getMessages, getPremiumBuyers, createNotice as apiCreateNotice, deleteNotice as apiDeleteNotice, deleteUser as apiDeleteUser, updateUser, deletePost as apiDeletePost, deleteChat as apiDeleteChat, createPremiumBuyer, updatePremiumBuyer, deletePremiumBuyer as apiDeletePremiumBuyer } from '@/lib/api';
 import ImageUpload from '@/components/ImageUpload';
-import type { DBUser, DBPost, DBNotice, DBChat, DBMessage, DBPremiumBuyer } from '@/lib/types';
+import type { DBUser, DBPost, DBNotice, DBChat, DBMessage, DBPremiumBuyer, DBCommunityPost, CommunityCategory } from '@/lib/types';
 import type { Ad, AdSlot } from '@/lib/ads';
 import { AD_SLOT_LABELS, AD_SLOT_SIZES } from '@/lib/ads';
 import Link from 'next/link';
@@ -16,7 +16,9 @@ const ALL_SLOTS = Object.keys(AD_SLOT_LABELS) as AdSlot[];
 export default function AdminPage() {
   const [authed, setAuthed] = useState(false);
   const [pw, setPw] = useState('');
-  const [tab, setTab] = useState<'overview' | 'users' | 'posts' | 'notices' | 'chats' | 'premium' | 'ads'>('overview');
+  const [tab, setTab] = useState<'overview' | 'users' | 'posts' | 'notices' | 'chats' | 'premium' | 'ads' | 'community'>('overview');
+  const [communityPosts, setCommunityPosts] = useState<DBCommunityPost[]>([]);
+  const [communityCat, setCommunityCat] = useState<CommunityCategory | 'all'>('all');
   const [stats, setStats] = useState<{
     users: { total: number; business: number; normal: number; todayNew: number };
     posts: { total: number; sell: number; buy: number; active: number; todayNew: number };
@@ -113,7 +115,7 @@ export default function AdminPage() {
     setLoading(true);
 
     // 모든 데이터를 동시에 병렬 요청
-    const [u, p, n, c, v, pb, ad, st] = await Promise.allSettled([
+    const [u, p, n, c, v, pb, ad, st, cm] = await Promise.allSettled([
       supabase.from('users').select('*').order('created_at', { ascending: false }).limit(200),
       supabase.from('posts').select('*, author:users!author_id(id, name, type)').order('created_at', { ascending: false }).limit(200),
       supabase.from('notices').select('*').order('created_at', { ascending: false }).limit(50),
@@ -122,6 +124,7 @@ export default function AdminPage() {
       getPremiumBuyers(false),
       fetch('/api/ads').then(r => r.json()),
       fetch('/api/admin/stats', { credentials: 'include' }).then(r => r.json()),
+      fetch('/api/community/posts?limit=200').then(r => r.json()),
     ]);
 
     if (u.status === 'fulfilled' && u.value.data) setUsers(u.value.data);
@@ -132,8 +135,24 @@ export default function AdminPage() {
     if (pb.status === 'fulfilled') setPremiumBuyers(pb.value);
     if (ad.status === 'fulfilled') setAds(ad.value);
     if (st.status === 'fulfilled' && st.value?.users) setStats(st.value);
+    if (cm.status === 'fulfilled' && cm.value?.posts) setCommunityPosts(cm.value.posts);
 
     setLoading(false);
+  };
+
+  // 커뮤니티 CRUD
+  const deleteCommunityPost = async (id: string) => {
+    if (!confirm('정말 삭제하시겠습니까? 댓글도 함께 삭제됩니다.')) return;
+    await fetch(`/api/community/posts/${id}`, { method: 'DELETE' });
+    fetchData();
+  };
+  const toggleCommunityPinned = async (post: DBCommunityPost) => {
+    await fetch(`/api/community/posts/${post.id}`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ is_pinned: !post.is_pinned }),
+    });
+    fetchData();
   };
 
   useEffect(() => { if (authed) fetchData(); }, [authed]);
@@ -254,6 +273,7 @@ export default function AdminPage() {
     { key: 'overview' as const, label: '대시보드', icon: LayoutDashboard, count: null as number | null },
     { key: 'users' as const, label: '회원', icon: Users, count: users.length },
     { key: 'posts' as const, label: '게시글', icon: FileText, count: posts.length },
+    { key: 'community' as const, label: '커뮤니티', icon: MessageCircle, count: communityPosts.length },
     { key: 'notices' as const, label: '공지', icon: Bell, count: notices.length },
     { key: 'chats' as const, label: '거래', icon: MessageCircle, count: chats.length },
     { key: 'premium' as const, label: '프리미엄', icon: Crown, count: premiumBuyers.length },
@@ -267,7 +287,7 @@ export default function AdminPage() {
         <button onClick={logout} className="btn-secondary text-[12px] h-8">로그아웃</button>
       </div>
 
-      <div className="grid grid-cols-4 md:grid-cols-7 gap-2 mb-5">
+      <div className="grid grid-cols-4 md:grid-cols-8 gap-2 mb-5">
         {tabs.map(t => (
           <button key={t.key} onClick={() => setTab(t.key)}
             className={`card card-hover p-3 text-left ${tab === t.key ? 'border-zinc-900' : ''}`}>
@@ -585,6 +605,80 @@ export default function AdminPage() {
               {posts.length === 0 && <tr><td colSpan={8} className="py-8 text-center text-zinc-400">게시글이 없습니다.</td></tr>}
             </tbody>
           </table>
+        </div>
+      )}
+
+      {/* ─── Community ─── */}
+      {!loading && tab === 'community' && (
+        <div className="space-y-4">
+          <div className="flex items-center justify-between">
+            <div className="flex gap-1">
+              {([
+                { k: 'all' as const, label: '전체' },
+                { k: 'news' as const, label: '업계뉴스' },
+                { k: 'tip' as const, label: '거래TIP' },
+                { k: 'qna' as const, label: '질문과답변' },
+              ]).map(t => (
+                <button key={t.k} onClick={() => setCommunityCat(t.k)}
+                  className={`px-3 py-1.5 text-[12px] border ${communityCat === t.k ? 'border-zinc-900 bg-zinc-900 text-white font-bold' : 'border-zinc-200 text-zinc-600 hover:border-zinc-400'}`}>
+                  {t.label}
+                </button>
+              ))}
+            </div>
+            <Link href="/community/write" target="_blank" className="btn-primary h-9"><Plus size={14} /> 새 글 작성</Link>
+          </div>
+
+          <div className="card overflow-hidden">
+            <table className="w-full text-[13px]">
+              <thead>
+                <tr className="bg-zinc-50 border-b border-zinc-200">
+                  <th className="table-header text-center py-2.5 px-4 w-16">카테고리</th>
+                  <th className="table-header text-center py-2.5 px-4 w-14">고정</th>
+                  <th className="table-header text-left py-2.5 px-4">제목</th>
+                  <th className="table-header text-left py-2.5 px-4 w-24">작성자</th>
+                  <th className="table-header text-center py-2.5 px-4 w-16">조회</th>
+                  <th className="table-header text-center py-2.5 px-4 w-16">댓글</th>
+                  <th className="table-header text-left py-2.5 px-4 w-28">작성일</th>
+                  <th className="table-header text-center py-2.5 px-4 w-20">관리</th>
+                </tr>
+              </thead>
+              <tbody>
+                {(communityCat === 'all' ? communityPosts : communityPosts.filter(p => p.category === communityCat)).map(p => (
+                  <tr key={p.id} className="border-b border-zinc-100 hover:bg-zinc-50">
+                    <td className="py-2.5 px-4 text-center">
+                      <span className={`badge ${p.category === 'news' ? 'bg-blue-50 text-blue-600' : p.category === 'tip' ? 'bg-emerald-50 text-emerald-600' : 'bg-amber-50 text-amber-600'}`}>
+                        {p.category === 'news' ? '뉴스' : p.category === 'tip' ? 'TIP' : 'Q&A'}
+                      </span>
+                    </td>
+                    <td className="py-2.5 px-4 text-center">
+                      <button onClick={() => toggleCommunityPinned(p)} className={`badge cursor-pointer ${p.is_pinned ? 'bg-zinc-900 text-white' : 'bg-zinc-100 text-zinc-400'}`}>
+                        {p.is_pinned ? '고정' : '일반'}
+                      </button>
+                    </td>
+                    <td className="py-2.5 px-4">
+                      <Link href={`/community/${p.id}`} target="_blank" className="text-zinc-800 hover:text-accent">
+                        {p.title}
+                      </Link>
+                    </td>
+                    <td className="py-2.5 px-4 text-zinc-500 text-[12px]">{p.author_name || '익명'}</td>
+                    <td className="py-2.5 px-4 text-center text-zinc-400">{p.views}</td>
+                    <td className="py-2.5 px-4 text-center text-zinc-400">{p.comment_count || 0}</td>
+                    <td className="py-2.5 px-4 text-zinc-400 text-[11px]">{new Date(p.created_at).toLocaleDateString('ko-KR')}</td>
+                    <td className="py-2.5 px-4 text-center">
+                      <button onClick={() => deleteCommunityPost(p.id)} className="text-red-400 hover:text-red-600"><Trash2 size={14} /></button>
+                    </td>
+                  </tr>
+                ))}
+                {communityPosts.length === 0 && (
+                  <tr><td colSpan={8} className="py-12 text-center text-zinc-400">
+                    <p className="mb-2">커뮤니티 게시글이 없습니다.</p>
+                    <p className="text-[11px]">Supabase에 community_posts 테이블이 생성되어 있는지 확인하세요.</p>
+                    <p className="text-[11px]">(/supabase/migrations/20260418_community.sql 실행)</p>
+                  </td></tr>
+                )}
+              </tbody>
+            </table>
+          </div>
         </div>
       )}
 

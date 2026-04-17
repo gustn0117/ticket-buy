@@ -84,3 +84,28 @@ export interface DBNotice {
   is_pinned: boolean;
   created_at: string;
 }
+
+export type CommunityCategory = 'news' | 'tip' | 'qna';
+
+export interface DBCommunityPost {
+  id: string;
+  category: CommunityCategory;
+  title: string;
+  content: string | null;
+  author_id: string | null;
+  author_name: string | null;
+  is_pinned: boolean;
+  views: number;
+  created_at: string;
+  updated_at: string;
+  comment_count?: number;
+}
+
+export interface DBCommunityComment {
+  id: string;
+  post_id: string;
+  author_id: string | null;
+  author_name: string | null;
+  content: string;
+  created_at: string;
+}
