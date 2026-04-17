@@ -43,7 +43,7 @@ export default function LoginPage() {
     <div className="min-h-[80vh] flex items-center justify-center px-5 py-6">
       <div className="w-full max-w-[400px]">
         <div className="text-center mb-6">
-          <Image src="/logo.png" alt="티켓바이" width={140} height={40} className="h-10 w-auto object-contain mx-auto mb-3" priority />
+          <Image src="/logo-dark.png" alt="티켓바이" width={140} height={40} className="h-10 w-auto object-contain mx-auto mb-3" priority />
           <h1 className="text-[15px] font-semibold text-zinc-900">업체 로그인</h1>
           <p className="text-[11px] text-zinc-500 mt-1">매입 업체 전용 로그인입니다.</p>
         </div>

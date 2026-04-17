@@ -4,12 +4,12 @@ export default function FraudPage() {
   return (
     <div className="max-w-[740px] mx-auto px-5 py-6 animate-fade-in">
       {/* Hero Section */}
-      <div className="card bg-zinc-900 text-white p-8 text-center mb-6">
+      <div className="p-8 text-center mb-6 border border-zinc-800" style={{ background: '#1C1D3E', color: '#FFFFFF' }}>
         <div className="w-14 h-14 bg-white/20 rounded-lg flex items-center justify-center mx-auto mb-4">
           <Shield size={28} className="text-white" />
         </div>
-        <h1 className="text-[15px] font-semibold mb-1">사기 방지 가이드</h1>
-        <p className="text-zinc-400 text-[12px]">안전한 상품권 거래를 위한 필수 안내사항</p>
+        <h1 className="text-[18px] font-bold mb-1 text-white">사기 방지 가이드</h1>
+        <p className="text-zinc-300 text-[13px]">안전한 상품권 거래를 위한 필수 안내사항</p>
       </div>
 
       <div className="space-y-5">
