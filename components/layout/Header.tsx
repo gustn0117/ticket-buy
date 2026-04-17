@@ -129,10 +129,10 @@ export default function Header() {
               <Link href="/category/product" className="flex items-center gap-1 px-4 py-3 text-[13px] font-bold text-gray-800 hover:text-accent transition-colors border-b-2 border-transparent hover:border-accent">
                 상품별 업체찾기 <span className="text-[10px] text-white bg-accent px-1 rounded-sm">N</span>
               </Link>
-              <Link href="/board" className="flex items-center gap-1 px-4 py-3 text-[13px] font-bold text-gray-800 hover:text-accent transition-colors border-b-2 border-transparent hover:border-accent">
+              <Link href="/recommended" className="flex items-center gap-1 px-4 py-3 text-[13px] font-bold text-gray-800 hover:text-accent transition-colors border-b-2 border-transparent hover:border-accent">
                 오늘의 추천업체 <span className="text-[10px] text-white bg-accent px-1 rounded-sm">N</span>
               </Link>
-              <Link href="/board?tab=buy" className="flex items-center gap-1 px-4 py-3 text-[13px] font-bold text-gray-800 hover:text-accent transition-colors border-b-2 border-transparent hover:border-accent">
+              <Link href="/custom-search" className="flex items-center gap-1 px-4 py-3 text-[13px] font-bold text-gray-800 hover:text-accent transition-colors border-b-2 border-transparent hover:border-accent">
                 맞춤검색 <span className="text-[10px] text-white bg-green-600 px-1 rounded-sm">N</span>
               </Link>
             </div>
@@ -168,8 +168,11 @@ export default function Header() {
             <Link href="/category/product" className="block py-2.5 text-[13px] text-gray-700 font-medium border-b border-gray-100" onClick={() => setMobileMenuOpen(false)}>
               상품별 업체찾기
             </Link>
-            <Link href="/board" className="block py-2.5 text-[13px] text-gray-700 font-medium border-b border-gray-100" onClick={() => setMobileMenuOpen(false)}>
+            <Link href="/recommended" className="block py-2.5 text-[13px] text-gray-700 font-medium border-b border-gray-100" onClick={() => setMobileMenuOpen(false)}>
               오늘의 추천업체
+            </Link>
+            <Link href="/custom-search" className="block py-2.5 text-[13px] text-gray-700 font-medium border-b border-gray-100" onClick={() => setMobileMenuOpen(false)}>
+              맞춤검색
             </Link>
             <Link href="/community" className="block py-2.5 text-[13px] text-gray-700 font-medium border-b border-gray-100" onClick={() => setMobileMenuOpen(false)}>
               커뮤니티

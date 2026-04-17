@@ -1,44 +1,67 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import Link from 'next/link';
+import { useSearchParams } from 'next/navigation';
 import { MapPin, Phone, LayoutGrid, Building2, Landmark, Anchor, Train, University, Waves, Sun, Factory, Construction, Mountain, Leaf, Wheat, Sprout, TreePine, MountainSnow, Palmtree } from 'lucide-react';
 import LeftSidebar from '@/components/layout/LeftSidebar';
 import RightSidebar from '@/components/layout/RightSidebar';
+import CompanyCard from '@/components/home/CompanyCard';
+import { getPremiumBuyers } from '@/lib/api';
+import type { DBPremiumBuyer } from '@/lib/types';
 
 const regions = [
-  { name: '전체', count: 1300, Icon: LayoutGrid },
-  { name: '서울', count: 134, Icon: Building2 },
-  { name: '경기', count: 161, Icon: Landmark },
-  { name: '인천', count: 90, Icon: Anchor },
-  { name: '대전', count: 77, Icon: Train },
-  { name: '대구', count: 83, Icon: University },
-  { name: '부산', count: 110, Icon: Waves },
-  { name: '광주', count: 77, Icon: Sun },
-  { name: '울산', count: 63, Icon: Factory },
-  { name: '세종', count: 30, Icon: Construction },
-  { name: '강원', count: 63, Icon: Mountain },
-  { name: '충북', count: 64, Icon: Leaf },
-  { name: '충남', count: 63, Icon: Wheat },
-  { name: '전북', count: 63, Icon: Sprout },
-  { name: '전남', count: 60, Icon: TreePine },
-  { name: '경북', count: 69, Icon: MountainSnow },
-  { name: '경남', count: 79, Icon: TreePine },
-  { name: '제주', count: 6, Icon: Palmtree },
+  { name: '전체', Icon: LayoutGrid },
+  { name: '서울', Icon: Building2 },
+  { name: '경기', Icon: Landmark },
+  { name: '인천', Icon: Anchor },
+  { name: '대전', Icon: Train },
+  { name: '대구', Icon: University },
+  { name: '부산', Icon: Waves },
+  { name: '광주', Icon: Sun },
+  { name: '울산', Icon: Factory },
+  { name: '세종', Icon: Construction },
+  { name: '강원', Icon: Mountain },
+  { name: '충북', Icon: Leaf },
+  { name: '충남', Icon: Wheat },
+  { name: '전북', Icon: Sprout },
+  { name: '전남', Icon: TreePine },
+  { name: '경북', Icon: MountainSnow },
+  { name: '경남', Icon: TreePine },
+  { name: '제주', Icon: Palmtree },
 ];
 
-const regionOrder = ['서울', '경기', '인천', '부산', '대구', '광주', '대전', '울산', '충북', '전북'];
-const demoCompanies = Array.from({ length: 10 }, (_, i) => ({
-  id: `area-${i}`,
-  name: `상품권 매입 업체 ${i + 1}`,
-  desc: '빠르고 안전한 상품권 매입 전문 업체입니다.',
-  phone: `010-${String(1000 + i * 111).slice(0, 4)}-${String(5000 + i * 222).slice(0, 4)}`,
-  region: regionOrder[i],
-  isNew: i < 3,
-}));
+function AreaContent() {
+  const searchParams = useSearchParams();
+  const initialRegion = searchParams.get('region') || '전체';
+  const [selectedRegion, setSelectedRegion] = useState(initialRegion);
+  const [buyers, setBuyers] = useState<DBPremiumBuyer[]>([]);
+  const [loading, setLoading] = useState(true);
 
-export default function AreaCategoryPage() {
-  const [selectedRegion, setSelectedRegion] = useState('전체');
+  useEffect(() => {
+    setLoading(true);
+    getPremiumBuyers()
+      .then(data => setBuyers(data))
+      .catch(() => setBuyers([]))
+      .finally(() => setLoading(false));
+  }, []);
+
+  useEffect(() => {
+    const r = searchParams.get('region');
+    if (r) setSelectedRegion(r);
+  }, [searchParams]);
+
+  // 지역별 카운트 집계
+  const regionCounts = regions.reduce((acc, r) => {
+    if (r.name === '전체') acc[r.name] = buyers.length;
+    else acc[r.name] = buyers.filter(b => b.region?.includes(r.name)).length;
+    return acc;
+  }, {} as Record<string, number>);
+
+  // 선택된 지역 필터링
+  const filteredBuyers = selectedRegion === '전체'
+    ? buyers
+    : buyers.filter(b => b.region?.includes(selectedRegion));
 
   return (
     <div className="container-main py-6">
@@ -73,6 +96,7 @@ export default function AreaCategoryPage() {
               <div className="grid grid-cols-5 md:grid-cols-9 gap-0">
                 {regions.map((region) => {
                   const IconComp = region.Icon;
+                  const count = regionCounts[region.name] || 0;
                   return (
                     <button
                       key={region.name}
@@ -83,7 +107,7 @@ export default function AreaCategoryPage() {
                         <IconComp size={16} strokeWidth={1.5} />
                       </div>
                       <span className="icon-label">{region.name}</span>
-                      <span className="icon-count">{region.count}</span>
+                      <span className="icon-count">{count}</span>
                     </button>
                   );
                 })}
@@ -102,42 +126,43 @@ export default function AreaCategoryPage() {
           {/* Company listing header */}
           <div className="flex items-center justify-between mb-3">
             <h2 className="text-[16px] font-bold">
-              지역별 <span className="text-accent">업체 등록 현황</span>
+              {selectedRegion === '전체' ? '전국' : selectedRegion} <span className="text-accent">업체 등록 현황</span>
+              <span className="text-[12px] text-gray-400 ml-2">{filteredBuyers.length}건</span>
             </h2>
-            <span className="text-[11px] text-gray-400">광고문의</span>
+            <Link href="/register-business" className="text-[11px] text-gray-400 hover:text-accent">광고문의</Link>
           </div>
 
           {/* Company cards grid */}
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-2.5 mb-6">
-            {demoCompanies.map((company) => (
-              <Link key={company.id} href="/board" className="company-card card-hover block">
-                <div className="company-card-image">
-                  <h3>{company.name}</h3>
-                  {company.isNew && (
-                    <span className="absolute top-2 right-2 text-[9px] text-white bg-red-500 px-1.5 py-0.5 rounded-sm font-bold">NEW</span>
-                  )}
-                </div>
-                <div className="company-card-body">
-                  <p>{company.desc}</p>
-                  <div className="company-card-phone">
-                    <Phone size={13} className="text-gray-500" />
-                    <span>{company.phone}</span>
-                  </div>
-                </div>
-                <div className="company-card-footer">
-                  <span className="text-accent font-bold flex items-center gap-1">
-                    <MapPin size={10} />
-                    {company.name.slice(0, 8)}
-                  </span>
-                  <span className="text-gray-500">{company.region}</span>
-                </div>
+          {loading ? (
+            <div className="py-16 text-center text-gray-400 text-[13px]">불러오는 중...</div>
+          ) : filteredBuyers.length > 0 ? (
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-2.5 mb-6">
+              {filteredBuyers.map((buyer) => (
+                <CompanyCard key={buyer.id} company={buyer} isNew={false} />
+              ))}
+            </div>
+          ) : (
+            <div className="py-16 text-center border border-dashed border-gray-200 bg-white">
+              <p className="text-[13px] text-gray-500">
+                {selectedRegion === '전체' ? '등록된 업체가 없습니다.' : `${selectedRegion} 지역에 등록된 업체가 없습니다.`}
+              </p>
+              <Link href="/register-business" className="inline-block mt-3 text-[12px] text-accent font-bold hover:underline">
+                첫 업체로 등록하기 →
               </Link>
-            ))}
-          </div>
+            </div>
+          )}
         </div>
 
         <RightSidebar />
       </div>
     </div>
+  );
+}
+
+export default function AreaCategoryPage() {
+  return (
+    <Suspense fallback={<div className="container-main py-10 text-center text-gray-400 text-[13px]">불러오는 중...</div>}>
+      <AreaContent />
+    </Suspense>
   );
 }

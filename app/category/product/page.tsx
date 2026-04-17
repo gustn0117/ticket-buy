@@ -1,54 +1,64 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import Link from 'next/link';
-import { Phone, MapPin, LayoutGrid, Briefcase, UserX, Users, Wallet, Smartphone, Coins, Home, Store, Zap, Building, Award, PiggyBank, CreditCard, RefreshCw, Car, LandPlot, ShoppingCart, Laptop, FileText, Palette, FileCheck, Monitor, Heart } from 'lucide-react';
+import { useSearchParams } from 'next/navigation';
+import { LayoutGrid, Gift, CreditCard, Smartphone, Coffee, ShoppingBag, Film, Book } from 'lucide-react';
 import LeftSidebar from '@/components/layout/LeftSidebar';
 import RightSidebar from '@/components/layout/RightSidebar';
+import CompanyCard from '@/components/home/CompanyCard';
+import { getPremiumBuyers } from '@/lib/api';
+import type { DBPremiumBuyer } from '@/lib/types';
 
 const productTypes = [
-  { name: '전체', count: 1370, Icon: LayoutGrid },
-  { name: '직장인', count: 139, Icon: Briefcase },
-  { name: '무직자', count: 107, Icon: UserX },
-  { name: '여성', count: 57, Icon: Users },
-  { name: '비상금', count: 91, Icon: Wallet },
-  { name: '모바일', count: 47, Icon: Smartphone },
-  { name: '소액', count: 86, Icon: Coins },
-  { name: '무방문', count: 82, Icon: Home },
-  { name: '자영업', count: 65, Icon: Store },
-  { name: '당일', count: 92, Icon: Zap },
-  { name: '사업자', count: 91, Icon: Building },
-  { name: '전문직', count: 27, Icon: Award },
-  { name: '자산용', count: 38, Icon: PiggyBank },
-  { name: '신용', count: 24, Icon: CreditCard },
-  { name: '추가대출', count: 24, Icon: RefreshCw },
-  { name: '자동차', count: 10, Icon: Car },
-  { name: '부동산', count: 55, Icon: LandPlot },
-  { name: '생활비', count: 37, Icon: ShoppingCart },
-  { name: '온라인', count: 37, Icon: Laptop },
-  { name: '임용자', count: 37, Icon: FileText },
-  { name: '프리랜서', count: 37, Icon: Palette },
-  { name: '전문보증', count: 8, Icon: FileCheck },
-  { name: '비대면', count: 38, Icon: Monitor },
-  { name: '주부대출', count: 32, Icon: Heart },
+  { name: '전체', Icon: LayoutGrid },
+  { name: '롯데', Icon: Gift },
+  { name: '신세계', Icon: ShoppingBag },
+  { name: '문화상품권', Icon: Film },
+  { name: '컬쳐랜드', Icon: Book },
+  { name: '스타벅스', Icon: Coffee },
+  { name: '온캐시', Icon: CreditCard },
+  { name: '구글플레이', Icon: Smartphone },
+  { name: '틴캐시', Icon: CreditCard },
+  { name: '배민상품권', Icon: ShoppingBag },
+  { name: '해피머니', Icon: Gift },
+  { name: '기타', Icon: LayoutGrid },
 ];
 
-const demoCompanies = Array.from({ length: 10 }, (_, i) => ({
-  id: `prod-${i}`,
-  name: `상품권 매입업체 ${i + 1}`,
-  desc: '빠르고 안전한 상품권 매입 전문',
-  phone: `010-${String(4000 + i * 111).slice(0, 4)}-${String(8000 + i * 222).slice(0, 4)}`,
-  region: '전국',
-  isNew: i < 2,
-  isBest: i < 1,
-}));
+function ProductContent() {
+  const searchParams = useSearchParams();
+  const initialType = searchParams.get('type') || '전체';
+  const [selectedType, setSelectedType] = useState(initialType);
+  const [buyers, setBuyers] = useState<DBPremiumBuyer[]>([]);
+  const [loading, setLoading] = useState(true);
 
-export default function ProductCategoryPage() {
-  const [selectedType, setSelectedType] = useState('전체');
+  useEffect(() => {
+    setLoading(true);
+    getPremiumBuyers()
+      .then(data => setBuyers(data))
+      .catch(() => setBuyers([]))
+      .finally(() => setLoading(false));
+  }, []);
+
+  useEffect(() => {
+    const t = searchParams.get('type');
+    if (t) setSelectedType(t);
+  }, [searchParams]);
+
+  // 상품별 카운트
+  const typeCounts = productTypes.reduce((acc, t) => {
+    if (t.name === '전체') acc[t.name] = buyers.length;
+    else acc[t.name] = buyers.filter(b => b.brands?.some(br => br.includes(t.name))).length;
+    return acc;
+  }, {} as Record<string, number>);
+
+  // 필터링
+  const filteredBuyers = selectedType === '전체'
+    ? buyers
+    : buyers.filter(b => b.brands?.some(br => br.includes(selectedType)));
 
   return (
     <div className="container-main py-6">
-      {/* Breadcrumb */}
       <div className="flex items-center justify-between mb-4">
         <h1 className="text-[18px] font-bold text-gray-800">상품별 업체찾기</h1>
         <div className="breadcrumb">
@@ -60,7 +70,6 @@ export default function ProductCategoryPage() {
         <LeftSidebar />
 
         <div className="flex-1 min-w-0">
-          {/* Premium Banner + Product Icons */}
           <div className="flex flex-col md:flex-row gap-3 mb-4">
             <div className="w-full md:w-[280px] shrink-0 bg-white border border-gray-200">
               <div className="px-3 py-2 border-b border-gray-200">
@@ -74,9 +83,10 @@ export default function ProductCategoryPage() {
             </div>
 
             <div className="flex-1 bg-white border border-gray-200">
-              <div className="grid grid-cols-4 md:grid-cols-8 gap-0">
+              <div className="grid grid-cols-4 md:grid-cols-6 gap-0">
                 {productTypes.map((type) => {
                   const IconComp = type.Icon;
+                  const count = typeCounts[type.name] || 0;
                   return (
                     <button
                       key={type.name}
@@ -87,7 +97,7 @@ export default function ProductCategoryPage() {
                         <IconComp size={16} strokeWidth={1.5} />
                       </div>
                       <span className="icon-label">{type.name}</span>
-                      <span className="icon-count">{type.count}</span>
+                      <span className="icon-count">{count}</span>
                     </button>
                   );
                 })}
@@ -104,44 +114,42 @@ export default function ProductCategoryPage() {
 
           <div className="flex items-center justify-between mb-3">
             <h2 className="text-[16px] font-bold">
-              상품별 <span className="text-accent">업체 등록 현황</span>
+              {selectedType} <span className="text-accent">업체 등록 현황</span>
+              <span className="text-[12px] text-gray-400 ml-2">{filteredBuyers.length}건</span>
             </h2>
-            <span className="text-[11px] text-gray-400">광고문의</span>
+            <Link href="/register-business" className="text-[11px] text-gray-400 hover:text-accent">광고문의</Link>
           </div>
 
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-2.5 mb-6">
-            {demoCompanies.map((company) => (
-              <Link key={company.id} href="/board" className="company-card card-hover block">
-                <div className="company-card-image relative">
-                  <h3>{company.name}</h3>
-                  {company.isNew && (
-                    <span className="absolute top-2 right-2 text-[9px] text-white bg-red-500 px-1.5 py-0.5 rounded-sm font-bold">NEW</span>
-                  )}
-                  {company.isBest && (
-                    <span className="absolute top-2 left-2 text-[9px] text-white bg-accent px-1.5 py-0.5 rounded-sm font-bold">BEST</span>
-                  )}
-                </div>
-                <div className="company-card-body">
-                  <p>{company.desc}</p>
-                  <div className="company-card-phone">
-                    <Phone size={13} className="text-gray-500" />
-                    <span>{company.phone}</span>
-                  </div>
-                </div>
-                <div className="company-card-footer">
-                  <span className="text-accent font-bold flex items-center gap-1">
-                    <MapPin size={10} />
-                    {company.name.slice(0, 8)}
-                  </span>
-                  <span className="text-gray-500">{company.region}</span>
-                </div>
+          {loading ? (
+            <div className="py-16 text-center text-gray-400 text-[13px]">불러오는 중...</div>
+          ) : filteredBuyers.length > 0 ? (
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-2.5 mb-6">
+              {filteredBuyers.map((buyer) => (
+                <CompanyCard key={buyer.id} company={buyer} isNew={false} />
+              ))}
+            </div>
+          ) : (
+            <div className="py-16 text-center border border-dashed border-gray-200 bg-white">
+              <p className="text-[13px] text-gray-500">
+                {selectedType === '전체' ? '등록된 업체가 없습니다.' : `"${selectedType}" 취급 업체가 없습니다.`}
+              </p>
+              <Link href="/register-business" className="inline-block mt-3 text-[12px] text-accent font-bold hover:underline">
+                첫 업체로 등록하기 →
               </Link>
-            ))}
-          </div>
+            </div>
+          )}
         </div>
 
         <RightSidebar />
       </div>
     </div>
+  );
+}
+
+export default function ProductCategoryPage() {
+  return (
+    <Suspense fallback={<div className="container-main py-10 text-center text-gray-400 text-[13px]">불러오는 중...</div>}>
+      <ProductContent />
+    </Suspense>
   );
 }
