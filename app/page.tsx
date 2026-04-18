@@ -7,7 +7,7 @@ import HeroBanner from '@/components/home/HeroBanner';
 import LeftSidebar from '@/components/layout/LeftSidebar';
 import RightSidebar from '@/components/layout/RightSidebar';
 import SellPostItem from '@/components/home/SellPostItem';
-import PremiumBuyerCard from '@/components/home/PremiumBuyerCard';
+import MainCompaniesSection from '@/components/home/MainCompaniesSection';
 import { BrandLogo } from '@/components/BrandLogo';
 import { getPosts, getPremiumBuyers, getNotices } from '@/lib/api';
 import type { DBPost, DBUser, DBPremiumBuyer, DBNotice } from '@/lib/types';
@@ -154,6 +154,9 @@ export default function Home() {
               </div>
             </div>
 
+            {/* 메인 등록업체 (5열 그리드) */}
+            <MainCompaniesSection buyers={buyers} loading={loading} />
+
             {/* 상품권 팝니다 (최신 판매글) */}
             <section className="mb-6">
               <div className="flex items-center justify-between mb-3">
@@ -236,20 +239,6 @@ export default function Home() {
               )}
             </section>
 
-            {/* 매입 업체 (추가 노출) */}
-            {buyers.length > 0 && (
-              <section className="mb-6">
-                <div className="flex items-center justify-between mb-3">
-                  <h2 className="text-[16px] font-bold text-gray-800">매입 업체</h2>
-                  <Link href="/recommended" className="text-[12px] text-gray-500 hover:text-accent flex items-center gap-0.5">
-                    전체 업체 <ChevronRight size={11} />
-                  </Link>
-                </div>
-                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2.5">
-                  {buyers.slice(0, 4).map(b => <PremiumBuyerCard key={b.id} {...b} />)}
-                </div>
-              </section>
-            )}
           </div>
 
           <RightSidebar />

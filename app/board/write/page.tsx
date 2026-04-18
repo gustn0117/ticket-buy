@@ -2,16 +2,18 @@
 
 import { useState, useEffect, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { ArrowLeft, Lock } from 'lucide-react';
+import { ArrowLeft, Lock, Tag, ShoppingCart } from 'lucide-react';
 import Link from 'next/link';
 import { categories } from '@/data/mock';
 import { createPost, getPost, updatePost } from '@/lib/api';
 import { useAuth } from '@/contexts/AuthContext';
 import { formatNumber, parseNumber } from '@/lib/format';
+import LeftSidebar from '@/components/layout/LeftSidebar';
+import RightSidebar from '@/components/layout/RightSidebar';
 
 export default function WritePostPage() {
   return (
-    <Suspense fallback={<div className="max-w-[640px] mx-auto px-5 py-20 text-center text-zinc-400 text-[13px]">불러오는 중...</div>}>
+    <Suspense fallback={<div className="container-main py-20 text-center text-gray-400 text-[13px]">불러오는 중...</div>}>
       <WritePostContent />
     </Suspense>
   );
@@ -159,53 +161,80 @@ function WritePostContent() {
   };
 
   if (loadingEdit) {
-    return <div className="max-w-[640px] mx-auto px-5 py-20 text-center text-zinc-400 text-[13px]">불러오는 중...</div>;
+    return <div className="container-main py-20 text-center text-gray-400 text-[13px]">불러오는 중...</div>;
   }
 
   // 비회원 글 수정 시 비밀번호 인증 화면
   if (isEdit && editPost && !editPost.author_id && !editAuth.verified) {
     return (
-      <div className="max-w-[400px] mx-auto px-5 py-10">
-        <Link href={`/board/${editId}`} className="inline-flex items-center gap-1.5 text-[13px] text-zinc-500 hover:text-zinc-900 mb-5 transition-colors font-medium">
-          <ArrowLeft size={16} /> 돌아가기
-        </Link>
-        <div className="card p-5">
-          <div className="text-center mb-5">
-            <Lock size={24} className="mx-auto text-zinc-400 mb-2" />
-            <h1 className="text-[15px] font-semibold">비밀번호 확인</h1>
-            <p className="text-[12px] text-zinc-500 mt-1">글 작성 시 설정한 비밀번호를 입력하세요.</p>
+      <div className="container-main py-6">
+        <div className="flex items-center justify-between mb-4">
+          <h1 className="text-[18px] font-bold text-gray-800">게시글 수정</h1>
+          <div className="breadcrumb">
+            <Link href="/">HOME</Link> &gt; <Link href="/board">게시판</Link> &gt; 수정
           </div>
-          <form onSubmit={verifyEditPassword} className="space-y-3">
-            <input type="password" value={editAuth.password} onChange={(e) => setEditAuth({ ...editAuth, password: e.target.value })}
-              placeholder="비밀번호" className="input" autoFocus />
-            <button type="submit" className="btn-primary w-full h-10">확인</button>
-          </form>
+        </div>
+        <div className="flex gap-4">
+          <LeftSidebar />
+          <div className="flex-1 min-w-0">
+            <div className="max-w-[420px] mx-auto bg-white border border-gray-200 p-6">
+              <div className="text-center mb-5">
+                <Lock size={24} className="mx-auto text-gray-400 mb-2" />
+                <h2 className="text-[15px] font-bold">비밀번호 확인</h2>
+                <p className="text-[12px] text-gray-500 mt-1">글 작성 시 설정한 비밀번호를 입력하세요.</p>
+              </div>
+              <form onSubmit={verifyEditPassword} className="space-y-3">
+                <input type="password" value={editAuth.password} onChange={(e) => setEditAuth({ ...editAuth, password: e.target.value })}
+                  placeholder="비밀번호" className="w-full h-10 px-3 border border-gray-300 text-[13px] focus:border-accent focus:outline-none" autoFocus />
+                <button type="submit" className="btn-accent w-full h-10">확인</button>
+              </form>
+            </div>
+          </div>
+          <RightSidebar />
         </div>
       </div>
     );
   }
 
+  const writeLabel = form.type === 'sell' ? '상품권 팝니다' : '상품권 삽니다';
+  const WriteIcon = form.type === 'sell' ? Tag : ShoppingCart;
+
   return (
-    <div className="max-w-[640px] mx-auto px-5 py-6 animate-fade-in">
-      <Link href="/board" className="inline-flex items-center gap-1.5 text-[13px] text-zinc-500 hover:text-zinc-900 mb-5 transition-colors font-medium">
-        <ArrowLeft size={16} /> 목록으로
-      </Link>
+    <div className="container-main py-6">
+      <div className="flex items-center justify-between mb-4">
+        <h1 className="text-[18px] font-bold text-gray-800">{isEdit ? '글 수정' : writeLabel + ' 글쓰기'}</h1>
+        <div className="breadcrumb">
+          <Link href="/">HOME</Link> &gt; <Link href={`/board?tab=${form.type}`}>{writeLabel}</Link> &gt; {isEdit ? '수정' : '글쓰기'}
+        </div>
+      </div>
 
-      <div className="card p-5">
-        <h1 className="section-title mb-5">{isEdit ? '글 수정' : '글쓰기'}</h1>
+      <div className="flex gap-4">
+        <LeftSidebar />
 
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <div className="flex-1 min-w-0 max-w-[800px]">
+          <div className="bg-white border border-gray-200">
+            <div className="flex items-center justify-between px-4 py-3 border-b border-gray-200 bg-gray-50">
+              <Link href={`/board?tab=${form.type}`} className="flex items-center gap-1 text-[12px] text-gray-500 hover:text-accent">
+                <ArrowLeft size={12} /> 목록
+              </Link>
+              <span className="flex items-center gap-1.5 text-[12px] text-accent font-bold">
+                <WriteIcon size={12} /> {isEdit ? '글 수정' : writeLabel}
+              </span>
+              <span />
+            </div>
+
+            <form onSubmit={handleSubmit} className="p-5 space-y-4">
           {/* Post type */}
           <div>
-            <label className="block text-[12px] font-medium text-zinc-600 mb-1">글 유형 *</label>
+            <label className="block text-[12px] font-medium text-gray-600 mb-1.5">글 유형 *</label>
             <div className="flex gap-2">
-              {[{ value: 'sell', label: '팝니다' }, { value: 'buy', label: '삽니다' }].map(opt => (
-                <label key={opt.value} className={`flex-1 flex items-center justify-center gap-1.5 py-2 text-[13px] font-medium rounded-md cursor-pointer transition-colors ${
-                  form.type === opt.value ? 'bg-zinc-900 text-white' : 'bg-zinc-100 text-zinc-500 hover:bg-zinc-200'
+              {[{ value: 'sell', label: '상품권 팝니다', Icon: Tag }, { value: 'buy', label: '상품권 삽니다', Icon: ShoppingCart }].map(opt => (
+                <label key={opt.value} className={`flex-1 flex items-center justify-center gap-1.5 py-2.5 text-[13px] font-bold cursor-pointer transition-colors border ${
+                  form.type === opt.value ? 'border-accent bg-accent text-white' : 'border-gray-200 bg-white text-gray-600 hover:border-accent hover:text-accent'
                 }`}>
                   <input type="radio" name="postType" value={opt.value} checked={form.type === opt.value}
                     onChange={(e) => handleChange('type', e.target.value)} className="sr-only" />
-                  {opt.label}
+                  <opt.Icon size={13} /> {opt.label}
                 </label>
               ))}
             </div>
@@ -312,10 +341,17 @@ function WritePostContent() {
             </div>
           )}
 
-          <button type="submit" disabled={submitting} className="btn-primary w-full h-10">
-            {submitting ? '처리 중...' : isEdit ? '수정하기' : '등록하기'}
-          </button>
-        </form>
+              <div className="flex items-center justify-end gap-2 pt-3 border-t border-gray-100">
+                <Link href={`/board?tab=${form.type}`} className="btn-secondary h-10 px-4 text-[13px]">취소</Link>
+                <button type="submit" disabled={submitting} className="btn-accent h-10 px-6 text-[13px] disabled:opacity-60">
+                  {submitting ? '처리 중...' : isEdit ? '수정하기' : '등록하기'}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+
+        <RightSidebar />
       </div>
     </div>
   );
