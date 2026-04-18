@@ -32,8 +32,8 @@ export default function Home() {
 
   useEffect(() => {
     Promise.allSettled([
-      getPosts('sell'),
-      getPosts('buy'),
+      getPosts('sell', { limit: 30 }),
+      getPosts('buy', { limit: 30 }),
       getPremiumBuyers(),
       getNotices(),
     ]).then(([s, b, pb, n]) => {
