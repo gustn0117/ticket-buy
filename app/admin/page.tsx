@@ -849,7 +849,7 @@ export default function AdminPage() {
                 </div>
               </div>
               <div>
-                <ImageUpload label="업체 이미지" value={premiumForm.image_url} onChange={(url) => setPremiumForm(p => ({ ...p, image_url: url }))} />
+                <ImageUpload label="업체 이미지" folder="buyers" value={premiumForm.image_url} onChange={(url) => setPremiumForm(p => ({ ...p, image_url: url }))} />
               </div>
               <div className="grid grid-cols-4 gap-3">
                 <div>
@@ -973,7 +973,7 @@ export default function AdminPage() {
                 <input value={adForm.description} onChange={e => setAdForm(p => ({ ...p, description: e.target.value }))} className="input" placeholder="짧은 설명" />
               </div>
               <div>
-                <ImageUpload label="광고 이미지" value={adForm.image_url} onChange={(url) => setAdForm(p => ({ ...p, image_url: url }))} />
+                <ImageUpload label="광고 이미지" folder="ads" value={adForm.image_url} onChange={(url) => setAdForm(p => ({ ...p, image_url: url }))} />
               </div>
               <div className="grid grid-cols-1 gap-4">
                 <div>

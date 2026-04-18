@@ -8,9 +8,10 @@ interface ImageUploadProps {
   onChange: (url: string) => void;
   label?: string;
   className?: string;
+  folder?: string; // Supabase Storage 폴더명 (예: 'ads', 'buyers', 'posts')
 }
 
-export default function ImageUpload({ value, onChange, label, className = '' }: ImageUploadProps) {
+export default function ImageUpload({ value, onChange, label, className = '', folder }: ImageUploadProps) {
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -24,6 +25,7 @@ export default function ImageUpload({ value, onChange, label, className = '' }: 
 
     const formData = new FormData();
     formData.append('file', file);
+    if (folder) formData.append('folder', folder);
 
     try {
       const res = await fetch('/api/upload', { method: 'POST', body: formData });
