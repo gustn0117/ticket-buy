@@ -2,6 +2,8 @@
 
 import { useState } from 'react';
 import Image from 'next/image';
+import Link from 'next/link';
+import { User, Building2 } from 'lucide-react';
 
 export default function RegisterBusinessPage() {
   const [form, setForm] = useState({
@@ -52,10 +54,12 @@ export default function RegisterBusinessPage() {
   if (done) {
     return (
       <div className="min-h-[60vh] flex items-center justify-center px-5">
-        <div className="text-center">
-          <h2 className="text-[16px] font-semibold mb-2">제휴 신청 완료</h2>
-          <p className="text-[13px] text-zinc-500 mb-4">승인 후 사업자번호로 로그인할 수 있습니다.</p>
-          <a href="/login" className="btn-primary inline-flex h-9 px-5 text-[12px]">로그인 페이지</a>
+        <div className="text-center max-w-[400px]">
+          <h2 className="text-[18px] font-bold mb-2">업체 회원가입 완료</h2>
+          <p className="text-[13px] text-gray-500 mb-4">
+            사업자등록번호와 설정하신 비밀번호로 바로 로그인할 수 있습니다.
+          </p>
+          <a href="/login" className="btn-accent inline-flex h-10 px-6 text-[13px]">로그인 하러가기 →</a>
         </div>
       </div>
     );
@@ -66,8 +70,22 @@ export default function RegisterBusinessPage() {
       <div className="w-full max-w-[640px]">
         <div className="text-center mb-6">
           <Image src="/logo-dark.png" alt="티켓바이" width={140} height={40} className="h-10 w-auto object-contain mx-auto mb-3" priority />
-          <h1 className="text-[15px] font-semibold text-zinc-900">매입 업체 제휴 문의</h1>
-          <p className="text-[12px] text-zinc-500 mt-1">상품권 매입 업체 등록 신청</p>
+          <h1 className="text-[16px] font-bold text-gray-900">업체 회원가입</h1>
+          <p className="text-[12px] text-gray-500 mt-1">매입 업체로 등록하여 광고 노출 및 상담 문의를 받아보세요.</p>
+        </div>
+
+        {/* 가입 유형 선택 */}
+        <div className="grid grid-cols-2 gap-2 mb-4">
+          <Link href="/register" className="border border-gray-200 bg-white p-3 text-center hover:border-accent transition-colors">
+            <User size={18} className="mx-auto text-gray-500 mb-1" />
+            <p className="text-[12px] font-bold text-gray-700">개인 회원가입</p>
+            <p className="text-[10px] text-gray-500 mt-0.5">상품권 매입/매도</p>
+          </Link>
+          <div className="border-2 border-accent bg-accent/5 p-3 text-center">
+            <Building2 size={18} className="mx-auto text-accent mb-1" />
+            <p className="text-[12px] font-bold text-accent">업체 회원가입</p>
+            <p className="text-[10px] text-gray-500 mt-0.5">매입 업체 등록</p>
+          </div>
         </div>
 
         <div className="card p-5 animate-fade-in">

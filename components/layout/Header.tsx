@@ -43,9 +43,9 @@ export default function Header() {
               </>
             ) : (
               <>
-                <Link href="/register-business" className="hover:text-gray-900">회원가입</Link>
+                <Link href="/register" className="hover:text-gray-900">회원가입</Link>
                 <span className="text-gray-300">|</span>
-                <Link href="/login" className="hover:text-gray-900">업체 로그인</Link>
+                <Link href="/login" className="hover:text-gray-900">로그인</Link>
               </>
             )}
           </div>
@@ -82,7 +82,7 @@ export default function Header() {
             <div className="hidden md:flex items-center gap-5">
               <Link href="/login" className="flex flex-col items-center gap-1 text-gray-600 hover:text-accent transition-colors">
                 <User size={22} strokeWidth={1.5} />
-                <span className="text-[10px]">업체로그인</span>
+                <span className="text-[10px]">로그인</span>
               </Link>
               <Link href="/register-business" className="flex flex-col items-center gap-1 text-gray-600 hover:text-accent transition-colors">
                 <Megaphone size={22} strokeWidth={1.5} />
@@ -191,8 +191,9 @@ export default function Header() {
                 </>
               ) : (
                 <>
-                  <Link href="/login" className="block py-2.5 text-[13px] text-gray-700" onClick={() => setMobileMenuOpen(false)}>업체 로그인</Link>
-                  <Link href="/register-business" className="block py-2.5 text-[13px] font-bold text-accent" onClick={() => setMobileMenuOpen(false)}>업체 회원가입</Link>
+                  <Link href="/login" className="block py-2.5 text-[13px] text-gray-700 font-medium" onClick={() => setMobileMenuOpen(false)}>로그인</Link>
+                  <Link href="/register" className="block py-2.5 text-[13px] font-bold text-accent" onClick={() => setMobileMenuOpen(false)}>개인 회원가입</Link>
+                  <Link href="/register-business" className="block py-2.5 text-[13px] text-gray-700" onClick={() => setMobileMenuOpen(false)}>업체 회원가입 (매입 업체)</Link>
                 </>
               )}
             </div>
