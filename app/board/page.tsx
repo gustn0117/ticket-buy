@@ -10,6 +10,8 @@ import RightSidebar from '@/components/layout/RightSidebar';
 import PremiumBuyerCard from '@/components/home/PremiumBuyerCard';
 import { getPosts, getPremiumBuyers } from '@/lib/api';
 import type { DBPost, DBUser, DBPremiumBuyer } from '@/lib/types';
+import { getCache, setCache } from '@/lib/cache';
+import { PostRowSkeleton } from '@/components/Skeleton';
 
 const PER_PAGE = 15;
 type PostWithAuthor = DBPost & { author: DBUser };
@@ -18,20 +20,24 @@ function BoardContent() {
   const searchParams = useSearchParams();
   const tabParam = searchParams.get('tab');
   const activeTab: 'buy' | 'sell' = tabParam === 'buy' ? 'buy' : 'sell';
-  const [posts, setPosts] = useState<PostWithAuthor[]>([]);
-  const [buyers, setBuyers] = useState<DBPremiumBuyer[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [posts, setPosts] = useState<PostWithAuthor[]>(() => getCache<PostWithAuthor[]>(`board_${activeTab}`) ?? []);
+  const [buyers, setBuyers] = useState<DBPremiumBuyer[]>(() => getCache<DBPremiumBuyer[]>('home_buyers') ?? []);
+  const [loading, setLoading] = useState(() => !getCache(`board_${activeTab}`));
   const [error, setError] = useState<string | null>(null);
   const [page, setPage] = useState(1);
 
-  useEffect(() => { getPremiumBuyers().then(setBuyers).catch(() => {}); }, []);
+  useEffect(() => {
+    getPremiumBuyers().then((data) => { setBuyers(data); setCache('home_buyers', data, 120000); }).catch(() => {});
+  }, []);
 
   useEffect(() => {
-    setLoading(true);
+    const cached = getCache<PostWithAuthor[]>(`board_${activeTab}`);
+    if (cached) { setPosts(cached); setLoading(false); }
+    else { setLoading(true); }
     setError(null);
     setPage(1);
     getPosts(activeTab)
-      .then((data) => setPosts(data))
+      .then((data) => { setPosts(data); setCache(`board_${activeTab}`, data, 60000); })
       .catch((err) => setError(err.message || '데이터를 불러오지 못했습니다.'))
       .finally(() => setLoading(false));
   }, [activeTab]);
@@ -105,7 +111,7 @@ function BoardContent() {
 
             {/* List */}
             {loading ? (
-              <div className="py-20 text-center text-gray-400 text-[13px]">불러오는 중...</div>
+              <div className="bg-white border border-gray-200 overflow-hidden"><PostRowSkeleton count={PER_PAGE} /></div>
             ) : error ? (
               <div className="py-20 text-center text-red-500 text-[13px]">{error}</div>
             ) : posts.length === 0 ? (

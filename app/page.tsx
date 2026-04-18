@@ -11,6 +11,8 @@ import MainCompaniesSection from '@/components/home/MainCompaniesSection';
 import { BrandLogo } from '@/components/BrandLogo';
 import { getPosts, getPremiumBuyers, getNotices } from '@/lib/api';
 import type { DBPost, DBUser, DBPremiumBuyer, DBNotice } from '@/lib/types';
+import { getCache, setCache } from '@/lib/cache';
+import { PostRowSkeleton } from '@/components/Skeleton';
 
 type PostWithAuthor = DBPost & { author: DBUser };
 
@@ -23,24 +25,29 @@ const TIPS = [
 ];
 
 export default function Home() {
-  const [sellPosts, setSellPosts] = useState<PostWithAuthor[]>([]);
-  const [buyPosts, setBuyPosts] = useState<PostWithAuthor[]>([]);
-  const [buyers, setBuyers] = useState<DBPremiumBuyer[]>([]);
-  const [notices, setNotices] = useState<DBNotice[]>([]);
-  const [loading, setLoading] = useState(true);
+  // 캐시가 있으면 즉시 초기화 (첫 렌더부터 데이터 표시)
+  const [sellPosts, setSellPosts] = useState<PostWithAuthor[]>(() => getCache<PostWithAuthor[]>('home_sell') ?? []);
+  const [buyPosts, setBuyPosts] = useState<PostWithAuthor[]>(() => getCache<PostWithAuthor[]>('home_buy') ?? []);
+  const [buyers, setBuyers] = useState<DBPremiumBuyer[]>(() => getCache<DBPremiumBuyer[]>('home_buyers') ?? []);
+  const [notices, setNotices] = useState<DBNotice[]>(() => getCache<DBNotice[]>('home_notices') ?? []);
+  const [loading, setLoading] = useState(() => {
+    // 캐시가 없을 때만 로딩 상태
+    return !getCache('home_sell');
+  });
   const [tipIdx, setTipIdx] = useState(0);
 
   useEffect(() => {
+    // 백그라운드에서 최신 데이터 가져오기 (캐시가 있어도 SWR 패턴)
     Promise.allSettled([
       getPosts('sell', { limit: 30 }),
       getPosts('buy', { limit: 30 }),
       getPremiumBuyers(),
       getNotices(),
     ]).then(([s, b, pb, n]) => {
-      if (s.status === 'fulfilled') setSellPosts(s.value);
-      if (b.status === 'fulfilled') setBuyPosts(b.value);
-      if (pb.status === 'fulfilled') setBuyers(pb.value);
-      if (n.status === 'fulfilled') setNotices(n.value.slice(0, 5));
+      if (s.status === 'fulfilled') { setSellPosts(s.value); setCache('home_sell', s.value, 60000); }
+      if (b.status === 'fulfilled') { setBuyPosts(b.value); setCache('home_buy', b.value, 60000); }
+      if (pb.status === 'fulfilled') { setBuyers(pb.value); setCache('home_buyers', pb.value, 120000); }
+      if (n.status === 'fulfilled') { const slim = n.value.slice(0, 5); setNotices(slim); setCache('home_notices', slim, 120000); }
     }).finally(() => setLoading(false));
 
     const timer = setInterval(() => setTipIdx(i => (i + 1) % TIPS.length), 5000);
@@ -176,7 +183,7 @@ export default function Home() {
               </div>
 
               {loading ? (
-                <div className="py-10 text-center text-gray-400 text-[13px]">불러오는 중...</div>
+                <div className="bg-white border border-gray-200 overflow-hidden"><PostRowSkeleton count={8} /></div>
               ) : sellPosts.length === 0 ? (
                 <div className="bg-white border border-dashed border-gray-200 py-10 text-center">
                   <p className="text-[13px] text-gray-500 mb-2">아직 등록된 판매글이 없습니다.</p>
