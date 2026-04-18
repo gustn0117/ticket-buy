@@ -80,10 +80,23 @@ export default function Header() {
 
             {/* Icon nav - Desktop */}
             <div className="hidden md:flex items-center gap-5">
-              <Link href="/login" className="flex flex-col items-center gap-1 text-gray-600 hover:text-accent transition-colors">
-                <User size={22} strokeWidth={1.5} />
-                <span className="text-[10px]">로그인</span>
-              </Link>
+              {isLoggedIn ? (
+                <button onClick={logout} className="flex flex-col items-center gap-1 text-gray-600 hover:text-accent transition-colors">
+                  <User size={22} strokeWidth={1.5} />
+                  <span className="text-[10px]">로그아웃</span>
+                </button>
+              ) : (
+                <Link href="/login" className="flex flex-col items-center gap-1 text-gray-600 hover:text-accent transition-colors">
+                  <User size={22} strokeWidth={1.5} />
+                  <span className="text-[10px]">로그인</span>
+                </Link>
+              )}
+              {isLoggedIn && (
+                <Link href="/dashboard" className="flex flex-col items-center gap-1 text-gray-600 hover:text-accent transition-colors">
+                  <Eye size={22} strokeWidth={1.5} />
+                  <span className="text-[10px]">내 대시보드</span>
+                </Link>
+              )}
               <Link href="/register-business" className="flex flex-col items-center gap-1 text-gray-600 hover:text-accent transition-colors">
                 <Megaphone size={22} strokeWidth={1.5} />
                 <span className="text-[10px]">광고문의</span>
