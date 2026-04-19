@@ -27,6 +27,21 @@ function WritePostContent() {
   const editId = searchParams.get('edit');
   const postType = (searchParams.get('type') as 'sell' | 'buy') || 'sell';
   const isEdit = !!editId;
+  const [authChecked, setAuthChecked] = useState(false);
+
+  useEffect(() => {
+    const t = setTimeout(() => setAuthChecked(true), 50);
+    return () => clearTimeout(t);
+  }, []);
+
+  // 삽니다(buy) 글은 로그인 필수
+  useEffect(() => {
+    if (!authChecked || isEdit) return;
+    if (postType === 'buy' && !isLoggedIn) {
+      const redirect = encodeURIComponent('/board/write?type=buy');
+      router.replace(`/login?redirect=${redirect}`);
+    }
+  }, [authChecked, postType, isLoggedIn, isEdit, router]);
 
   const [form, setForm] = useState({
     type: postType,
@@ -89,6 +104,11 @@ function WritePostContent() {
   }, [editId, router, user?.id]);
 
   const handleChange = (field: string, value: string) => {
+    if (field === 'type' && value === 'buy' && !isLoggedIn && !isEdit) {
+      const redirect = encodeURIComponent('/board/write?type=buy');
+      router.push(`/login?redirect=${redirect}`);
+      return;
+    }
     setForm(prev => {
       const next = { ...prev, [field]: value };
       if (field === 'category') {
@@ -114,6 +134,14 @@ function WritePostContent() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    // 삽니다(buy)는 회원만
+    if (form.type === 'buy' && !isLoggedIn && !isEdit) {
+      alert('구매글은 로그인 후 작성할 수 있습니다.');
+      const redirect = encodeURIComponent('/board/write?type=buy');
+      router.push(`/login?redirect=${redirect}`);
+      return;
+    }
 
     // 비회원 판매글 필수 검증 (로그인 안된 경우)
     if (!isLoggedIn && !isEdit) {
@@ -313,8 +341,8 @@ function WritePostContent() {
               placeholder="추가 설명을 입력하세요" rows={4} className="input h-auto py-3 resize-none" />
           </div>
 
-          {/* 비회원 정보 (로그인 안된 경우 + 신규 작성 시만) */}
-          {!isLoggedIn && !isEdit && (
+          {/* 비회원 정보 — 판매(팝니다)만 비회원 허용 */}
+          {!isLoggedIn && !isEdit && form.type === 'sell' && (
             <div className="card bg-zinc-50 border-zinc-200 p-4">
               <p className="text-[12px] font-semibold text-zinc-700 mb-2">비회원 작성 정보</p>
               <p className="text-[11px] text-zinc-500 mb-3">글 수정·삭제 시 아래 정보가 필요합니다. 회원가입 없이 작성할 수 있습니다.</p>

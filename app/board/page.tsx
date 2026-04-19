@@ -9,6 +9,7 @@ import LeftSidebar from '@/components/layout/LeftSidebar';
 import RightSidebar from '@/components/layout/RightSidebar';
 import PremiumBuyerCard from '@/components/home/PremiumBuyerCard';
 import { getPosts, getPremiumBuyers } from '@/lib/api';
+import { useAuth } from '@/contexts/AuthContext';
 import type { DBPost, DBUser, DBPremiumBuyer } from '@/lib/types';
 import { getCache, setCache } from '@/lib/cache';
 import { PostRowSkeleton } from '@/components/Skeleton';
@@ -18,6 +19,7 @@ type PostWithAuthor = DBPost & { author: DBUser };
 
 function BoardContent() {
   const searchParams = useSearchParams();
+  const { isLoggedIn } = useAuth();
   const tabParam = searchParams.get('tab');
   const activeTab: 'buy' | 'sell' = tabParam === 'buy' ? 'buy' : 'sell';
   const [posts, setPosts] = useState<PostWithAuthor[]>(() => getCache<PostWithAuthor[]>(`board_${activeTab}`) ?? []);
@@ -103,10 +105,24 @@ function BoardContent() {
 
             {/* Header row + write */}
             <div className="flex items-center justify-between px-4 py-2.5 border-b border-gray-200">
-              <div className="text-[11px] text-gray-500">최신순 정렬</div>
-              <Link href={`/board/write?type=${writeType}`} className="btn-accent h-8 px-3 text-[12px]">
-                <PenSquare size={12} /> {writeLabel}
-              </Link>
+              <div className="text-[11px] text-gray-500">
+                최신순 정렬
+                {writeType === 'buy' && !isLoggedIn && (
+                  <span className="ml-2 text-accent">· 구매글 작성은 로그인이 필요합니다</span>
+                )}
+              </div>
+              {writeType === 'buy' && !isLoggedIn ? (
+                <Link
+                  href={`/login?redirect=${encodeURIComponent('/board/write?type=buy')}`}
+                  className="btn-accent h-8 px-3 text-[12px]"
+                >
+                  <PenSquare size={12} /> 로그인 후 {writeLabel}
+                </Link>
+              ) : (
+                <Link href={`/board/write?type=${writeType}`} className="btn-accent h-8 px-3 text-[12px]">
+                  <PenSquare size={12} /> {writeLabel}
+                </Link>
+              )}
             </div>
 
             {/* List */}
