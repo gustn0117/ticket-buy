@@ -61,9 +61,9 @@ export default function CompanyCard({ company, isNew, fallbackIndex = 0 }: Compa
         <p className="text-[12px] text-gray-600 leading-relaxed text-center line-clamp-2 min-h-[36px]">
           {company.description || '상품권 매입 전문 업체입니다.'}
         </p>
-        <div className="flex items-center justify-center gap-1.5 mt-2.5 text-[14px] font-bold text-gray-800">
-          <Phone size={13} className="text-gray-500" />
-          <span className="tabular-nums">{company.phone}</span>
+        <div className="flex items-center justify-center gap-1.5 mt-2.5 text-[13px] md:text-[14px] font-bold text-gray-800 whitespace-nowrap">
+          <Phone size={13} className="text-gray-500 shrink-0" />
+          <span className="tabular-nums whitespace-nowrap">{company.phone}</span>
         </div>
       </div>
 

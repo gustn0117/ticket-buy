@@ -70,9 +70,9 @@ export default function BuyerDetailPage({ params }: { params: Promise<{ id: stri
 
         <div className="px-6 py-4 flex flex-wrap gap-4 border-b border-zinc-100">
           {buyer.phone && (
-            <div className="flex items-center gap-2 text-[13px]">
-              <Phone size={14} className="text-zinc-400" />
-              <span className="font-medium">{buyer.phone}</span>
+            <div className="flex items-center gap-2 text-[13px] whitespace-nowrap">
+              <Phone size={14} className="text-zinc-400 shrink-0" />
+              <span className="font-medium tabular-nums whitespace-nowrap">{buyer.phone}</span>
             </div>
           )}
           {buyer.region && (

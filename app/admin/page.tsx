@@ -563,7 +563,7 @@ export default function AdminPage() {
                 <tr key={u.id} className="border-b border-zinc-100 hover:bg-zinc-50">
                   <td className="py-2.5 px-4 font-medium">{u.name}</td>
                   <td className="py-2.5 px-4 text-zinc-500">{u.email}</td>
-                  <td className="py-2.5 px-4 text-zinc-500">{u.phone || '-'}</td>
+                  <td className="py-2.5 px-4 text-zinc-500 whitespace-nowrap tabular-nums">{u.phone || '-'}</td>
                   <td className="py-2.5 px-4 text-center"><button onClick={() => toggleUserType(u.id, u.type)} className={`badge cursor-pointer ${u.type === 'business' ? 'bg-blue-50 text-blue-600' : 'bg-zinc-100 text-zinc-500'}`}>{u.type === 'business' ? '업체' : '일반'}</button></td>
                   <td className="py-2.5 px-4 text-zinc-400 text-[11px]">{new Date(u.created_at).toLocaleDateString('ko-KR')}</td>
                   <td className="py-2.5 px-4 text-center"><button onClick={() => deleteUser(u.id)} className="text-red-400 hover:text-red-600"><Trash2 size={14} /></button></td>
@@ -912,8 +912,8 @@ export default function AdminPage() {
                     <td className="py-2.5 px-4 font-medium">{b.name}</td>
                     <td className="py-2.5 px-4 text-zinc-500 max-w-[200px] truncate">{b.description || '-'}</td>
                     <td className="py-2.5 px-4">{b.brands?.map(br => <span key={br} className="badge bg-zinc-100 text-zinc-600 mr-1">{br}</span>)}</td>
-                    <td className="py-2.5 px-4 text-zinc-500">{b.phone || '-'}</td>
-                    <td className="py-2.5 px-4 text-zinc-500">{b.region || '-'}</td>
+                    <td className="py-2.5 px-4 text-zinc-500 whitespace-nowrap tabular-nums">{b.phone || '-'}</td>
+                    <td className="py-2.5 px-4 text-zinc-500 whitespace-nowrap">{b.region || '-'}</td>
                     <td className="py-2.5 px-4 text-center">
                       <span className={`badge ${b.tier === 'premium' ? 'bg-yellow-50 text-yellow-600' : b.tier === 'basic' ? 'bg-zinc-100 text-zinc-400' : 'bg-blue-50 text-blue-600'}`}>
                         {b.tier === 'premium' ? '프리미엄' : b.tier === 'basic' ? '베이직' : '스탠다드'}
