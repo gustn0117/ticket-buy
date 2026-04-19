@@ -2,15 +2,31 @@
 
 import Link from 'next/link';
 import Image from 'next/image';
+import { useRouter } from 'next/navigation';
 import { useState, useEffect } from 'react';
-import { Search, User, Menu, X, Phone, Clock, ChevronDown, Eye, ShieldAlert, Megaphone } from 'lucide-react';
+import { Search, User, Menu, X, Clock, Eye, ShieldAlert, Megaphone } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 
 export default function Header() {
+  const router = useRouter();
   const { user, isLoggedIn, logout } = useAuth();
   const [searchQuery, setSearchQuery] = useState('');
-  const [companySearch, setCompanySearch] = useState('');
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
+  const handleSearchSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    const q = searchQuery.trim();
+    if (!q) return;
+    router.push(`/search?q=${encodeURIComponent(q)}`);
+    setMobileMenuOpen(false);
+  };
+
+  const handleBuyerSearchSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    const q = searchQuery.trim();
+    if (!q) return;
+    router.push(`/search?q=${encodeURIComponent(q)}&tab=buyer`);
+  };
   const [visitorInfo, setVisitorInfo] = useState<{ today: number; current: number; total: number } | null>(null);
 
   useEffect(() => {
@@ -62,21 +78,33 @@ export default function Header() {
             </Link>
 
             {/* Search bars - Desktop */}
-            <div className="hidden md:flex items-center gap-2 flex-1 max-w-[500px] mx-6">
+            <form onSubmit={handleSearchSubmit} className="hidden md:flex items-center gap-2 flex-1 max-w-[500px] mx-6">
               <div className="relative flex-1">
-                <input type="text" placeholder="통합검색" value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full h-[38px] pl-3 pr-9 border border-gray-300 text-[13px] focus:border-accent focus:outline-none" />
-                <button className="absolute right-0 top-0 h-full w-[38px] flex items-center justify-center bg-accent text-white hover:opacity-90 transition-colors">
+                <input
+                  type="text"
+                  placeholder="통합검색 (상품권, 업체, 커뮤니티)"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  maxLength={80}
+                  className="w-full h-[38px] pl-3 pr-10 border border-gray-300 text-[13px] focus:border-accent focus:outline-none"
+                />
+                <button
+                  type="submit"
+                  className="absolute right-0 top-0 h-full w-[38px] flex items-center justify-center bg-accent text-white hover:opacity-90 transition-colors"
+                  aria-label="검색"
+                >
                   <Search size={16} />
                 </button>
               </div>
-              <div className="relative w-[180px]">
-                <select className="w-full h-[38px] pl-3 pr-8 border border-gray-300 text-[13px] text-gray-500 focus:border-accent focus:outline-none appearance-none bg-white">
-                  <option>업체명 검색</option>
-                </select>
-                <ChevronDown size={14} className="absolute right-2.5 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" />
-              </div>
-            </div>
+              <button
+                type="button"
+                onClick={handleBuyerSearchSubmit}
+                disabled={!searchQuery.trim()}
+                className="h-[38px] px-3 border border-gray-300 text-[12px] text-gray-600 hover:border-accent hover:text-accent transition-colors disabled:opacity-50 disabled:cursor-not-allowed whitespace-nowrap"
+              >
+                업체명 검색
+              </button>
+            </form>
 
             {/* Icon nav - Desktop */}
             <div className="hidden md:flex items-center gap-5">
@@ -118,15 +146,25 @@ export default function Header() {
           </div>
 
           {/* Mobile search */}
-          <div className="md:hidden pb-3">
+          <form onSubmit={handleSearchSubmit} className="md:hidden pb-3">
             <div className="relative">
-              <input type="text" placeholder="상품권 업체 검색" value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full h-[38px] pl-3 pr-10 border border-gray-300 text-[13px] focus:border-accent focus:outline-none" />
-              <button className="absolute right-0 top-0 h-full w-[38px] flex items-center justify-center bg-accent text-white">
+              <input
+                type="text"
+                placeholder="상품권, 업체, 커뮤니티 검색"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                maxLength={80}
+                className="w-full h-[38px] pl-3 pr-10 border border-gray-300 text-[13px] focus:border-accent focus:outline-none"
+              />
+              <button
+                type="submit"
+                className="absolute right-0 top-0 h-full w-[38px] flex items-center justify-center bg-accent text-white"
+                aria-label="검색"
+              >
                 <Search size={16} />
               </button>
             </div>
-          </div>
+          </form>
         </div>
       </div>
 
