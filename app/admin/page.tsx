@@ -57,7 +57,7 @@ export default function AdminPage() {
   // Premium buyer form
   const [showPremiumForm, setShowPremiumForm] = useState(false);
   const [editingPremium, setEditingPremium] = useState<DBPremiumBuyer | null>(null);
-  const [premiumForm, setPremiumForm] = useState({ name: '', description: '', phone: '', region: '', brands: '', image_url: '', user_id: '', priority: 0, is_active: true, tier: 'standard' as 'premium' | 'standard' | 'basic' });
+  const [premiumForm, setPremiumForm] = useState({ name: '', headline: '', description: '', phone: '', region: '', brands: '', image_url: '', user_id: '', priority: 0, is_active: true, tier: 'standard' as 'premium' | 'standard' | 'basic' });
 
   // Ad form
   const [showAdForm, setShowAdForm] = useState(false);
@@ -193,11 +193,11 @@ export default function AdminPage() {
   useEffect(() => { msgEndRef.current?.scrollIntoView({ behavior: 'smooth' }); }, [chatMessages]);
 
   // Premium Buyer CRUD
-  const resetPremiumForm = () => { setPremiumForm({ name: '', description: '', phone: '', region: '', brands: '', image_url: '', user_id: '', priority: 0, is_active: true, tier: 'standard' }); setEditingPremium(null); setShowPremiumForm(false); };
-  const startEditPremium = (b: DBPremiumBuyer) => { setPremiumForm({ name: b.name, description: b.description, phone: b.phone, region: b.region, brands: b.brands?.join(', ') || '', image_url: b.image_url, user_id: b.user_id || '', priority: b.priority, is_active: b.is_active, tier: b.tier || 'standard' }); setEditingPremium(b); setShowPremiumForm(true); };
+  const resetPremiumForm = () => { setPremiumForm({ name: '', headline: '', description: '', phone: '', region: '', brands: '', image_url: '', user_id: '', priority: 0, is_active: true, tier: 'standard' }); setEditingPremium(null); setShowPremiumForm(false); };
+  const startEditPremium = (b: DBPremiumBuyer) => { setPremiumForm({ name: b.name, headline: b.headline || '', description: b.description, phone: b.phone, region: b.region, brands: b.brands?.join(', ') || '', image_url: b.image_url, user_id: b.user_id || '', priority: b.priority, is_active: b.is_active, tier: b.tier || 'standard' }); setEditingPremium(b); setShowPremiumForm(true); };
   const savePremium = async (e: React.FormEvent) => {
     e.preventDefault();
-    const payload = { name: premiumForm.name, description: premiumForm.description, phone: premiumForm.phone, region: premiumForm.region, brands: premiumForm.brands.split(',').map(s => s.trim()).filter(Boolean), image_url: premiumForm.image_url, user_id: premiumForm.user_id || null, priority: premiumForm.priority, is_active: premiumForm.is_active, tier: premiumForm.tier };
+    const payload = { name: premiumForm.name, headline: premiumForm.headline.trim() || null, description: premiumForm.description, phone: premiumForm.phone, region: premiumForm.region, brands: premiumForm.brands.split(',').map(s => s.trim()).filter(Boolean), image_url: premiumForm.image_url, user_id: premiumForm.user_id || null, priority: premiumForm.priority, is_active: premiumForm.is_active, tier: premiumForm.tier };
     if (editingPremium) {
       await updatePremiumBuyer(editingPremium.id, payload);
     } else {
@@ -832,11 +832,22 @@ export default function AdminPage() {
                 </div>
               </div>
               <div>
+                <label className="block text-[11px] font-medium text-zinc-500 mb-1">메인 배너 문구 (선택)</label>
+                <input
+                  value={premiumForm.headline}
+                  onChange={e => setPremiumForm(p => ({ ...p, headline: e.target.value }))}
+                  className="input h-9"
+                  maxLength={20}
+                  placeholder="예: 간편한 비대면 매입"
+                />
+                <p className="text-[10px] text-zinc-400 mt-1">홈 상단 카드 상단 어두운 배너에 크게 표시됩니다. (최대 20자, 비워두면 업체 소개 첫 줄 사용)</p>
+              </div>
+              <div>
                 <label className="block text-[11px] font-medium text-zinc-500 mb-1">업체 소개 (2~3줄)</label>
                 <textarea value={premiumForm.description} onChange={e => setPremiumForm(p => ({ ...p, description: e.target.value }))}
                   className="input" rows={2} placeholder="예: 간편한 비대면 상품권 매입 / 당일 입금 OK"
                   style={{ height: 'auto', minHeight: '60px', padding: '8px 12px' }} />
-                <p className="text-[10px] text-zinc-400 mt-1">카드에 간략히 표시됩니다. 핵심 혜택만 짧게 작성하세요.</p>
+                <p className="text-[10px] text-zinc-400 mt-1">카드 본문에 표시됩니다. 핵심 혜택만 짧게 작성하세요.</p>
               </div>
               <div className="grid grid-cols-2 gap-3">
                 <div>

@@ -22,7 +22,7 @@ const FALLBACK_BGS = [
 
 export default function CompanyCard({ company, isNew, fallbackIndex = 0 }: CompanyCardProps) {
   const fallbackBg = FALLBACK_BGS[fallbackIndex % FALLBACK_BGS.length];
-  const displayTitle = company.description?.split('\n')[0]?.slice(0, 20) || company.name;
+  const displayTitle = company.headline?.trim() || company.description?.split('\n')[0]?.slice(0, 20) || company.name;
 
   return (
     <Link href={`/buyer/${company.id}`} className="company-card card-hover block group">

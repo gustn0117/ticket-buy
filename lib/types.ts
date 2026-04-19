@@ -65,6 +65,7 @@ export interface DBPremiumBuyer {
   id: string;
   user_id: string | null;
   name: string;
+  headline: string | null;
   description: string;
   phone: string;
   region: string;
