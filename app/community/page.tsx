@@ -6,6 +6,7 @@ import { useSearchParams, useRouter } from 'next/navigation';
 import { Plus, ChevronRight, Pin, MessageCircle, Eye, ChevronLeft } from 'lucide-react';
 import LeftSidebar from '@/components/layout/LeftSidebar';
 import RightSidebar from '@/components/layout/RightSidebar';
+import { useAuth } from '@/contexts/AuthContext';
 import type { DBCommunityPost, CommunityCategory } from '@/lib/types';
 
 const CATEGORY_META: Record<CommunityCategory, { label: string; desc: string }> = {
@@ -17,6 +18,7 @@ const CATEGORY_META: Record<CommunityCategory, { label: string; desc: string }> 
 function CommunityContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
+  const { user } = useAuth();
   const initialCat = (searchParams.get('cat') as CommunityCategory) || 'news';
   const [activeCat, setActiveCat] = useState<CommunityCategory>(initialCat);
   const [posts, setPosts] = useState<DBCommunityPost[]>([]);
@@ -98,12 +100,22 @@ function CommunityContent() {
               <div className="text-[12px] text-gray-500">
                 총 <span className="text-accent font-bold">{posts.length}</span>건
               </div>
-              <Link
-                href={`/community/write?cat=${activeCat}`}
-                className="btn-accent h-8 px-3 text-[12px]"
-              >
-                <Plus size={12} /> 글쓰기
-              </Link>
+              {user ? (
+                <Link
+                  href={`/community/write?cat=${activeCat}`}
+                  className="btn-accent h-8 px-3 text-[12px]"
+                >
+                  <Plus size={12} /> 글쓰기
+                </Link>
+              ) : (
+                <Link
+                  href={`/login?redirect=${encodeURIComponent(`/community/write?cat=${activeCat}`)}`}
+                  className="btn-accent h-8 px-3 text-[12px]"
+                  title="로그인 후 글쓰기"
+                >
+                  <Plus size={12} /> 로그인 후 글쓰기
+                </Link>
+              )}
             </div>
 
             {/* List */}

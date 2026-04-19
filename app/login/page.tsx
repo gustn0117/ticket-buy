@@ -1,15 +1,26 @@
 'use client';
 
-import { useState } from 'react';
+import { Suspense, useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { User, Building2 } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 
 type LoginType = 'normal' | 'business';
 
-export default function LoginPage() {
+function safeRedirect(raw: string | null): string | null {
+  if (!raw) return null;
+  try {
+    const decoded = decodeURIComponent(raw);
+    if (!decoded.startsWith('/') || decoded.startsWith('//')) return null;
+    return decoded;
+  } catch {
+    return null;
+  }
+}
+
+function LoginContent() {
   const [loginType, setLoginType] = useState<LoginType>('normal');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -18,6 +29,8 @@ export default function LoginPage() {
   const [submitting, setSubmitting] = useState(false);
   const { login } = useAuth();
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const redirectTo = safeRedirect(searchParams.get('redirect'));
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -42,7 +55,11 @@ export default function LoginPage() {
         return;
       }
       login(data.user);
-      router.push(loginType === 'business' ? '/dashboard' : '/');
+      if (redirectTo) {
+        router.push(redirectTo);
+      } else {
+        router.push(loginType === 'business' ? '/dashboard' : '/');
+      }
     } catch {
       setError('로그인에 실패했습니다.');
     } finally {
@@ -57,6 +74,9 @@ export default function LoginPage() {
           <Image src="/logo-dark.png" alt="티켓바이" width={140} height={40} className="h-10 w-auto object-contain mx-auto mb-3" priority />
           <h1 className="text-[16px] font-bold text-gray-900">로그인</h1>
           <p className="text-[12px] text-gray-500 mt-1">티켓바이에 오신 것을 환영합니다.</p>
+          {redirectTo && (
+            <p className="text-[11px] text-accent mt-1">로그인 후 이전 페이지로 이동합니다.</p>
+          )}
         </div>
 
         {/* 로그인 타입 탭 */}
@@ -157,5 +177,13 @@ export default function LoginPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense fallback={<div className="min-h-[80vh] flex items-center justify-center text-gray-400 text-[13px]">불러오는 중...</div>}>
+      <LoginContent />
+    </Suspense>
   );
 }

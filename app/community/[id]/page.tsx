@@ -26,7 +26,6 @@ export default function CommunityDetailPage({ params }: { params: Promise<{ id: 
   const [notFound, setNotFound] = useState(false);
 
   // 댓글 입력
-  const [commentName, setCommentName] = useState('');
   const [commentContent, setCommentContent] = useState('');
   const [commentSubmitting, setCommentSubmitting] = useState(false);
 
@@ -50,10 +49,6 @@ export default function CommunityDetailPage({ params }: { params: Promise<{ id: 
     fetchData();
   }, [id]);
 
-  useEffect(() => {
-    if (user?.name) setCommentName(user.name);
-  }, [user]);
-
   const handleDelete = async () => {
     if (!confirm('정말 삭제하시겠습니까?')) return;
     try {
@@ -67,7 +62,8 @@ export default function CommunityDetailPage({ params }: { params: Promise<{ id: 
 
   const handleCommentSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!commentContent.trim() || !commentName.trim()) return;
+    if (!user) return;
+    if (!commentContent.trim()) return;
     setCommentSubmitting(true);
     try {
       const res = await fetch('/api/community/comments', {
@@ -75,8 +71,8 @@ export default function CommunityDetailPage({ params }: { params: Promise<{ id: 
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           post_id: id,
-          author_id: user?.id || null,
-          author_name: commentName.trim(),
+          author_id: user.id,
+          author_name: user.name,
           content: commentContent.trim(),
         }),
       });
@@ -224,36 +220,41 @@ export default function CommunityDetailPage({ params }: { params: Promise<{ id: 
             </div>
 
             {/* Comment form */}
-            <form onSubmit={handleCommentSubmit} className="p-4 border-t border-gray-200 bg-gray-50">
-              <div className="flex items-center gap-2 mb-2">
-                <input
-                  type="text"
-                  value={commentName}
-                  onChange={e => setCommentName(e.target.value)}
-                  placeholder="닉네임"
-                  maxLength={30}
-                  className="w-32 h-9 px-3 border border-gray-300 text-[12px] bg-white focus:border-accent focus:outline-none"
-                />
-                <span className="text-[11px] text-gray-400">로 댓글 작성</span>
-              </div>
-              <div className="flex gap-2">
-                <textarea
-                  value={commentContent}
-                  onChange={e => setCommentContent(e.target.value)}
-                  placeholder="댓글을 입력하세요 (최대 1000자)"
-                  maxLength={1000}
-                  rows={3}
-                  className="flex-1 px-3 py-2 border border-gray-300 text-[12px] bg-white focus:border-accent focus:outline-none resize-y"
-                />
-                <button
-                  type="submit"
-                  disabled={commentSubmitting || !commentContent.trim() || !commentName.trim()}
-                  className="btn-accent h-[52px] w-12 shrink-0 disabled:opacity-60"
+            {user ? (
+              <form onSubmit={handleCommentSubmit} className="p-4 border-t border-gray-200 bg-gray-50">
+                <div className="flex items-center gap-2 mb-2 text-[11px] text-gray-500">
+                  <span className="text-[12px] font-bold text-gray-800">{user.name}</span>
+                  <span>로 댓글 작성</span>
+                </div>
+                <div className="flex gap-2">
+                  <textarea
+                    value={commentContent}
+                    onChange={e => setCommentContent(e.target.value)}
+                    placeholder="댓글을 입력하세요 (최대 1000자)"
+                    maxLength={1000}
+                    rows={3}
+                    className="flex-1 px-3 py-2 border border-gray-300 text-[12px] bg-white focus:border-accent focus:outline-none resize-y"
+                  />
+                  <button
+                    type="submit"
+                    disabled={commentSubmitting || !commentContent.trim()}
+                    className="btn-accent h-[52px] w-12 shrink-0 disabled:opacity-60"
+                  >
+                    <Send size={14} />
+                  </button>
+                </div>
+              </form>
+            ) : (
+              <div className="p-4 border-t border-gray-200 bg-gray-50 text-center">
+                <p className="text-[12px] text-gray-500 mb-2">댓글을 작성하려면 로그인이 필요합니다.</p>
+                <Link
+                  href={`/login?redirect=${encodeURIComponent(`/community/${id}`)}`}
+                  className="btn-accent inline-flex h-9 px-4 text-[12px]"
                 >
-                  <Send size={14} />
-                </button>
+                  로그인하기
+                </Link>
               </div>
-            </form>
+            )}
           </section>
         </div>
 

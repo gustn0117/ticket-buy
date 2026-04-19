@@ -26,9 +26,9 @@ function WriteContent() {
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
   const [images, setImages] = useState<string[]>([]);
-  const [authorName, setAuthorName] = useState('');
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [authChecked, setAuthChecked] = useState(false);
 
   const addImage = (url: string) => {
     if (!url) return;
@@ -39,18 +39,27 @@ function WriteContent() {
   };
 
   useEffect(() => {
-    if (user?.name) setAuthorName(user.name);
-  }, [user]);
+    const t = setTimeout(() => setAuthChecked(true), 50);
+    return () => clearTimeout(t);
+  }, []);
+
+  useEffect(() => {
+    if (!authChecked) return;
+    if (!user) {
+      const redirect = encodeURIComponent(`/community/write?cat=${category}`);
+      router.replace(`/login?redirect=${redirect}`);
+    }
+  }, [authChecked, user, router, category]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
-    if (!title.trim()) {
-      setError('제목을 입력해주세요.');
+    if (!user) {
+      setError('로그인 후 작성해주세요.');
       return;
     }
-    if (!authorName.trim()) {
-      setError('작성자 이름을 입력해주세요.');
+    if (!title.trim()) {
+      setError('제목을 입력해주세요.');
       return;
     }
 
@@ -64,8 +73,8 @@ function WriteContent() {
           title: title.trim(),
           content: content.trim() || null,
           images,
-          author_id: user?.id || null,
-          author_name: authorName.trim(),
+          author_id: user.id,
+          author_name: user.name,
           is_pinned: false,
         }),
       });
@@ -78,6 +87,14 @@ function WriteContent() {
       setSubmitting(false);
     }
   };
+
+  if (!authChecked || !user) {
+    return (
+      <div className="container-main py-10 text-center text-gray-400 text-[13px]">
+        {authChecked ? '로그인 페이지로 이동 중...' : '불러오는 중...'}
+      </div>
+    );
+  }
 
   return (
     <div className="container-main py-6">
@@ -118,17 +135,12 @@ function WriteContent() {
               </div>
             </div>
 
-            {/* 작성자 */}
+            {/* 작성자 (로그인 사용자) */}
             <div>
-              <label className="block text-[12px] font-medium text-gray-600 mb-1.5">작성자 *</label>
-              <input
-                type="text"
-                value={authorName}
-                onChange={e => setAuthorName(e.target.value)}
-                placeholder="닉네임 또는 이름"
-                maxLength={30}
-                className="w-full h-10 px-3 border border-gray-300 text-[13px] focus:border-accent focus:outline-none"
-              />
+              <label className="block text-[12px] font-medium text-gray-600 mb-1.5">작성자</label>
+              <div className="h-10 px-3 flex items-center bg-gray-50 border border-gray-200 text-[13px] text-gray-700">
+                {user.name}
+              </div>
             </div>
 
             {/* 제목 */}

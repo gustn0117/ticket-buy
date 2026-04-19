@@ -57,6 +57,9 @@ export async function POST(req: NextRequest) {
   const body = await req.json();
   const { category, title, content, images, author_id, author_name, is_pinned } = body;
 
+  if (!author_id || typeof author_id !== 'string') {
+    return NextResponse.json({ error: '로그인이 필요합니다.' }, { status: 401 });
+  }
   if (!category || !title) {
     return NextResponse.json({ error: '카테고리와 제목은 필수입니다.' }, { status: 400 });
   }
@@ -72,6 +75,16 @@ export async function POST(req: NextRequest) {
     : [];
 
   const supabase = createServiceClient();
+
+  const { data: authorRow, error: authorErr } = await supabase
+    .from('users')
+    .select('id, name')
+    .eq('id', author_id)
+    .maybeSingle();
+  if (authorErr || !authorRow) {
+    return NextResponse.json({ error: '유효하지 않은 계정입니다. 다시 로그인해주세요.' }, { status: 401 });
+  }
+
   const { data, error } = await supabase
     .from('community_posts')
     .insert({
@@ -79,8 +92,8 @@ export async function POST(req: NextRequest) {
       title,
       content: content || null,
       images: cleanImages,
-      author_id: author_id || null,
-      author_name: author_name || null,
+      author_id: authorRow.id,
+      author_name: (typeof author_name === 'string' && author_name.trim()) || authorRow.name,
       is_pinned: !!is_pinned,
     })
     .select()
