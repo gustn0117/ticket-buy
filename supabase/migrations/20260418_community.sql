@@ -4,6 +4,7 @@ create table if not exists ticket_buy.community_posts (
   category text not null check (category in ('news','tip','qna')),
   title text not null,
   content text,
+  images text[] default array[]::text[],
   author_id uuid references ticket_buy.users(id) on delete set null,
   author_name text,
   is_pinned boolean default false,
@@ -12,8 +13,13 @@ create table if not exists ticket_buy.community_posts (
   updated_at timestamptz default now()
 );
 
+-- 기존 스키마가 있던 환경에서도 동기화되도록 보강
+alter table ticket_buy.community_posts
+  add column if not exists images text[] default array[]::text[];
+
 create index if not exists community_posts_category_idx on ticket_buy.community_posts(category);
 create index if not exists community_posts_created_idx on ticket_buy.community_posts(created_at desc);
+create index if not exists community_posts_pinned_created_idx on ticket_buy.community_posts(category, is_pinned desc, created_at desc);
 
 -- 댓글
 create table if not exists ticket_buy.community_comments (

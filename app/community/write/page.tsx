@@ -3,9 +3,12 @@
 import { useState, useEffect, Suspense } from 'react';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { ArrowLeft } from 'lucide-react';
+import { ArrowLeft, X } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
+import ImageUpload from '@/components/ImageUpload';
 import type { CommunityCategory } from '@/lib/types';
+
+const MAX_IMAGES = 5;
 
 const CATEGORY_LABEL: Record<CommunityCategory, string> = {
   news: '업계뉴스',
@@ -22,9 +25,18 @@ function WriteContent() {
   const [category, setCategory] = useState<CommunityCategory>(initialCat);
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
+  const [images, setImages] = useState<string[]>([]);
   const [authorName, setAuthorName] = useState('');
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  const addImage = (url: string) => {
+    if (!url) return;
+    setImages(prev => (prev.length >= MAX_IMAGES ? prev : [...prev, url]));
+  };
+  const removeImage = (idx: number) => {
+    setImages(prev => prev.filter((_, i) => i !== idx));
+  };
 
   useEffect(() => {
     if (user?.name) setAuthorName(user.name);
@@ -51,6 +63,7 @@ function WriteContent() {
           category,
           title: title.trim(),
           content: content.trim() || null,
+          images,
           author_id: user?.id || null,
           author_name: authorName.trim(),
           is_pinned: false,
@@ -142,6 +155,31 @@ function WriteContent() {
                 rows={12}
                 className="w-full px-3 py-2 border border-gray-300 text-[13px] focus:border-accent focus:outline-none resize-y"
               />
+            </div>
+
+            {/* 이미지 첨부 */}
+            <div>
+              <label className="block text-[12px] font-medium text-gray-600 mb-1.5">
+                이미지 첨부 <span className="text-gray-400 font-normal">(선택, 최대 {MAX_IMAGES}장 · 장당 5MB)</span>
+              </label>
+              <div className="flex flex-wrap gap-2">
+                {images.map((url, idx) => (
+                  <div key={url + idx} className="relative">
+                    <img src={url} alt="" className="h-20 w-20 rounded border border-gray-200 object-cover" />
+                    <button
+                      type="button"
+                      onClick={() => removeImage(idx)}
+                      className="absolute -top-1.5 -right-1.5 w-5 h-5 bg-zinc-900 text-white rounded-full flex items-center justify-center hover:bg-zinc-700"
+                      aria-label="이미지 삭제"
+                    >
+                      <X size={10} />
+                    </button>
+                  </div>
+                ))}
+                {images.length < MAX_IMAGES && (
+                  <ImageUpload value="" onChange={addImage} folder="community" />
+                )}
+              </div>
             </div>
 
             {error && (

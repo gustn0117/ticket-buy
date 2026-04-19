@@ -160,6 +160,24 @@ export default function CommunityDetailPage({ params }: { params: Promise<{ id: 
               </div>
             </div>
 
+            {/* Images */}
+            {post.images && post.images.length > 0 && (
+              <div className="px-5 pt-5">
+                <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
+                  {post.images.map((url, idx) => (
+                    <a key={url + idx} href={url} target="_blank" rel="noreferrer" className="block">
+                      <img
+                        src={url}
+                        alt={`첨부 이미지 ${idx + 1}`}
+                        loading="lazy"
+                        className="w-full aspect-square object-cover rounded border border-gray-200 hover:opacity-90 transition-opacity"
+                      />
+                    </a>
+                  ))}
+                </div>
+              </div>
+            )}
+
             {/* Content */}
             <div className="px-5 py-6 text-[13px] text-gray-700 leading-relaxed whitespace-pre-wrap min-h-[200px]">
               {post.content || <span className="text-gray-400">내용이 없습니다.</span>}

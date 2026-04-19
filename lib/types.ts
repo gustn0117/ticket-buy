@@ -92,6 +92,7 @@ export interface DBCommunityPost {
   category: CommunityCategory;
   title: string;
   content: string | null;
+  images: string[] | null;
   author_id: string | null;
   author_name: string | null;
   is_pinned: boolean;

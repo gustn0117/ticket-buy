@@ -55,7 +55,7 @@ export async function GET(req: NextRequest) {
 // POST /api/community/posts
 export async function POST(req: NextRequest) {
   const body = await req.json();
-  const { category, title, content, author_id, author_name, is_pinned } = body;
+  const { category, title, content, images, author_id, author_name, is_pinned } = body;
 
   if (!category || !title) {
     return NextResponse.json({ error: '카테고리와 제목은 필수입니다.' }, { status: 400 });
@@ -67,6 +67,10 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: '제목은 200자 이내로 입력해주세요.' }, { status: 400 });
   }
 
+  const cleanImages = Array.isArray(images)
+    ? images.filter((u: unknown): u is string => typeof u === 'string' && u.trim().length > 0).slice(0, 5)
+    : [];
+
   const supabase = createServiceClient();
   const { data, error } = await supabase
     .from('community_posts')
@@ -74,6 +78,7 @@ export async function POST(req: NextRequest) {
       category,
       title,
       content: content || null,
+      images: cleanImages,
       author_id: author_id || null,
       author_name: author_name || null,
       is_pinned: !!is_pinned,

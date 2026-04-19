@@ -37,6 +37,11 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
   if (body.content !== undefined) updates.content = body.content;
   if (body.category !== undefined) updates.category = body.category;
   if (body.is_pinned !== undefined) updates.is_pinned = !!body.is_pinned;
+  if (Array.isArray(body.images)) {
+    updates.images = body.images
+      .filter((u: unknown): u is string => typeof u === 'string' && u.trim().length > 0)
+      .slice(0, 5);
+  }
 
   const supabase = createServiceClient();
   const { data, error } = await supabase
