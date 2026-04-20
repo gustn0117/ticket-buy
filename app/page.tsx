@@ -65,25 +65,31 @@ export default function Home() {
           <div className="flex-1 min-w-0">
             {/* 빠른 액션 배너 */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-5">
-              <Link href="/board/write?type=sell" className="flex items-center gap-4 p-5 bg-gradient-to-r from-accent to-accent-light text-white hover:opacity-90 transition-opacity">
-                <div className="w-12 h-12 rounded-full bg-white/20 flex items-center justify-center shrink-0">
+              <Link
+                href="/board/write?type=sell"
+                className="flex items-center gap-4 p-5 bg-gradient-to-r from-accent to-accent-light text-white hover:brightness-110 transition-all"
+              >
+                <div className="w-12 h-12 rounded-full bg-white/25 flex items-center justify-center shrink-0 text-white">
                   <Tag size={22} />
                 </div>
-                <div className="flex-1">
-                  <p className="text-[15px] font-bold">상품권 팝니다</p>
-                  <p className="text-[12px] opacity-90">남는 상품권을 빠르게 판매하세요</p>
+                <div className="flex-1 min-w-0">
+                  <p className="text-[15px] font-bold text-white">상품권 팝니다</p>
+                  <p className="text-[12px] text-white/90">남는 상품권을 빠르게 판매하세요</p>
                 </div>
-                <PenSquare size={18} />
+                <PenSquare size={18} className="text-white/80" />
               </Link>
-              <Link href="/board/write?type=buy" className="flex items-center gap-4 p-5 bg-gradient-to-r from-gray-800 to-gray-900 text-white hover:opacity-90 transition-opacity">
-                <div className="w-12 h-12 rounded-full bg-white/15 flex items-center justify-center shrink-0">
+              <Link
+                href="/board/write?type=buy"
+                className="flex items-center gap-4 p-5 bg-gradient-to-r from-zinc-700 to-zinc-900 text-white hover:brightness-125 transition-all"
+              >
+                <div className="w-12 h-12 rounded-full bg-white/25 flex items-center justify-center shrink-0 text-white">
                   <ShoppingCart size={22} />
                 </div>
-                <div className="flex-1">
-                  <p className="text-[15px] font-bold">상품권 삽니다</p>
-                  <p className="text-[12px] opacity-80">원하는 상품권을 직접 구매하세요</p>
+                <div className="flex-1 min-w-0">
+                  <p className="text-[15px] font-bold text-white">상품권 삽니다</p>
+                  <p className="text-[12px] text-white/85">원하는 상품권을 직접 구매하세요</p>
                 </div>
-                <PenSquare size={18} />
+                <PenSquare size={18} className="text-white/80" />
               </Link>
             </div>
 
