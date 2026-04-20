@@ -205,7 +205,7 @@ function GuideContent() {
                     { title: '지역별 업체 검색', desc: '전국 17개 시도별 업체 검색' },
                     { title: '상품별 업체 검색', desc: '상품권 종류별 맞춤 매입 업체' },
                     { title: '안전거래 중개', desc: '에스크로 기반 안전 거래 지원' },
-                    { title: '사기번호 조회', desc: '신고된 사기 번호 실시간 조회' },
+                    { title: '통합 검색', desc: '상품권·업체·커뮤니티 글 통합 검색' },
                   ].map(s => (
                     <div key={s.title} className="border border-gray-200 p-3">
                       <p className="text-[12px] font-bold text-gray-800">{s.title}</p>
