@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { ChevronRight, PenSquare, ShoppingCart, Tag, Megaphone, Lightbulb, ShieldCheck } from 'lucide-react';
+import { ChevronRight, PenSquare, ShoppingCart, Tag, Megaphone, Lightbulb, ShieldCheck, ChevronLeft } from 'lucide-react';
 import HeroBanner from '@/components/home/HeroBanner';
 import LeftSidebar from '@/components/layout/LeftSidebar';
 import RightSidebar from '@/components/layout/RightSidebar';
@@ -137,25 +137,59 @@ export default function Home() {
 
               {/* TIP */}
               <div className="bg-white border border-gray-200 flex items-stretch overflow-hidden">
-                <div className="shrink-0 flex items-center justify-center w-[90px]" style={{ background: 'linear-gradient(135deg, #E63946 0%, #F26A4B 100%)' }}>
-                  <div className="text-center">
-                    <Lightbulb size={18} className="text-white mx-auto mb-0.5" />
-                    <p className="text-white text-[10px] font-bold tracking-wider">TIP</p>
-                  </div>
+                <div
+                  className="shrink-0 flex flex-col items-center justify-center w-[110px] text-white px-2"
+                  style={{ background: 'linear-gradient(135deg, #E63946 0%, #F26A4B 100%)' }}
+                >
+                  <Lightbulb size={22} className="mb-1" />
+                  <p className="text-[11px] font-bold tracking-widest">SAFE TIP</p>
+                  <p className="text-[10px] opacity-75 mt-0.5 tabular-nums">
+                    {String(tipIdx + 1).padStart(2, '0')} / {String(TIPS.length).padStart(2, '0')}
+                  </p>
                 </div>
-                <div className="flex-1 p-4 min-w-0">
-                  <p className="text-[13px] font-bold text-gray-800 mb-0.5">{TIPS[tipIdx].title}</p>
-                  <p className="text-[11px] text-gray-500 leading-relaxed">{TIPS[tipIdx].desc}</p>
-                  <div className="flex items-center justify-between mt-2">
-                    <div className="flex gap-1">
+                <div className="flex-1 min-w-0 flex flex-col">
+                  <div className="flex items-center justify-between px-4 py-2.5 border-b border-gray-200 bg-gray-50">
+                    <span className="text-[12px] font-bold text-gray-700">안전거래 TIP</span>
+                    <Link
+                      href="/guide"
+                      className="text-[11px] text-gray-500 hover:text-accent flex items-center gap-0.5"
+                    >
+                      이용방법 <ChevronRight size={11} />
+                    </Link>
+                  </div>
+                  <div className="flex-1 flex flex-col justify-center px-4 py-3">
+                    <p className="text-[14px] font-bold text-gray-800 mb-1">{TIPS[tipIdx].title}</p>
+                    <p className="text-[12px] text-gray-500 leading-relaxed line-clamp-2">{TIPS[tipIdx].desc}</p>
+                  </div>
+                  <div className="flex items-center justify-between px-4 py-2 border-t border-gray-100">
+                    <div className="flex items-center gap-1">
                       {TIPS.map((_, i) => (
-                        <button key={i} onClick={() => setTipIdx(i)}
-                          className={`h-1 rounded-full transition-all ${i === tipIdx ? 'bg-accent w-4' : 'bg-gray-300 w-1.5'}`} />
+                        <button
+                          key={i}
+                          onClick={() => setTipIdx(i)}
+                          aria-label={`TIP ${i + 1}`}
+                          className={`h-1.5 rounded-full transition-all ${i === tipIdx ? 'bg-accent w-5' : 'bg-gray-300 w-1.5 hover:bg-gray-400'}`}
+                        />
                       ))}
                     </div>
-                    <Link href="/guide" className="text-[10px] text-gray-500 hover:text-accent flex items-center gap-0.5">
-                      이용방법 <ChevronRight size={10} />
-                    </Link>
+                    <div className="flex items-center gap-0.5">
+                      <button
+                        type="button"
+                        onClick={() => setTipIdx((i) => (i - 1 + TIPS.length) % TIPS.length)}
+                        aria-label="이전 TIP"
+                        className="w-6 h-6 flex items-center justify-center text-gray-400 hover:text-accent hover:bg-gray-50 rounded"
+                      >
+                        <ChevronLeft size={13} />
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setTipIdx((i) => (i + 1) % TIPS.length)}
+                        aria-label="다음 TIP"
+                        className="w-6 h-6 flex items-center justify-center text-gray-400 hover:text-accent hover:bg-gray-50 rounded"
+                      >
+                        <ChevronRight size={13} />
+                      </button>
+                    </div>
                   </div>
                 </div>
               </div>
