@@ -88,7 +88,7 @@ export default function MainCompaniesSection({ buyers, loading }: Props) {
         <h2 className="text-[17px] font-bold text-gray-800 absolute left-1/2 -translate-x-1/2 hidden md:block">
           메인 등록업체
         </h2>
-        <Link href="/register-business" className="flex items-center gap-1 text-[11px] text-gray-500 hover:text-accent border border-gray-200 px-2 py-1 rounded-sm">
+        <Link href="/advertising" className="flex items-center gap-1 text-[11px] text-gray-500 hover:text-accent border border-gray-200 px-2 py-1 rounded-sm">
           광고문의 <HelpCircle size={10} />
         </Link>
       </div>

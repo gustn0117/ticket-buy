@@ -133,7 +133,7 @@ export default function BottomSections({ notices }: BottomSectionsProps) {
             <h3 className="text-[14px] font-bold">바로가기</h3>
           </div>
           <div className="grid grid-cols-3 gap-0">
-            <Link href="/register-business" className="flex flex-col items-center gap-1.5 py-4 hover:bg-gray-50 transition-colors border-r border-b border-gray-100">
+            <Link href="/advertising" className="flex flex-col items-center gap-1.5 py-4 hover:bg-gray-50 transition-colors border-r border-b border-gray-100">
               <div className="w-8 h-8 bg-gray-100 rounded flex items-center justify-center text-gray-500">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M12 20h9M16.5 3.5a2.121 2.121 0 013 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
               </div>

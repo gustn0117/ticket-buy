@@ -125,7 +125,7 @@ export default function Header() {
                   <span className="text-[10px]">내 대시보드</span>
                 </Link>
               )}
-              <Link href="/register-business" className="flex flex-col items-center gap-1 text-gray-600 hover:text-accent transition-colors">
+              <Link href="/advertising" className="flex flex-col items-center gap-1 text-gray-600 hover:text-accent transition-colors">
                 <Megaphone size={22} strokeWidth={1.5} />
                 <span className="text-[10px]">광고문의</span>
               </Link>
