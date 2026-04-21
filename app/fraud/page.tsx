@@ -48,9 +48,9 @@ export default function FraudPage() {
           <h2 className="section-title">안전 거래 수칙</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
             {[
-              { icon: FileText, title: '계약서 필수 작성', desc: '거래 전 반드시 전자 계약서를 작성하고 서명을 받으세요.', color: 'zinc' },
-              { icon: Users, title: '상대방 정보 확인', desc: '거래 전 상대방의 거래 이력과 평판을 확인하세요.', color: 'blue' },
-              { icon: Shield, title: '사업자 조회', desc: '프리미엄 업체의 사업자등록번호를 반드시 확인하세요.', color: 'zinc' },
+              { icon: FileText, title: '통화·문자 기록 보관', desc: '업체와 주고받은 통화 녹음·문자를 캡처해 분쟁 시 증거로 활용하세요.', color: 'zinc' },
+              { icon: Users, title: '상대방 정보 확인', desc: '더치트(thecheat.co.kr)에서 연락처·계좌 사기 이력을 조회하세요.', color: 'blue' },
+              { icon: Shield, title: '사업자 조회', desc: '국세청 홈택스에서 사업자등록번호로 정상 사업자 여부를 확인하세요.', color: 'zinc' },
               { icon: Phone, title: '피해 신고', desc: '사기 피해 시 경찰 사이버수사대(182)에 즉시 신고하세요.', color: 'blue' },
             ].map((item) => (
               <div key={item.title} className="card card-hover p-4 flex items-start gap-3">

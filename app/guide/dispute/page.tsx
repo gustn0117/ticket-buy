@@ -17,7 +17,7 @@ const sellerDisputes = [
 ];
 
 const steps = [
-  { icon: MessageCircle, num: 1, title: '당사자 협의', desc: '채팅으로 상대방과\n먼저 협의 시도', color: 'bg-blue-500' },
+  { icon: MessageCircle, num: 1, title: '당사자 협의', desc: '업체 전화·문자로\n먼저 협의 시도', color: 'bg-blue-500' },
   { icon: FileText, num: 2, title: '신고 접수', desc: '협의 실패 시\n플랫폼에 신고 접수', color: 'bg-amber-500' },
   { icon: Scale, num: 3, title: '조정 지원', desc: '플랫폼의 제한적\n조정 지원', color: 'bg-purple-500' },
   { icon: AlertTriangle, num: 4, title: '법적 절차 안내', desc: '미해결 시\n법적 절차 직접 진행', color: 'bg-red-500' },
@@ -94,12 +94,12 @@ export default function DisputeGuidePage() {
         <div className="card p-5 space-y-5">
           <div>
             <h3 className="text-[13px] font-semibold text-zinc-800 mb-1">1단계: 당사자 협의 (필수)</h3>
-            <p className="text-[12px] text-zinc-600 mb-1">분쟁 발생 시 먼저 채팅을 통해 상대방과 협의를 시도해야 합니다.</p>
+            <p className="text-[12px] text-zinc-600 mb-1">분쟁 발생 시 먼저 업체 전화·문자를 통해 상대방과 협의를 시도해야 합니다.</p>
             <p className="text-[11px] text-zinc-500">협의 기간: 최소 24시간 이상 협의 시도 후 신고 접수 가능</p>
           </div>
           <div>
             <h3 className="text-[13px] font-semibold text-zinc-800 mb-1">2단계: 신고 접수</h3>
-            <p className="text-[12px] text-zinc-600">당사자 간 협의가 실패한 경우, 플랫폼에 신고를 접수할 수 있습니다. 채팅 기록, 계약서, 입금 내역 등 증거 자료를 함께 제출해 주세요.</p>
+            <p className="text-[12px] text-zinc-600">당사자 간 협의가 실패한 경우, 플랫폼에 신고를 접수할 수 있습니다. 통화·문자 기록, 입금 내역, 캡처 등 증거 자료를 함께 제출해 주세요.</p>
           </div>
           <div>
             <h3 className="text-[13px] font-semibold text-zinc-800 mb-1">3단계: 조정 지원</h3>

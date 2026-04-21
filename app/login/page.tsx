@@ -163,7 +163,7 @@ function LoginContent() {
             {loginType === 'normal' ? (
               <>
                 <p className="font-medium text-gray-800 mb-1">개인 회원이세요?</p>
-                <p className="text-[11px] text-gray-500">상품권을 직접 사고 팔거나 채팅으로 거래할 수 있습니다.</p>
+                <p className="text-[11px] text-gray-500">상품권을 직접 사고 팔며, 업체와 전화·문자로 거래할 수 있습니다.</p>
                 <Link href="/register" className="block mt-2 font-medium text-accent">개인 회원가입 →</Link>
               </>
             ) : (

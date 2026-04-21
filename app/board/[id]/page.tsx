@@ -3,8 +3,8 @@
 import { use, useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { ArrowLeft, Eye, Clock, Pencil, Trash2, ShieldCheck, Tag, ShoppingCart } from 'lucide-react';
-import { getPost, deletePost, createChat } from '@/lib/api';
+import { ArrowLeft, Eye, Clock, Pencil, Trash2, Tag, ShoppingCart, Phone, MessageSquare } from 'lucide-react';
+import { getPost, deletePost } from '@/lib/api';
 import { useAuth } from '@/contexts/AuthContext';
 import type { DBPost, DBUser } from '@/lib/types';
 import { getCategoryName } from '@/data/mock';
@@ -51,35 +51,22 @@ export default function PostDetailPage({ params }: { params: Promise<{ id: strin
     }
   };
 
-  const handleContact = async (tradeType: 'direct' | 'escrow' = 'direct') => {
-    if (!post) return;
-    if (!post.author_id) {
-      if (post.guest_phone) {
-        if (confirm(`판매자 연락처: ${post.guest_phone}\n\n전화를 거시겠습니까?`)) {
-          window.location.href = `tel:${post.guest_phone}`;
-        }
-      } else {
-        alert('판매자가 연락처를 등록하지 않았습니다. 직접 연락할 수 없습니다.');
-      }
+  const contactPhone = post?.guest_phone || post?.author?.phone || '';
+
+  const handleCall = () => {
+    if (!contactPhone) {
+      alert('등록된 연락처가 없어 전화를 걸 수 없습니다.');
       return;
     }
-    if (!isLoggedIn || !user) {
-      router.push('/login');
+    window.location.href = `tel:${contactPhone.replace(/[^0-9]/g, '')}`;
+  };
+
+  const handleSms = () => {
+    if (!contactPhone) {
+      alert('등록된 연락처가 없어 문자를 보낼 수 없습니다.');
       return;
     }
-    try {
-      const isSell = post.type === 'sell';
-      const chat = await createChat({
-        post_id: post.id,
-        buyer_id: isSell ? user.id : post.author_id,
-        seller_id: isSell ? post.author_id : user.id,
-        trade_type: tradeType,
-      });
-      window.dispatchEvent(new CustomEvent('open-chat-widget', { detail: { chatId: chat.id } }));
-    } catch (err: unknown) {
-      const message = err instanceof Error ? err.message : '채팅 생성에 실패했습니다.';
-      alert(message);
-    }
+    window.location.href = `sms:${contactPhone.replace(/[^0-9]/g, '')}`;
   };
 
   if (loading) {
@@ -214,15 +201,29 @@ export default function PostDetailPage({ params }: { params: Promise<{ id: strin
             {/* CTA */}
             {!isAuthor && (
               <div className="px-5 py-5 bg-gray-50 space-y-2">
-                <button onClick={() => handleContact('direct')} className="btn-accent w-full h-11 text-[13px]">
-                  {isSell ? '구매 문의하기' : '판매 문의하기'} (직접거래)
-                </button>
-                <button onClick={() => handleContact('escrow')} className="btn-secondary w-full h-11 text-[13px]">
-                  <ShieldCheck size={14} /> 중개거래로 안전하게
-                </button>
-                <p className="text-[11px] text-gray-500 text-center leading-relaxed">
-                  중개거래 시 티켓바이가 계약서 작성 및 금전/상품권 전달을 중개합니다.
-                </p>
+                {contactPhone ? (
+                  <>
+                    <div className="flex items-center justify-center gap-2 py-2 text-[14px] font-bold text-gray-900 whitespace-nowrap">
+                      <Phone size={16} className="text-accent shrink-0" />
+                      <span className="tabular-nums">{contactPhone}</span>
+                    </div>
+                    <div className="grid grid-cols-2 gap-2">
+                      <button onClick={handleCall} className="btn-accent w-full h-11 text-[13px]">
+                        <Phone size={14} /> 전화하기
+                      </button>
+                      <button onClick={handleSms} className="btn-secondary w-full h-11 text-[13px]">
+                        <MessageSquare size={14} /> 문자하기
+                      </button>
+                    </div>
+                    <p className="text-[11px] text-gray-500 text-center leading-relaxed">
+                      {isSell ? '판매자' : '구매자'}에게 직접 전화 또는 문자로 수량·금액·발송 조건을 협의하세요.
+                    </p>
+                  </>
+                ) : (
+                  <p className="text-[12px] text-gray-500 text-center py-4">
+                    연락처가 등록되지 않았습니다.
+                  </p>
+                )}
               </div>
             )}
 
