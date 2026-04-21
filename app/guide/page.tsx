@@ -251,9 +251,9 @@ function GuideContent() {
               <div className="space-y-2">
                 {[
                   { step: 1, title: '판매글 찾기', desc: '메인 또는 게시판에서 원하는 상품권을 찾습니다.' },
-                  { step: 2, title: '구매하기 클릭', desc: '상세 페이지에서 구매 버튼을 선택합니다.' },
-                  { step: 3, title: '채팅으로 협의', desc: '판매자와 수량, 금액, 발송일을 협의합니다.' },
-                  { step: 4, title: '계약 → 입금 → 수령', desc: '전자 계약서 작성 후 입금, 상품권 수령하면 완료.' },
+                  { step: 2, title: '업체 전화번호 확인', desc: '상세 페이지에 표기된 업체 전화번호를 확인합니다.' },
+                  { step: 3, title: '전화 또는 문자 연락', desc: '업체 번호로 직접 전화·문자하여 수량·금액·발송 조건을 협의합니다.' },
+                  { step: 4, title: '입금 → 수령', desc: '협의된 방식으로 입금 후 상품권을 수령하면 거래 완료.' },
                 ].map(item => (
                   <div key={item.step} className="bg-white border border-gray-200 p-3 flex gap-3">
                     <div className="w-6 h-6 rounded-full bg-accent text-white text-[11px] font-bold flex items-center justify-center shrink-0">{item.step}</div>
@@ -272,10 +272,10 @@ function GuideContent() {
               </h2>
               <div className="space-y-2">
                 {[
-                  { step: 1, title: '회원가입 또는 로그인', desc: '글 작성을 위해 로그인이 필요합니다.' },
-                  { step: 2, title: '글쓰기 클릭', desc: '게시판 상단의 글쓰기 버튼을 눌러 작성합니다.' },
-                  { step: 3, title: '상세 정보 입력', desc: '상품권 종류, 액면가, 판매가, 발송 방법을 입력합니다.' },
-                  { step: 4, title: '구매자 응대', desc: '채팅으로 구매자와 협의 후 거래를 진행합니다.' },
+                  { step: 1, title: '판매글 작성', desc: '회원가입 없이도 판매글을 등록할 수 있습니다.' },
+                  { step: 2, title: '상세 정보 입력', desc: '상품권 종류, 액면가, 판매가, 발송 방법, 연락처를 입력합니다.' },
+                  { step: 3, title: '구매자 연락 수신', desc: '글에 기재된 연락처로 전화·문자가 오면 응답합니다.' },
+                  { step: 4, title: '협의 후 거래 진행', desc: '전화 또는 문자로 수량·입금 방법을 협의하고 거래를 진행합니다.' },
                 ].map(item => (
                   <div key={item.step} className="bg-white border border-gray-200 p-3 flex gap-3">
                     <div className="w-6 h-6 rounded-full bg-gray-700 text-white text-[11px] font-bold flex items-center justify-center shrink-0">{item.step}</div>

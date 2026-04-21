@@ -19,9 +19,9 @@ type PostWithAuthor = DBPost & { author: DBUser };
 const BRANDS = ['전체', '롯데', '신세계', '문화상품권', '컬쳐랜드', '스타벅스', '온캐시', '구글플레이', '해피머니'];
 
 const TIPS = [
-  { title: '계약서 없이 입금 금지', desc: '모든 거래는 반드시 전자 계약서 작성 후 진행하세요.' },
+  { title: '업체 전화번호로 직접 확인', desc: '거래 전 반드시 업체 전화/문자로 조건과 신원을 확인하세요.' },
   { title: '너무 높은 할인율은 의심', desc: '시세보다 비정상적으로 높은 할인율은 사기 신호일 수 있어요.' },
-  { title: '신원 확인은 필수', desc: '거래 전 상대방의 거래 이력과 평점을 꼭 확인하세요.' },
+  { title: '사업자 등록번호 조회', desc: '국세청 홈택스에서 정상 사업자인지 꼭 확인하세요.' },
 ];
 
 export default function Home() {
@@ -93,6 +93,99 @@ export default function Home() {
               </Link>
             </div>
 
+            {/* 메인 등록업체 (상단 배치, 확대) */}
+            <MainCompaniesSection buyers={buyers} loading={loading} />
+
+            {/* 공지 + TIP (좌우 2열, 확대) */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+              {/* 공지사항 */}
+              <div className="bg-white border border-gray-200 flex flex-col">
+                <div className="flex items-center justify-between px-5 py-3.5 border-b border-gray-200 bg-gray-50">
+                  <div className="flex items-center gap-2">
+                    <Megaphone size={16} className="text-accent" />
+                    <span className="text-[15px] font-bold text-gray-800">공지사항</span>
+                  </div>
+                  <Link href="/notice" className="text-[12px] text-gray-500 hover:text-accent flex items-center gap-0.5">
+                    더보기 <ChevronRight size={12} />
+                  </Link>
+                </div>
+                <div className="flex-1">
+                  {notices.length === 0 ? (
+                    <p className="py-10 text-center text-[13px] text-gray-400">등록된 공지가 없습니다.</p>
+                  ) : notices.slice(0, 6).map(n => (
+                    <Link key={n.id} href="/notice" className="flex items-center justify-between px-5 py-3 hover:bg-gray-50 border-b border-gray-100 last:border-b-0 transition-colors">
+                      <div className="flex items-center gap-2 min-w-0 flex-1">
+                        {n.is_pinned && <ShieldCheck size={13} className="text-accent shrink-0" />}
+                        <span className="text-[13px] text-gray-700 truncate">{n.title}</span>
+                      </div>
+                      <span className="text-[11px] text-gray-400 shrink-0 ml-3 tabular-nums">
+                        {new Date(n.created_at).toLocaleDateString('ko-KR')}
+                      </span>
+                    </Link>
+                  ))}
+                </div>
+              </div>
+
+              {/* TIP */}
+              <div className="bg-white border border-gray-200 flex items-stretch overflow-hidden">
+                <div
+                  className="shrink-0 flex flex-col items-center justify-center w-[130px] text-white px-3"
+                  style={{ background: 'linear-gradient(135deg, #E63946 0%, #F26A4B 100%)' }}
+                >
+                  <Lightbulb size={28} className="mb-1.5" />
+                  <p className="text-[13px] font-bold tracking-widest">SAFE TIP</p>
+                  <p className="text-[11px] opacity-75 mt-1 tabular-nums">
+                    {String(tipIdx + 1).padStart(2, '0')} / {String(TIPS.length).padStart(2, '0')}
+                  </p>
+                </div>
+                <div className="flex-1 min-w-0 flex flex-col">
+                  <div className="flex items-center justify-between px-5 py-3.5 border-b border-gray-200 bg-gray-50">
+                    <span className="text-[15px] font-bold text-gray-800">안전거래 TIP</span>
+                    <Link
+                      href="/guide"
+                      className="text-[12px] text-gray-500 hover:text-accent flex items-center gap-0.5"
+                    >
+                      이용방법 <ChevronRight size={12} />
+                    </Link>
+                  </div>
+                  <div className="flex-1 flex flex-col justify-center px-5 py-5">
+                    <p className="text-[16px] font-bold text-gray-900 mb-2">{TIPS[tipIdx].title}</p>
+                    <p className="text-[13px] text-gray-600 leading-relaxed line-clamp-3">{TIPS[tipIdx].desc}</p>
+                  </div>
+                  <div className="flex items-center justify-between px-5 py-2.5 border-t border-gray-100">
+                    <div className="flex items-center gap-1.5">
+                      {TIPS.map((_, i) => (
+                        <button
+                          key={i}
+                          onClick={() => setTipIdx(i)}
+                          aria-label={`TIP ${i + 1}`}
+                          className={`h-2 rounded-full transition-all ${i === tipIdx ? 'bg-accent w-6' : 'bg-gray-300 w-2 hover:bg-gray-400'}`}
+                        />
+                      ))}
+                    </div>
+                    <div className="flex items-center gap-0.5">
+                      <button
+                        type="button"
+                        onClick={() => setTipIdx((i) => (i - 1 + TIPS.length) % TIPS.length)}
+                        aria-label="이전 TIP"
+                        className="w-7 h-7 flex items-center justify-center text-gray-400 hover:text-accent hover:bg-gray-50 rounded"
+                      >
+                        <ChevronLeft size={14} />
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setTipIdx((i) => (i + 1) % TIPS.length)}
+                        aria-label="다음 TIP"
+                        className="w-7 h-7 flex items-center justify-center text-gray-400 hover:text-accent hover:bg-gray-50 rounded"
+                      >
+                        <ChevronRight size={14} />
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
             {/* 브랜드 바로가기 */}
             <div className="bg-white border border-gray-200 mb-5">
               <div className="flex items-center justify-between px-4 py-3 border-b border-gray-200">
@@ -110,99 +203,6 @@ export default function Home() {
                 ))}
               </div>
             </div>
-
-            {/* 공지 + TIP */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-5">
-              {/* 공지사항 */}
-              <div className="bg-white border border-gray-200">
-                <div className="flex items-center justify-between px-4 py-2.5 border-b border-gray-200 bg-gray-50">
-                  <div className="flex items-center gap-1.5">
-                    <Megaphone size={13} className="text-gray-500" />
-                    <span className="text-[12px] font-bold">공지사항</span>
-                  </div>
-                  <Link href="/notice" className="text-[11px] text-gray-500 hover:text-accent flex items-center gap-0.5">
-                    더보기 <ChevronRight size={11} />
-                  </Link>
-                </div>
-                <div>
-                  {notices.length === 0 ? (
-                    <p className="py-6 text-center text-[12px] text-gray-400">등록된 공지가 없습니다.</p>
-                  ) : notices.map(n => (
-                    <Link key={n.id} href="/notice" className="flex items-center justify-between px-4 py-2 hover:bg-gray-50 border-b border-gray-100 last:border-b-0 transition-colors">
-                      <div className="flex items-center gap-1.5 min-w-0 flex-1">
-                        {n.is_pinned && <ShieldCheck size={11} className="text-accent shrink-0" />}
-                        <span className="text-[12px] text-gray-700 truncate">{n.title}</span>
-                      </div>
-                      <span className="text-[10px] text-gray-400 shrink-0 ml-3">
-                        {new Date(n.created_at).toLocaleDateString('ko-KR')}
-                      </span>
-                    </Link>
-                  ))}
-                </div>
-              </div>
-
-              {/* TIP */}
-              <div className="bg-white border border-gray-200 flex items-stretch overflow-hidden">
-                <div
-                  className="shrink-0 flex flex-col items-center justify-center w-[110px] text-white px-2"
-                  style={{ background: 'linear-gradient(135deg, #E63946 0%, #F26A4B 100%)' }}
-                >
-                  <Lightbulb size={22} className="mb-1" />
-                  <p className="text-[11px] font-bold tracking-widest">SAFE TIP</p>
-                  <p className="text-[10px] opacity-75 mt-0.5 tabular-nums">
-                    {String(tipIdx + 1).padStart(2, '0')} / {String(TIPS.length).padStart(2, '0')}
-                  </p>
-                </div>
-                <div className="flex-1 min-w-0 flex flex-col">
-                  <div className="flex items-center justify-between px-4 py-2.5 border-b border-gray-200 bg-gray-50">
-                    <span className="text-[12px] font-bold text-gray-700">안전거래 TIP</span>
-                    <Link
-                      href="/guide"
-                      className="text-[11px] text-gray-500 hover:text-accent flex items-center gap-0.5"
-                    >
-                      이용방법 <ChevronRight size={11} />
-                    </Link>
-                  </div>
-                  <div className="flex-1 flex flex-col justify-center px-4 py-3">
-                    <p className="text-[14px] font-bold text-gray-800 mb-1">{TIPS[tipIdx].title}</p>
-                    <p className="text-[12px] text-gray-500 leading-relaxed line-clamp-2">{TIPS[tipIdx].desc}</p>
-                  </div>
-                  <div className="flex items-center justify-between px-4 py-2 border-t border-gray-100">
-                    <div className="flex items-center gap-1">
-                      {TIPS.map((_, i) => (
-                        <button
-                          key={i}
-                          onClick={() => setTipIdx(i)}
-                          aria-label={`TIP ${i + 1}`}
-                          className={`h-1.5 rounded-full transition-all ${i === tipIdx ? 'bg-accent w-5' : 'bg-gray-300 w-1.5 hover:bg-gray-400'}`}
-                        />
-                      ))}
-                    </div>
-                    <div className="flex items-center gap-0.5">
-                      <button
-                        type="button"
-                        onClick={() => setTipIdx((i) => (i - 1 + TIPS.length) % TIPS.length)}
-                        aria-label="이전 TIP"
-                        className="w-6 h-6 flex items-center justify-center text-gray-400 hover:text-accent hover:bg-gray-50 rounded"
-                      >
-                        <ChevronLeft size={13} />
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => setTipIdx((i) => (i + 1) % TIPS.length)}
-                        aria-label="다음 TIP"
-                        className="w-6 h-6 flex items-center justify-center text-gray-400 hover:text-accent hover:bg-gray-50 rounded"
-                      >
-                        <ChevronRight size={13} />
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* 메인 등록업체 (5열 그리드) */}
-            <MainCompaniesSection buyers={buyers} loading={loading} />
 
             {/* 상품권 팝니다 (최신 판매글) */}
             <section className="mb-6">
