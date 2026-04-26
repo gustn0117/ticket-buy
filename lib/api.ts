@@ -177,7 +177,7 @@ export async function updateChat(id: string, updates: Partial<DBChat>) {
 export async function getNotices() {
   const { data, error } = await supabase
     .from('notices')
-    .select('id, title, is_pinned, created_at')
+    .select('id, title, content, is_pinned, created_at')
     .order('is_pinned', { ascending: false })
     .order('created_at', { ascending: false })
     .limit(30);

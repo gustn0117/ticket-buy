@@ -10,6 +10,9 @@ import { AD_SLOT_LABELS, AD_SLOT_SIZES } from '@/lib/ads';
 import Link from 'next/link';
 import { Users, FileText, Bell, MessageCircle, Trash2, Shield, Megaphone, Pencil, Plus, Eye, EyeOff, ArrowLeft, Radio, Crown, LayoutDashboard, TrendingUp, ExternalLink, Activity } from 'lucide-react';
 import { getCategoryName } from '@/data/mock';
+import { getCache, setCache } from '@/lib/cache';
+
+const ADMIN_CACHE_TTL = 30 * 1000; // 30초 (관리자라 너무 길면 변경사항 반영이 늦음)
 
 const ALL_SLOTS = Object.keys(AD_SLOT_LABELS) as AdSlot[];
 
@@ -26,12 +29,12 @@ export default function AdminPage() {
     premium: { total: number; active: number; premium: number };
     notices: { total: number; pinned: number };
   } | null>(null);
-  const [users, setUsers] = useState<DBUser[]>([]);
-  const [posts, setPosts] = useState<(DBPost & { author?: DBUser })[]>([]);
-  const [notices, setNotices] = useState<DBNotice[]>([]);
-  const [chats, setChats] = useState<DBChat[]>([]);
-  const [premiumBuyers, setPremiumBuyers] = useState<DBPremiumBuyer[]>([]);
-  const [ads, setAds] = useState<Ad[]>([]);
+  const [users, setUsers] = useState<DBUser[]>(() => getCache<DBUser[]>('admin_users') ?? []);
+  const [posts, setPosts] = useState<(DBPost & { author?: DBUser })[]>(() => getCache<(DBPost & { author?: DBUser })[]>('admin_posts') ?? []);
+  const [notices, setNotices] = useState<DBNotice[]>(() => getCache<DBNotice[]>('admin_notices') ?? []);
+  const [chats, setChats] = useState<DBChat[]>(() => getCache<DBChat[]>('admin_chats') ?? []);
+  const [premiumBuyers, setPremiumBuyers] = useState<DBPremiumBuyer[]>(() => getCache<DBPremiumBuyer[]>('admin_premium') ?? []);
+  const [ads, setAds] = useState<Ad[]>(() => getCache<Ad[]>('admin_ads') ?? []);
   const [visitors, setVisitors] = useState<{ total: number; today: number; trades?: number; last30: { date: string; count: number }[] }>({ total: 0, today: 0, trades: 0, last30: [] });
   const [showStatsEdit, setShowStatsEdit] = useState(false);
   const [statsEdit, setStatsEdit] = useState({ today: 0, total: 0, trades: 0 });
@@ -42,7 +45,7 @@ export default function AdminPage() {
     if (res.ok) setVisitors(await res.json());
     setShowStatsEdit(false);
   };
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(() => !getCache('admin_users'));
 
   // Chat viewer
   const [viewingChat, setViewingChat] = useState<DBChat | null>(null);
@@ -52,6 +55,7 @@ export default function AdminPage() {
 
   // Notice form
   const [noticeTitle, setNoticeTitle] = useState('');
+  const [noticeContent, setNoticeContent] = useState('');
   const [noticePinned, setNoticePinned] = useState(false);
 
   // Premium buyer form
@@ -112,7 +116,8 @@ export default function AdminPage() {
   };
 
   const fetchData = async () => {
-    setLoading(true);
+    // 캐시가 없을 때만 로딩 인디케이터 노출 (캐시 있으면 즉시 화면 + 백그라운드 갱신)
+    if (!getCache('admin_users')) setLoading(true);
 
     // 모든 데이터를 동시에 병렬 요청
     const [u, p, n, c, v, pb, ad, st, cm] = await Promise.allSettled([
@@ -127,13 +132,13 @@ export default function AdminPage() {
       fetch('/api/community/posts?limit=200').then(r => r.json()),
     ]);
 
-    if (u.status === 'fulfilled' && u.value.data) setUsers(u.value.data);
-    if (p.status === 'fulfilled' && p.value.data) setPosts(p.value.data);
-    if (n.status === 'fulfilled' && n.value.data) setNotices(n.value.data);
-    if (c.status === 'fulfilled' && c.value.data) setChats(c.value.data);
+    if (u.status === 'fulfilled' && u.value.data) { setUsers(u.value.data); setCache('admin_users', u.value.data, ADMIN_CACHE_TTL); }
+    if (p.status === 'fulfilled' && p.value.data) { setPosts(p.value.data); setCache('admin_posts', p.value.data, ADMIN_CACHE_TTL); }
+    if (n.status === 'fulfilled' && n.value.data) { setNotices(n.value.data); setCache('admin_notices', n.value.data, ADMIN_CACHE_TTL); }
+    if (c.status === 'fulfilled' && c.value.data) { setChats(c.value.data); setCache('admin_chats', c.value.data, ADMIN_CACHE_TTL); }
     if (v.status === 'fulfilled') setVisitors(v.value);
-    if (pb.status === 'fulfilled') setPremiumBuyers(pb.value);
-    if (ad.status === 'fulfilled') setAds(ad.value);
+    if (pb.status === 'fulfilled') { setPremiumBuyers(pb.value); setCache('admin_premium', pb.value, ADMIN_CACHE_TTL); }
+    if (ad.status === 'fulfilled') { setAds(ad.value); setCache('admin_ads', ad.value, ADMIN_CACHE_TTL); }
     if (st.status === 'fulfilled' && st.value?.users) setStats(st.value);
     if (cm.status === 'fulfilled' && cm.value?.posts) setCommunityPosts(cm.value.posts);
 
@@ -161,7 +166,19 @@ export default function AdminPage() {
   const deleteUser = async (id: string) => { if (!confirm('정말 삭제하시겠습니까?')) return; await apiDeleteUser(id); fetchData(); };
   const deletePost = async (id: string) => { if (!confirm('게시글을 삭제하시겠습니까?')) return; await apiDeletePost(id); fetchData(); };
   const deleteNotice = async (id: string) => { if (!confirm('공지를 삭제하시겠습니까?')) return; await apiDeleteNotice(id); fetchData(); };
-  const addNotice = async (e: React.FormEvent) => { e.preventDefault(); if (!noticeTitle.trim()) return; await apiCreateNotice({ title: noticeTitle, is_pinned: noticePinned }); setNoticeTitle(''); setNoticePinned(false); fetchData(); };
+  const addNotice = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!noticeTitle.trim()) return;
+    await apiCreateNotice({
+      title: noticeTitle.trim(),
+      content: noticeContent.trim() || undefined,
+      is_pinned: noticePinned,
+    });
+    setNoticeTitle('');
+    setNoticeContent('');
+    setNoticePinned(false);
+    fetchData();
+  };
   const toggleUserType = async (id: string, t: string) => { await updateUser(id, { type: t === 'normal' ? 'business' : 'normal' } as any); fetchData(); };
   const deleteChat = async (id: string) => { if (!confirm('채팅을 삭제하시겠습니까?')) return; await apiDeleteChat(id); if (viewingChat?.id === id) setViewingChat(null); fetchData(); };
 
@@ -685,34 +702,63 @@ export default function AdminPage() {
       {/* ─── Notices ─── */}
       {!loading && tab === 'notices' && (
         <div className="space-y-4">
-          <form onSubmit={addNotice} className="card p-4 flex items-end gap-3">
-            <div className="flex-1">
-              <label className="block text-[12px] font-medium text-zinc-600 mb-1">새 공지사항</label>
-              <input value={noticeTitle} onChange={(e) => setNoticeTitle(e.target.value)} placeholder="공지 제목을 입력하세요" className="input" required />
+          <form onSubmit={addNotice} className="card p-4 space-y-3">
+            <div>
+              <label className="block text-[12px] font-medium text-zinc-600 mb-1">제목 *</label>
+              <input
+                value={noticeTitle}
+                onChange={(e) => setNoticeTitle(e.target.value)}
+                placeholder="공지 제목을 입력하세요"
+                className="input"
+                required
+              />
             </div>
-            <label className="flex items-center gap-1.5 text-[12px] text-zinc-600 whitespace-nowrap shrink-0 mb-1">
-              <input type="checkbox" checked={noticePinned} onChange={(e) => setNoticePinned(e.target.checked)} className="w-3.5 h-3.5" /> 고정
-            </label>
-            <button type="submit" className="btn-primary h-10 shrink-0">등록</button>
+            <div>
+              <label className="block text-[12px] font-medium text-zinc-600 mb-1">내용 (선택)</label>
+              <textarea
+                value={noticeContent}
+                onChange={(e) => setNoticeContent(e.target.value)}
+                placeholder="상세 내용을 입력하세요. 비워두면 제목만 노출됩니다."
+                rows={5}
+                className="input resize-y"
+                style={{ height: 'auto', minHeight: '110px', padding: '10px 12px' }}
+              />
+            </div>
+            <div className="flex items-center justify-between">
+              <label className="flex items-center gap-1.5 text-[12px] text-zinc-600 whitespace-nowrap">
+                <input
+                  type="checkbox"
+                  checked={noticePinned}
+                  onChange={(e) => setNoticePinned(e.target.checked)}
+                  className="w-3.5 h-3.5"
+                />
+                상단 고정
+              </label>
+              <button type="submit" className="btn-primary h-10 px-6">등록</button>
+            </div>
           </form>
           <div className="card overflow-hidden">
             <table className="w-full text-[13px]">
               <thead><tr className="bg-zinc-50 border-b border-zinc-200">
                 <th className="table-header text-center py-2.5 px-4 w-16">고정</th>
-                <th className="table-header text-left py-2.5 px-4">제목</th>
+                <th className="table-header text-left py-2.5 px-4 w-[26%]">제목</th>
+                <th className="table-header text-left py-2.5 px-4">내용</th>
                 <th className="table-header text-left py-2.5 px-4 w-28">등록일</th>
                 <th className="table-header text-center py-2.5 px-4 w-16">관리</th>
               </tr></thead>
               <tbody>
                 {notices.map(n => (
-                  <tr key={n.id} className="border-b border-zinc-100 hover:bg-zinc-50">
+                  <tr key={n.id} className="border-b border-zinc-100 hover:bg-zinc-50 align-top">
                     <td className="py-2.5 px-4 text-center">{n.is_pinned ? <span className="badge bg-zinc-900 text-white">고정</span> : '-'}</td>
-                    <td className="py-2.5 px-4">{n.title}</td>
-                    <td className="py-2.5 px-4 text-zinc-400 text-[11px]">{new Date(n.created_at).toLocaleDateString('ko-KR')}</td>
+                    <td className="py-2.5 px-4 font-medium">{n.title}</td>
+                    <td className="py-2.5 px-4 text-zinc-500 text-[12px] whitespace-pre-wrap break-words">
+                      {n.content ? (n.content.length > 160 ? n.content.slice(0, 160) + '…' : n.content) : '-'}
+                    </td>
+                    <td className="py-2.5 px-4 text-zinc-400 text-[11px] whitespace-nowrap">{new Date(n.created_at).toLocaleDateString('ko-KR')}</td>
                     <td className="py-2.5 px-4 text-center"><button onClick={() => deleteNotice(n.id)} className="text-red-400 hover:text-red-600"><Trash2 size={14} /></button></td>
                   </tr>
                 ))}
-                {notices.length === 0 && <tr><td colSpan={4} className="py-8 text-center text-zinc-400">공지가 없습니다.</td></tr>}
+                {notices.length === 0 && <tr><td colSpan={5} className="py-8 text-center text-zinc-400">공지가 없습니다.</td></tr>}
               </tbody>
             </table>
           </div>
