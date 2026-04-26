@@ -16,10 +16,8 @@ export default function Footer() {
             <Link href="/privacy" className="hover:text-accent">이메일무단수집거부</Link>
             <Link href="/faq" className="hover:text-accent">오류신고</Link>
           </div>
-          <div className="flex items-center gap-2 text-[11px] text-gray-500">
-            <span>불법추심으로피해발생시</span>
-            <span>채무자대리인 신청하세요</span>
-          </div>
+          <div />
+
         </div>
       </div>
 
@@ -53,17 +51,12 @@ export default function Footer() {
               </p>
             </div>
 
-            {/* 금리 안내 */}
+            {/* 거래 안내 */}
             <div>
-              <h4 className="text-[13px] font-bold text-gray-800 mb-3">거래 및 수수료 안내</h4>
-              <div className="flex items-center gap-2 mb-2">
-                <Link href="/guide" className="flex items-center gap-1 text-[11px] text-accent hover:underline">
-                  이자계산기
-                </Link>
-              </div>
+              <h4 className="text-[13px] font-bold text-gray-800 mb-3">상품권 거래안내</h4>
               <p className="text-[10px] text-gray-400 leading-relaxed">
-                상품권 매입률은 업체마다 상이하며 거래 조건에 따라 달라질 수 있습니다.
-                중개수수료 없음, 추가비용 없음. 상품권 종류, 금액에 따라 매입률이 달라집니다.
+                상품권 매입률은 업체마다 상이하며 거래조건에 따라 달라질 수 있습니다.<br />
+                상품권 종류, 당일 상품권 시세에 따라 매입률이 달라질 수 있습니다.
               </p>
             </div>
 
