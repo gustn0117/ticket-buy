@@ -1,6 +1,9 @@
+'use client';
+
 import Link from 'next/link';
 import { Phone, User } from 'lucide-react';
 import type { DBPremiumBuyer } from '@/lib/types';
+import { addRecentBuyer } from '@/lib/recentBuyers';
 
 interface CompanyCardProps {
   company: DBPremiumBuyer;
@@ -24,10 +27,23 @@ export default function CompanyCard({ company, isNew, fallbackIndex = 0 }: Compa
   const fallbackBg = FALLBACK_BGS[fallbackIndex % FALLBACK_BGS.length];
   const displayTitle = company.headline?.trim() || company.description?.split('\n')[0]?.slice(0, 20) || company.name;
 
+  const handleClick = () => {
+    addRecentBuyer({
+      id: company.id,
+      name: company.name,
+      region: company.region,
+      image_url: company.image_url,
+    });
+  };
+
   return (
-    <Link href={`/buyer/${company.id}`} className="company-card card-hover block group">
+    <Link
+      href={`/buyer/${company.id}`}
+      onClick={handleClick}
+      className="company-card card-hover block group"
+    >
       {/* Image header with overlay title */}
-      <div className="relative h-[150px] md:h-[160px] overflow-hidden">
+      <div className="relative h-[100px] md:h-[110px] overflow-hidden">
         {company.image_url ? (
           <>
             <img src={company.image_url} alt={company.name} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
@@ -43,7 +59,7 @@ export default function CompanyCard({ company, isNew, fallbackIndex = 0 }: Compa
         )}
         {/* Title overlay */}
         <div className="absolute inset-0 flex items-center justify-center px-3">
-          <h3 className="text-white text-[15px] md:text-[16px] font-bold text-center leading-tight drop-shadow-md">
+          <h3 className="text-white text-[13px] md:text-[14px] font-bold text-center leading-tight drop-shadow-md">
             {displayTitle}
           </h3>
         </div>
@@ -57,12 +73,12 @@ export default function CompanyCard({ company, isNew, fallbackIndex = 0 }: Compa
       </div>
 
       {/* Body */}
-      <div className="px-3 pt-3.5 pb-2.5">
-        <p className="text-[12.5px] text-gray-600 leading-relaxed text-center line-clamp-2 min-h-[40px]">
+      <div className="px-3 pt-2.5 pb-2">
+        <p className="text-[12px] text-gray-600 leading-snug text-center line-clamp-2 min-h-[34px]">
           {company.description || '상품권 매입 전문 업체입니다.'}
         </p>
-        <div className="flex items-center justify-center gap-1.5 mt-3 text-[14px] md:text-[15px] font-bold text-gray-900 whitespace-nowrap">
-          <Phone size={14} className="text-gray-500 shrink-0" />
+        <div className="flex items-center justify-center gap-1.5 mt-2 text-[13px] md:text-[14px] font-bold text-gray-900 whitespace-nowrap">
+          <Phone size={13} className="text-gray-500 shrink-0" />
           <span className="tabular-nums whitespace-nowrap">{company.phone}</span>
         </div>
       </div>
