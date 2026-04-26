@@ -2,21 +2,19 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { ChevronRight, PenSquare, ShoppingCart, Tag, Megaphone, Lightbulb, ShieldCheck, ChevronLeft } from 'lucide-react';
+import { ChevronRight, PenSquare, ShoppingCart, Megaphone, Lightbulb, ShieldCheck, ChevronLeft } from 'lucide-react';
 import HeroBanner from '@/components/home/HeroBanner';
 import LeftSidebar from '@/components/layout/LeftSidebar';
 import RightSidebar from '@/components/layout/RightSidebar';
 import SellPostItem from '@/components/home/SellPostItem';
 import MainCompaniesSection from '@/components/home/MainCompaniesSection';
-import { BrandLogo } from '@/components/BrandLogo';
+import BuyerFinder from '@/components/home/BuyerFinder';
+import RealtimeSellPosts from '@/components/home/RealtimeSellPosts';
 import { getPosts, getPremiumBuyers, getNotices } from '@/lib/api';
 import type { DBPost, DBUser, DBPremiumBuyer, DBNotice } from '@/lib/types';
 import { getCache, setCache } from '@/lib/cache';
-import { PostRowSkeleton } from '@/components/Skeleton';
 
 type PostWithAuthor = DBPost & { author: DBUser };
-
-const BRANDS = ['전체', '롯데', '신세계', '문화상품권', '컬쳐랜드', '스타벅스', '온캐시', '구글플레이', '해피머니'];
 
 const TIPS = [
   { title: '업체 전화번호로 직접 확인', desc: '거래 전 반드시 업체 전화/문자로 조건과 신원을 확인하세요.' },
@@ -63,56 +61,14 @@ export default function Home() {
           <LeftSidebar />
 
           <div className="flex-1 min-w-0">
-            {/* 빠른 액션 배너 */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-5">
-              <Link
-                href="/board/write?type=sell"
-                className="flex items-center gap-4 p-5 bg-gradient-to-r from-accent to-accent-light text-white hover:brightness-110 transition-all"
-              >
-                <div className="w-12 h-12 rounded-full bg-white/25 flex items-center justify-center shrink-0 text-white">
-                  <Tag size={22} />
-                </div>
-                <div className="flex-1 min-w-0">
-                  <p className="text-[15px] font-bold text-white">상품권 팝니다</p>
-                  <p className="text-[12px] text-white/90">남는 상품권을 빠르게 판매하세요</p>
-                </div>
-                <PenSquare size={18} className="text-white/80" />
-              </Link>
-              <Link
-                href="/board/write?type=buy"
-                className="flex items-center gap-4 p-5 bg-gradient-to-r from-zinc-700 to-zinc-900 text-white hover:brightness-125 transition-all"
-              >
-                <div className="w-12 h-12 rounded-full bg-white/25 flex items-center justify-center shrink-0 text-white">
-                  <ShoppingCart size={22} />
-                </div>
-                <div className="flex-1 min-w-0">
-                  <p className="text-[15px] font-bold text-white">상품권 삽니다</p>
-                  <p className="text-[12px] text-white/85">원하는 상품권을 직접 구매하세요</p>
-                </div>
-                <PenSquare size={18} className="text-white/80" />
-              </Link>
-            </div>
+            {/* 지역으로 / 상품으로 업체찾기 (CTA 자리 대체) */}
+            <BuyerFinder />
 
-            {/* 브랜드 바로가기 (CTA 바로 아래) */}
-            <div className="bg-white border border-gray-200 mb-5">
-              <div className="flex items-center justify-between px-4 py-3 border-b border-gray-200">
-                <h3 className="text-[14px] font-bold text-gray-800">브랜드별 바로가기</h3>
-                <Link href="/category/product" className="text-[11px] text-gray-500 hover:text-accent flex items-center gap-0.5">
-                  전체 브랜드 <ChevronRight size={11} />
-                </Link>
-              </div>
-              <div className="grid grid-cols-5 md:grid-cols-9 gap-0 p-2">
-                {BRANDS.map(b => (
-                  <Link key={b} href={`/category/product?type=${b}`} className="flex flex-col items-center gap-1 py-2 hover:bg-accent/5 rounded transition-colors">
-                    <BrandLogo name={b} size="sm" />
-                    <span className="text-[10px] text-gray-600 truncate max-w-full">{b}</span>
-                  </Link>
-                ))}
-              </div>
-            </div>
-
-            {/* 메인 등록업체 (브랜드 아래) */}
+            {/* 메인 등록업체 */}
             <MainCompaniesSection buyers={buyers} loading={loading} />
+
+            {/* 실시간 판매문의 (매입업체 옆) */}
+            <RealtimeSellPosts posts={sellPosts} loading={loading} />
 
             {/* 공지 + TIP (좌우 2열, 확대) */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
@@ -204,48 +160,7 @@ export default function Home() {
               </div>
             </div>
 
-            {/* 상품권 팝니다 (최신 판매글) */}
-            <section className="mb-6">
-              <div className="flex items-center justify-between mb-3">
-                <h2 className="text-[16px] font-bold text-gray-800 flex items-center gap-2">
-                  <Tag size={15} className="text-accent" />
-                  상품권 팝니다
-                  {!loading && <span className="text-[12px] text-gray-400 font-normal">{sellPosts.length}건</span>}
-                </h2>
-                <div className="flex items-center gap-2">
-                  <Link href="/board?tab=sell" className="text-[12px] text-gray-500 hover:text-accent flex items-center gap-0.5">
-                    전체보기 <ChevronRight size={11} />
-                  </Link>
-                  <Link href="/board/write?type=sell" className="btn-accent h-8 px-3 text-[12px]">
-                    <PenSquare size={12} /> 판매글 작성
-                  </Link>
-                </div>
-              </div>
-
-              {loading ? (
-                <div className="bg-white border border-gray-200 overflow-hidden"><PostRowSkeleton count={8} /></div>
-              ) : sellPosts.length === 0 ? (
-                <div className="bg-white border border-dashed border-gray-200 py-10 text-center">
-                  <p className="text-[13px] text-gray-500 mb-2">아직 등록된 판매글이 없습니다.</p>
-                  <Link href="/board/write?type=sell" className="text-[12px] text-accent font-bold hover:underline">
-                    첫 판매글 작성하기 →
-                  </Link>
-                </div>
-              ) : (
-                <div className="bg-white border border-gray-200 overflow-hidden">
-                  {sellPosts.slice(0, 10).map((post, idx) => (
-                    <SellPostItem key={post.id} post={post} num={idx + 1} showStatus />
-                  ))}
-                  {sellPosts.length > 10 && (
-                    <Link href="/board?tab=sell" className="block py-3 text-center text-[12px] text-gray-500 hover:text-accent hover:bg-gray-50 border-t border-gray-100 transition-colors">
-                      + {sellPosts.length - 10}건 더보기
-                    </Link>
-                  )}
-                </div>
-              )}
-            </section>
-
-            {/* 상품권 삽니다 (최신 구매글) */}
+            {/* 상품권 삽니다 (최신 구매글, 줄광고 형태로 유지) */}
             <section className="mb-6">
               <div className="flex items-center justify-between mb-3">
                 <h2 className="text-[16px] font-bold text-gray-800 flex items-center gap-2">
