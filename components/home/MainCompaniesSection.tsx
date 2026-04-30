@@ -1,9 +1,10 @@
 'use client';
 
 import Link from 'next/link';
-import { ChevronRight, Phone, User, HelpCircle } from 'lucide-react';
+import { Phone, User, HelpCircle } from 'lucide-react';
 import CompanyCard from './CompanyCard';
 import type { DBPremiumBuyer } from '@/lib/types';
+import { pickFallbackPhoto } from '@/lib/fallbackPhotos';
 
 interface Props {
   buyers: DBPremiumBuyer[];
@@ -34,23 +35,18 @@ const DEMO_COMPANIES = [
 ];
 
 function DemoCard({ item, index }: { item: typeof DEMO_COMPANIES[number]; index: number }) {
-  const bgs = [
-    'linear-gradient(135deg, #4A5568 0%, #2D3748 100%)',
-    'linear-gradient(135deg, #5A6F8C 0%, #2C3E50 100%)',
-    'linear-gradient(135deg, #4B5563 0%, #1F2937 100%)',
-    'linear-gradient(135deg, #6B7280 0%, #374151 100%)',
-    'linear-gradient(135deg, #475569 0%, #1E293B 100%)',
-    'linear-gradient(135deg, #52525B 0%, #27272A 100%)',
-    'linear-gradient(135deg, #57534E 0%, #292524 100%)',
-  ];
-  const bg = bgs[index % bgs.length];
+  const fallbackPhoto = pickFallbackPhoto(`demo-${index}-${item.title}`);
 
   return (
     <Link href="/register-business" className="company-card card-hover block group">
-      <div className="relative h-[125px] md:h-[140px] overflow-hidden" style={{ background: bg }}>
-        <div className="absolute inset-0 opacity-20" style={{
-          backgroundImage: 'radial-gradient(circle at 20% 30%, rgba(255,255,255,0.3) 0%, transparent 40%), radial-gradient(circle at 80% 70%, rgba(255,255,255,0.15) 0%, transparent 40%)'
-        }} />
+      <div className="relative h-[125px] md:h-[140px] overflow-hidden bg-gray-800">
+        <img
+          src={fallbackPhoto}
+          alt=""
+          loading="lazy"
+          className="w-full h-full object-cover opacity-60 transition-transform duration-500 group-hover:scale-105"
+        />
+        <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-black/40 to-black/75" />
         <div className="absolute inset-0 flex items-center justify-center px-3">
           <h3 className="text-white text-[14px] md:text-[15px] font-bold text-center leading-tight drop-shadow-md">
             {item.title}

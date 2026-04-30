@@ -4,27 +4,17 @@ import Link from 'next/link';
 import { Phone, User } from 'lucide-react';
 import type { DBPremiumBuyer } from '@/lib/types';
 import { addRecentBuyer } from '@/lib/recentBuyers';
+import { pickFallbackPhoto } from '@/lib/fallbackPhotos';
 
 interface CompanyCardProps {
   company: DBPremiumBuyer;
   isNew?: boolean;
-  /** 이미지가 없을 때 기본 배경 인덱스 (0~6) */
+  /** 이미지가 없을 때 기본 배경 사진 인덱스 (0~9) */
   fallbackIndex?: number;
 }
 
-/** 이미지가 없을 때 쓰는 아바타 풍의 그라데이션 배경 세트 */
-const FALLBACK_BGS = [
-  'linear-gradient(135deg, #4A5568 0%, #2D3748 100%)',
-  'linear-gradient(135deg, #5A6F8C 0%, #2C3E50 100%)',
-  'linear-gradient(135deg, #4B5563 0%, #1F2937 100%)',
-  'linear-gradient(135deg, #6B7280 0%, #374151 100%)',
-  'linear-gradient(135deg, #475569 0%, #1E293B 100%)',
-  'linear-gradient(135deg, #52525B 0%, #27272A 100%)',
-  'linear-gradient(135deg, #57534E 0%, #292524 100%)',
-];
-
 export default function CompanyCard({ company, isNew, fallbackIndex = 0 }: CompanyCardProps) {
-  const fallbackBg = FALLBACK_BGS[fallbackIndex % FALLBACK_BGS.length];
+  const fallbackPhoto = pickFallbackPhoto(company.id || fallbackIndex);
   const displayTitle = company.headline?.trim() || company.description?.split('\n')[0]?.slice(0, 20) || company.name;
 
   const handleClick = () => {
@@ -43,20 +33,16 @@ export default function CompanyCard({ company, isNew, fallbackIndex = 0 }: Compa
       className="company-card card-hover block group"
     >
       {/* Image header with overlay title */}
-      <div className="relative h-[125px] md:h-[140px] overflow-hidden">
-        {company.image_url ? (
-          <>
-            <img src={company.image_url} alt={company.name} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
-            <div className="absolute inset-0 bg-gradient-to-b from-black/10 via-black/30 to-black/70" />
-          </>
-        ) : (
-          <div className="w-full h-full relative" style={{ background: fallbackBg }}>
-            {/* subtle pattern */}
-            <div className="absolute inset-0 opacity-20" style={{
-              backgroundImage: 'radial-gradient(circle at 20% 30%, rgba(255,255,255,0.3) 0%, transparent 40%), radial-gradient(circle at 80% 70%, rgba(255,255,255,0.15) 0%, transparent 40%)'
-            }} />
-          </div>
-        )}
+      <div className="relative h-[125px] md:h-[140px] overflow-hidden bg-gray-800">
+        <img
+          src={company.image_url || fallbackPhoto}
+          alt={company.name}
+          loading="lazy"
+          className={`w-full h-full object-cover transition-transform duration-500 group-hover:scale-105 ${
+            company.image_url ? '' : 'opacity-60'
+          }`}
+        />
+        <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-black/40 to-black/75" />
         {/* Title overlay */}
         <div className="absolute inset-0 flex items-center justify-center px-3">
           <h3 className="text-white text-[14px] md:text-[15px] font-bold text-center leading-tight drop-shadow-md">
