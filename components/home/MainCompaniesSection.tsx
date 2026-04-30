@@ -1,10 +1,13 @@
 'use client';
 
 import Link from 'next/link';
-import { Phone, User, HelpCircle } from 'lucide-react';
+import { Phone, User, HelpCircle, MessageSquare } from 'lucide-react';
 import CompanyCard from './CompanyCard';
 import type { DBPremiumBuyer } from '@/lib/types';
 import { pickFallbackPhoto } from '@/lib/fallbackPhotos';
+
+const SMS_BODY = '티켓바이 보고 연락드립니다.';
+const stripPhone = (p: string) => p.replace(/[^0-9+]/g, '');
 
 interface Props {
   buyers: DBPremiumBuyer[];
@@ -36,40 +39,61 @@ const DEMO_COMPANIES = [
 
 function DemoCard({ item, index }: { item: typeof DEMO_COMPANIES[number]; index: number }) {
   const fallbackPhoto = pickFallbackPhoto(`demo-${index}-${item.title}`);
+  const phoneDigits = stripPhone(item.phone);
 
   return (
-    <Link href="/register-business" className="company-card card-hover block group">
-      <div className="relative h-[125px] md:h-[140px] overflow-hidden bg-gray-800">
-        <img
-          src={fallbackPhoto}
-          alt=""
-          loading="lazy"
-          className="w-full h-full object-cover opacity-60 transition-transform duration-500 group-hover:scale-105"
-        />
-        <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-black/40 to-black/75" />
-        <div className="absolute inset-0 flex items-center justify-center px-3">
-          <h3 className="text-white text-[14px] md:text-[15px] font-bold text-center leading-tight drop-shadow-md">
-            {item.title}
-          </h3>
+    <div className="company-card card-hover group flex flex-col">
+      <Link href="/register-business" className="block">
+        <div className="relative h-[125px] md:h-[140px] overflow-hidden bg-gray-800">
+          <img
+            src={fallbackPhoto}
+            alt=""
+            loading="lazy"
+            className="w-full h-full object-cover opacity-60 transition-transform duration-500 group-hover:scale-105"
+          />
+          <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-black/40 to-black/75" />
+          <div className="absolute inset-0 flex items-center justify-center px-3">
+            <h3 className="text-white text-[14px] md:text-[15px] font-bold text-center leading-tight drop-shadow-md">
+              {item.title}
+            </h3>
+          </div>
         </div>
-      </div>
-      <div className="px-3 pt-3 pb-2.5">
-        <p className="text-[12.5px] text-gray-600 leading-snug text-center line-clamp-2 min-h-[38px] whitespace-pre-line">
-          {item.desc}
-        </p>
-        <div className="flex items-center justify-center gap-1.5 mt-2.5 text-[14px] md:text-[15px] font-bold text-gray-900 whitespace-nowrap">
-          <Phone size={14} className="text-gray-500 shrink-0" />
-          <span className="tabular-nums whitespace-nowrap">{item.phone}</span>
+        <div className="px-3 pt-3 pb-2.5">
+          <p className="text-[12.5px] text-gray-600 leading-snug text-center line-clamp-2 min-h-[38px] whitespace-pre-line">
+            {item.desc}
+          </p>
+          <div className="flex items-center justify-center gap-1.5 mt-2.5 text-[14px] md:text-[15px] font-bold text-gray-900 whitespace-nowrap">
+            <Phone size={14} className="text-gray-500 shrink-0" />
+            <span className="tabular-nums whitespace-nowrap">{item.phone}</span>
+          </div>
         </div>
+        <div className="flex justify-between items-center px-3 py-2 border-t border-gray-100 text-[11px]">
+          <span className="text-accent font-bold flex items-center gap-1 truncate">
+            <User size={10} className="shrink-0" />
+            <span className="truncate">{item.name}</span>
+          </span>
+          <span className="text-gray-500 shrink-0 ml-2">{item.region}</span>
+        </div>
+      </Link>
+
+      {/* 모바일 전용: 통화하기 / 문자하기 */}
+      <div className="grid grid-cols-2 border-t border-gray-100 md:hidden">
+        <a
+          href={`tel:${phoneDigits}`}
+          className="flex items-center justify-center gap-1.5 py-2.5 text-[12px] font-bold text-white bg-accent hover:brightness-110 transition-all whitespace-nowrap"
+          aria-label={`${item.name} 통화하기`}
+        >
+          <Phone size={13} /> 통화하기
+        </a>
+        <a
+          href={`sms:${phoneDigits}?&body=${encodeURIComponent(SMS_BODY)}`}
+          className="flex items-center justify-center gap-1.5 py-2.5 text-[12px] font-bold text-gray-700 bg-gray-100 hover:bg-gray-200 transition-colors whitespace-nowrap"
+          aria-label={`${item.name} 문자하기`}
+        >
+          <MessageSquare size={13} /> 문자하기
+        </a>
       </div>
-      <div className="flex justify-between items-center px-3 py-2 border-t border-gray-100 text-[11px]">
-        <span className="text-accent font-bold flex items-center gap-1 truncate">
-          <User size={10} className="shrink-0" />
-          <span className="truncate">{item.name}</span>
-        </span>
-        <span className="text-gray-500 shrink-0 ml-2">{item.region}</span>
-      </div>
-    </Link>
+    </div>
   );
 }
 
