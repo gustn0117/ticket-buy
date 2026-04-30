@@ -75,21 +75,21 @@ export default function SellPostItem({ post, num, showStatus }: SellPostItemProp
           {post.title}
         </span>
 
-        {/* 태그들 */}
-        <div className="hidden md:flex items-center gap-1 flex-wrap shrink min-w-0">
-          {post.tags?.map((tag) => {
+        {/* 태그들 (한 줄 고정, 넘치면 잘림) */}
+        <div className="hidden md:flex items-center gap-1 min-w-0 overflow-hidden flex-nowrap">
+          {post.tags?.slice(0, 3).map((tag) => {
             const cleanTag = tag.startsWith('#') ? tag : `#${tag}`;
             return (
-              <span key={tag} className={`text-[11px] px-1.5 py-px rounded ${tagClass(tag)}`}>
+              <span key={tag} className={`shrink-0 text-[11px] px-1.5 py-px rounded whitespace-nowrap ${tagClass(tag)}`}>
                 {cleanTag}
               </span>
             );
           })}
           {isNew && (
-            <span className="text-[10px] font-bold px-1.5 py-px rounded bg-red-500 text-white">N</span>
+            <span className="shrink-0 text-[10px] font-bold px-1.5 py-px rounded bg-red-500 text-white whitespace-nowrap">N</span>
           )}
           {showStatus && (
-            <span className={`text-[11px] px-1.5 py-px rounded ${status.cls}`}>{status.label}</span>
+            <span className={`shrink-0 text-[11px] px-1.5 py-px rounded whitespace-nowrap ${status.cls}`}>{status.label}</span>
           )}
         </div>
 
