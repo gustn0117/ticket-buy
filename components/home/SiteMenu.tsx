@@ -58,6 +58,7 @@ const COLUMNS: MenuColumn[] = [
     href: '/faq',
     items: [
       { label: '공지사항', href: '/notice' },
+      { label: '1:1 문의', href: '/contact', highlight: true },
       { label: '자주묻는질문', href: '/faq' },
       { label: '이용안내', href: '/guide' },
       { label: '광고문의', href: '/advertising' },

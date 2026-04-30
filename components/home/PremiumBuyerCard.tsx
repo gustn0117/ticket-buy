@@ -55,7 +55,7 @@ export default function PremiumBuyerCard({ id, name, description, phone, region,
           </Link>
           <a href={phone ? `tel:${phone.replace(/[^0-9]/g, '')}` : '#'}
             className="flex-1 h-9 flex items-center justify-center gap-1 text-[12px] font-medium text-white rounded transition-opacity hover:opacity-90"
-            style={{ background: 'linear-gradient(135deg, #F04E51 0%, #F26A4B 100%)' }}>
+            style={{ background: 'linear-gradient(135deg, var(--accent) 0%, var(--accent-light) 100%)' }}>
             <Phone size={12} /> 통화하기
           </a>
         </div>
