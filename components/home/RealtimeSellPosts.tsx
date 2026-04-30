@@ -6,6 +6,8 @@ import { getCategoryName } from '@/data/mock';
 interface Props {
   posts: (DBPost & { author?: DBUser })[];
   loading?: boolean;
+  /** 매입업체 옆 사이드바 모드 (1열, 더 컴팩트) */
+  sidebar?: boolean;
 }
 
 function timeAgo(iso: string): string {
@@ -21,9 +23,10 @@ function timeAgo(iso: string): string {
   return `${String(date.getMonth() + 1).padStart(2, '0')}.${String(date.getDate()).padStart(2, '0')}`;
 }
 
-export default function RealtimeSellPosts({ posts, loading }: Props) {
+export default function RealtimeSellPosts({ posts, loading, sidebar = false }: Props) {
+  const limit = sidebar ? 10 : 12;
   return (
-    <section className="bg-white border border-gray-200 mb-5">
+    <section className={`bg-white border border-gray-200 ${sidebar ? 'h-full flex flex-col' : 'mb-5'}`}>
       <div className="flex items-center justify-between px-4 py-3 border-b border-gray-200 bg-gray-50">
         <h3 className="text-[14px] font-bold text-gray-800 flex items-center gap-1.5">
           <span className="inline-flex items-center justify-center w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse" />
@@ -42,17 +45,19 @@ export default function RealtimeSellPosts({ posts, loading }: Props) {
       </div>
 
       {loading ? (
-        <div className="py-10 text-center text-[13px] text-gray-400">불러오는 중...</div>
+        <div className={`text-center text-[13px] text-gray-400 ${sidebar ? 'flex-1 flex items-center justify-center py-10' : 'py-10'}`}>
+          불러오는 중...
+        </div>
       ) : posts.length === 0 ? (
-        <div className="py-10 text-center">
+        <div className={`text-center ${sidebar ? 'flex-1 flex flex-col items-center justify-center py-10' : 'py-10'}`}>
           <p className="text-[13px] text-gray-500 mb-2">아직 등록된 판매 문의가 없습니다.</p>
           <Link href="/board/write?type=sell" className="text-[12px] text-accent font-bold hover:underline">
             첫 판매글 작성하기 →
           </Link>
         </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-x-0">
-          {posts.slice(0, 12).map((post) => {
+        <div className={sidebar ? 'flex-1 flex flex-col' : 'grid grid-cols-1 md:grid-cols-2 gap-x-0'}>
+          {posts.slice(0, limit).map((post) => {
             const isNew = Date.now() - new Date(post.created_at).getTime() < 86400000;
             return (
               <Link
@@ -72,9 +77,11 @@ export default function RealtimeSellPosts({ posts, loading }: Props) {
                 <span className="shrink-0 text-[12px] font-bold text-gray-900 tabular-nums whitespace-nowrap">
                   {post.price > 0 ? `${post.price.toLocaleString()}원` : '협의'}
                 </span>
-                <span className="shrink-0 hidden md:inline-block text-[10px] text-gray-400 tabular-nums w-[52px] text-right">
-                  {timeAgo(post.created_at)}
-                </span>
+                {!sidebar && (
+                  <span className="shrink-0 hidden md:inline-block text-[10px] text-gray-400 tabular-nums w-[52px] text-right">
+                    {timeAgo(post.created_at)}
+                  </span>
+                )}
               </Link>
             );
           })}
@@ -86,7 +93,7 @@ export default function RealtimeSellPosts({ posts, loading }: Props) {
           href="/board?tab=sell"
           className="block py-2.5 text-center text-[12px] text-gray-500 hover:text-accent hover:bg-gray-50 border-t border-gray-100 transition-colors"
         >
-          판매 문의 전체보기 (줄광고형) →
+          {sidebar ? '전체 판매문의 보기' : '판매 문의 전체보기 (줄광고형)'} →
         </Link>
       )}
     </section>
