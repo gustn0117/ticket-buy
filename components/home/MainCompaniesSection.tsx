@@ -80,14 +80,14 @@ function DemoCard({ item, index }: { item: typeof DEMO_COMPANIES[number]; index:
       <div className="grid grid-cols-2 border-t border-gray-100 md:hidden">
         <a
           href={`tel:${phoneDigits}`}
-          className="flex items-center justify-center gap-1.5 py-2.5 text-[12px] font-bold text-white bg-accent hover:brightness-110 transition-all whitespace-nowrap"
+          className="flex items-center justify-center gap-1.5 py-2.5 text-[12.5px] font-bold text-accent bg-white hover:bg-accent-bg transition-colors whitespace-nowrap border-r border-gray-100"
           aria-label={`${item.name} 통화하기`}
         >
           <Phone size={13} /> 통화하기
         </a>
         <a
           href={`sms:${phoneDigits}?&body=${encodeURIComponent(SMS_BODY)}`}
-          className="flex items-center justify-center gap-1.5 py-2.5 text-[12px] font-bold text-gray-700 bg-gray-100 hover:bg-gray-200 transition-colors whitespace-nowrap"
+          className="flex items-center justify-center gap-1.5 py-2.5 text-[12.5px] font-bold text-gray-700 bg-white hover:bg-gray-50 transition-colors whitespace-nowrap"
           aria-label={`${item.name} 문자하기`}
         >
           <MessageSquare size={13} /> 문자하기

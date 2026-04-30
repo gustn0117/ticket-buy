@@ -91,7 +91,7 @@ export default function CompanyCard({ company, isNew, fallbackIndex = 0 }: Compa
           <a
             href={`tel:${phoneDigits}`}
             onClick={(e) => e.stopPropagation()}
-            className="flex items-center justify-center gap-1.5 py-2.5 text-[12px] font-bold text-white bg-accent hover:brightness-110 transition-all whitespace-nowrap"
+            className="flex items-center justify-center gap-1.5 py-2.5 text-[12.5px] font-bold text-accent bg-white hover:bg-accent-bg transition-colors whitespace-nowrap border-r border-gray-100"
             aria-label={`${company.name} 통화하기`}
           >
             <Phone size={13} /> 통화하기
@@ -99,7 +99,7 @@ export default function CompanyCard({ company, isNew, fallbackIndex = 0 }: Compa
           <a
             href={`sms:${phoneDigits}?&body=${encodeURIComponent(SMS_BODY)}`}
             onClick={(e) => e.stopPropagation()}
-            className="flex items-center justify-center gap-1.5 py-2.5 text-[12px] font-bold text-gray-700 bg-gray-100 hover:bg-gray-200 transition-colors whitespace-nowrap"
+            className="flex items-center justify-center gap-1.5 py-2.5 text-[12.5px] font-bold text-gray-700 bg-white hover:bg-gray-50 transition-colors whitespace-nowrap"
             aria-label={`${company.name} 문자하기`}
           >
             <MessageSquare size={13} /> 문자하기
