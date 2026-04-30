@@ -47,22 +47,22 @@ function DemoCard({ item, index }: { item: typeof DEMO_COMPANIES[number]; index:
 
   return (
     <Link href="/register-business" className="company-card card-hover block group">
-      <div className="relative h-[100px] md:h-[110px] overflow-hidden" style={{ background: bg }}>
+      <div className="relative h-[125px] md:h-[140px] overflow-hidden" style={{ background: bg }}>
         <div className="absolute inset-0 opacity-20" style={{
           backgroundImage: 'radial-gradient(circle at 20% 30%, rgba(255,255,255,0.3) 0%, transparent 40%), radial-gradient(circle at 80% 70%, rgba(255,255,255,0.15) 0%, transparent 40%)'
         }} />
         <div className="absolute inset-0 flex items-center justify-center px-3">
-          <h3 className="text-white text-[13px] md:text-[14px] font-bold text-center leading-tight drop-shadow-md">
+          <h3 className="text-white text-[14px] md:text-[15px] font-bold text-center leading-tight drop-shadow-md">
             {item.title}
           </h3>
         </div>
       </div>
-      <div className="px-3 pt-2.5 pb-2">
-        <p className="text-[12px] text-gray-600 leading-snug text-center line-clamp-2 min-h-[34px] whitespace-pre-line">
+      <div className="px-3 pt-3 pb-2.5">
+        <p className="text-[12.5px] text-gray-600 leading-snug text-center line-clamp-2 min-h-[38px] whitespace-pre-line">
           {item.desc}
         </p>
-        <div className="flex items-center justify-center gap-1.5 mt-2 text-[13px] md:text-[14px] font-bold text-gray-900 whitespace-nowrap">
-          <Phone size={13} className="text-gray-500 shrink-0" />
+        <div className="flex items-center justify-center gap-1.5 mt-2.5 text-[14px] md:text-[15px] font-bold text-gray-900 whitespace-nowrap">
+          <Phone size={14} className="text-gray-500 shrink-0" />
           <span className="tabular-nums whitespace-nowrap">{item.phone}</span>
         </div>
       </div>
