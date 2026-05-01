@@ -9,7 +9,6 @@ import RightSidebar from '@/components/layout/RightSidebar';
 import MainCompaniesSection from '@/components/home/MainCompaniesSection';
 import BuyerFinder from '@/components/home/BuyerFinder';
 import RealtimeSellPosts from '@/components/home/RealtimeSellPosts';
-import SiteMenu from '@/components/home/SiteMenu';
 import SellPostItem from '@/components/home/SellPostItem';
 import { getPosts, getPremiumBuyers } from '@/lib/api';
 import type { DBPost, DBUser, DBPremiumBuyer } from '@/lib/types';
@@ -51,10 +50,7 @@ export default function Home() {
             {/* 2. 메인 등록업체 (전체 폭) */}
             <MainCompaniesSection buyers={buyers} loading={loading} />
 
-            {/* 3. 사이트 메뉴 */}
-            <SiteMenu />
-
-            {/* 4. 상품권 삽니다 (줄광고) */}
+            {/* 3. 상품권 삽니다 (줄광고) */}
             <section className="mb-6">
               <div className="flex items-center justify-between mb-3">
                 <h2 className="text-[16px] font-bold text-gray-800 flex items-center gap-2">
@@ -95,7 +91,7 @@ export default function Home() {
               )}
             </section>
 
-            {/* 5. 실시간 판매문의 (맨 밑) */}
+            {/* 4. 실시간 판매문의 (맨 밑) */}
             <RealtimeSellPosts posts={sellPosts} loading={loading} />
           </div>
 
