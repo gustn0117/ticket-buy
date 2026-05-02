@@ -4,42 +4,88 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { useState, useEffect } from 'react';
-import { Search, User, Menu, X, Clock, Eye, ShieldAlert, Megaphone, ChevronDown } from 'lucide-react';
+import { Search, User, Menu, X, Clock, Eye, ShieldAlert, Megaphone } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
-import MegaMenu, { type MegaMenuItem } from './MegaMenu';
+import MegaMenuBar, { type MegaMenuColumn } from './MegaMenuBar';
 
-const REGION_ITEMS: MegaMenuItem[] = [
-  { label: '서울', href: '/category/area?region=서울' },
-  { label: '경기', href: '/category/area?region=경기' },
-  { label: '인천', href: '/category/area?region=인천' },
-  { label: '부산', href: '/category/area?region=부산' },
-  { label: '대구', href: '/category/area?region=대구' },
-  { label: '더보기 +', href: '/category/area', highlight: true },
-];
+const HOT_BADGE = <span className="text-[10px] text-white bg-accent px-1 rounded-sm">HOT</span>;
+const NEW_BADGE = <span className="text-[10px] text-white bg-green-600 px-1 rounded-sm">N</span>;
 
-const PRODUCT_ITEMS: MegaMenuItem[] = [
-  { label: '신세계', href: '/category/product?type=신세계' },
-  { label: '롯데', href: '/category/product?type=롯데' },
-  { label: '문화상품권', href: '/category/product?type=문화상품권' },
-  { label: '컬쳐랜드', href: '/category/product?type=컬쳐랜드' },
-  { label: '스타벅스', href: '/category/product?type=스타벅스' },
-  { label: '더보기 +', href: '/category/product', highlight: true },
-];
-
-const COMMUNITY_ITEMS: MegaMenuItem[] = [
-  { label: '업계뉴스', href: '/community?cat=news' },
-  { label: '거래TIP (안전거래)', href: '/community?cat=tip' },
-  { label: '질문과 답변', href: '/community?cat=qna' },
-  { label: '통합검색', href: '/search' },
-];
-
-const SUPPORT_ITEMS: MegaMenuItem[] = [
-  { label: '공지사항', href: '/notice' },
-  { label: '1:1 문의', href: '/contact', highlight: true },
-  { label: '자주묻는질문', href: '/faq' },
-  { label: '이용안내', href: '/guide' },
-  { label: '광고문의', href: '/advertising' },
-  { label: '사기방지 가이드', href: '/fraud' },
+const NAV_COLUMNS: MegaMenuColumn[] = [
+  {
+    title: '상품권 팝니다',
+    href: '/board?tab=sell',
+    badge: HOT_BADGE,
+    items: [
+      { label: '판매글 작성', href: '/board/write?type=sell', highlight: true },
+      { label: '전체 판매글', href: '/board?tab=sell' },
+      { label: '실시간 판매문의', href: '/board?tab=sell' },
+    ],
+  },
+  {
+    title: '상품권 삽니다',
+    href: '/board?tab=buy',
+    badge: HOT_BADGE,
+    items: [
+      { label: '구매글 작성', href: '/board/write?type=buy', highlight: true },
+      { label: '전체 구매글', href: '/board?tab=buy' },
+    ],
+  },
+  {
+    title: '지역별 업체찾기',
+    href: '/category/area',
+    items: [
+      { label: '서울', href: '/category/area?region=서울' },
+      { label: '경기', href: '/category/area?region=경기' },
+      { label: '인천', href: '/category/area?region=인천' },
+      { label: '부산', href: '/category/area?region=부산' },
+      { label: '대구', href: '/category/area?region=대구' },
+      { label: '더보기 +', href: '/category/area', highlight: true },
+    ],
+  },
+  {
+    title: '상품별 업체찾기',
+    href: '/category/product',
+    items: [
+      { label: '신세계', href: '/category/product?type=신세계' },
+      { label: '롯데', href: '/category/product?type=롯데' },
+      { label: '문화상품권', href: '/category/product?type=문화상품권' },
+      { label: '컬쳐랜드', href: '/category/product?type=컬쳐랜드' },
+      { label: '스타벅스', href: '/category/product?type=스타벅스' },
+      { label: '더보기 +', href: '/category/product', highlight: true },
+    ],
+  },
+  {
+    title: '매입업체',
+    href: '/recommended',
+    badge: NEW_BADGE,
+    items: [
+      { label: '추천 매입업체', href: '/recommended' },
+      { label: '맞춤 검색', href: '/custom-search' },
+      { label: '광고문의', href: '/advertising' },
+    ],
+  },
+  {
+    title: '커뮤니티',
+    href: '/community',
+    items: [
+      { label: '업계뉴스', href: '/community?cat=news' },
+      { label: '거래TIP (안전거래)', href: '/community?cat=tip' },
+      { label: '질문과 답변', href: '/community?cat=qna' },
+      { label: '통합검색', href: '/search' },
+    ],
+  },
+  {
+    title: '고객센터',
+    href: '/faq',
+    items: [
+      { label: '공지사항', href: '/notice' },
+      { label: '1:1 문의', href: '/contact', highlight: true },
+      { label: '자주묻는질문', href: '/faq' },
+      { label: '이용안내', href: '/guide' },
+      { label: '사기방지 가이드', href: '/fraud' },
+    ],
+  },
 ];
 
 export default function Header() {
@@ -203,53 +249,22 @@ export default function Header() {
         </div>
       </div>
 
-      {/* Sub Navigation */}
-      <div className="hidden md:block bg-white border-b border-gray-300 relative">
+      {/* Sub Navigation - 단일 메가메뉴 바 (어떤 항목 hover해도 모든 컬럼 한 번에 펼쳐짐) */}
+      <div className="hidden md:block bg-white border-b border-gray-300">
         <div className="container-main">
-          <div className="flex items-center justify-between">
-            {/* Primary nav */}
-            <div className="flex items-center">
-              <Link href="/board?tab=sell" className="flex items-center gap-1 px-4 py-3 text-[13px] font-bold text-gray-800 hover:text-accent transition-colors border-b-2 border-transparent hover:border-accent">
-                상품권 팝니다 <span className="text-[10px] text-white bg-accent px-1 rounded-sm">HOT</span>
-              </Link>
-              <Link href="/board?tab=buy" className="flex items-center gap-1 px-4 py-3 text-[13px] font-bold text-gray-800 hover:text-accent transition-colors border-b-2 border-transparent hover:border-accent">
-                상품권 삽니다 <span className="text-[10px] text-white bg-accent px-1 rounded-sm">HOT</span>
-              </Link>
-
-              <MegaMenu href="/category/area" items={REGION_ITEMS} panelWidth={170} trigger={
-                <span className="flex items-center gap-1 px-4 py-3 text-[13px] font-bold text-gray-800 hover:text-accent transition-colors border-b-2 border-transparent hover:border-accent">
-                  지역별 업체찾기 <ChevronDown size={11} className="text-gray-400" />
-                </span>
-              } />
-              <MegaMenu href="/category/product" items={PRODUCT_ITEMS} panelWidth={170} trigger={
-                <span className="flex items-center gap-1 px-4 py-3 text-[13px] font-bold text-gray-800 hover:text-accent transition-colors border-b-2 border-transparent hover:border-accent">
-                  상품별 업체찾기 <ChevronDown size={11} className="text-gray-400" />
-                </span>
-              } />
-              <Link href="/recommended" className="flex items-center gap-1 px-4 py-3 text-[13px] font-bold text-gray-800 hover:text-accent transition-colors border-b-2 border-transparent hover:border-accent">
-                매입업체 <span className="text-[10px] text-white bg-green-600 px-1 rounded-sm">N</span>
-              </Link>
-              <MegaMenu href="/community" items={COMMUNITY_ITEMS} panelWidth={180} trigger={
-                <span className="flex items-center gap-1 px-4 py-3 text-[13px] font-bold text-gray-800 hover:text-accent transition-colors border-b-2 border-transparent hover:border-accent">
-                  커뮤니티 <ChevronDown size={11} className="text-gray-400" />
-                </span>
-              } />
-            </div>
-            {/* Secondary nav */}
-            <div className="flex items-center gap-1">
-              <Link href="/custom-search" className="flex items-center gap-1 px-3 py-3 text-[12px] text-gray-600 hover:text-accent transition-colors">
-                <Search size={12} /> 상세검색
-              </Link>
-              <Link href="/fraud" className="flex items-center gap-1 px-3 py-3 text-[12px] text-gray-600 hover:text-accent transition-colors">
-                <ShieldAlert size={12} /> 사기방지
-              </Link>
-              <MegaMenu href="/faq" items={SUPPORT_ITEMS} panelWidth={170} className="ml-0" trigger={
-                <span className="flex items-center gap-1 px-3 py-3 text-[12px] text-gray-600 hover:text-accent transition-colors">
-                  고객센터 <ChevronDown size={11} className="text-gray-400" />
-                </span>
-              } />
-            </div>
-          </div>
+          <MegaMenuBar
+            columns={NAV_COLUMNS}
+            rightExtra={
+              <>
+                <Link href="/custom-search" className="flex items-center gap-1 px-3 py-3 text-[12px] text-gray-600 hover:text-accent transition-colors">
+                  <Search size={12} /> 상세검색
+                </Link>
+                <Link href="/fraud" className="flex items-center gap-1 px-3 py-3 text-[12px] text-gray-600 hover:text-accent transition-colors">
+                  <ShieldAlert size={12} /> 사기방지
+                </Link>
+              </>
+            }
+          />
         </div>
       </div>
 
