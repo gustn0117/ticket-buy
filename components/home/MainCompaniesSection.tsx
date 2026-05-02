@@ -58,11 +58,11 @@ function DemoCard({ item, index }: { item: typeof DEMO_COMPANIES[number]; index:
             </h3>
           </div>
         </div>
-        <div className="px-3 pt-3 pb-2.5">
-          <p className="text-[12.5px] text-gray-600 leading-snug text-center line-clamp-2 min-h-[38px] whitespace-pre-line">
+        <div className="px-3 pt-2.5 pb-2">
+          <p className="text-[12.5px] text-gray-600 leading-tight text-center line-clamp-2 min-h-[32px] whitespace-pre-line">
             {item.desc}
           </p>
-          <div className="flex items-center justify-center gap-1.5 mt-2.5 text-[14px] md:text-[15px] font-bold text-gray-900 whitespace-nowrap">
+          <div className="flex items-center justify-center gap-1.5 mt-1 text-[14px] md:text-[15px] font-bold text-gray-900 whitespace-nowrap">
             <Phone size={14} className="text-gray-500 shrink-0" />
             <span className="tabular-nums whitespace-nowrap">{item.phone}</span>
           </div>
