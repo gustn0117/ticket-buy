@@ -39,7 +39,7 @@ export default function CompanyCard({ company, isNew, fallbackIndex = 0 }: Compa
         className="block"
       >
         {/* Image header with overlay title */}
-        <div className="relative h-[125px] md:h-[140px] overflow-hidden bg-gray-800">
+        <div className="relative h-[140px] md:h-[170px] overflow-hidden bg-gray-800">
           <img
             src={company.image_url || fallbackPhoto}
             alt={company.name}
@@ -51,7 +51,7 @@ export default function CompanyCard({ company, isNew, fallbackIndex = 0 }: Compa
           <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-black/40 to-black/75" />
           {/* Title overlay */}
           <div className="absolute inset-0 flex items-center justify-center px-3">
-            <h3 className="text-white text-[14px] md:text-[15px] font-bold text-center leading-tight drop-shadow-md">
+            <h3 className="text-white text-[15px] md:text-[17px] font-bold text-center leading-tight drop-shadow-md">
               {displayTitle}
             </h3>
           </div>
@@ -65,12 +65,12 @@ export default function CompanyCard({ company, isNew, fallbackIndex = 0 }: Compa
         </div>
 
         {/* Body */}
-        <div className="px-3 pt-2.5 pb-2">
-          <p className="text-[12.5px] text-gray-600 leading-tight text-center line-clamp-2 min-h-[32px]">
+        <div className="px-4 pt-3 pb-3">
+          <p className="text-[13px] text-gray-600 leading-tight text-center line-clamp-2 min-h-[34px]">
             {company.description || '상품권 매입 전문 업체입니다.'}
           </p>
-          <div className="flex items-center justify-center gap-1.5 mt-1 text-[14px] md:text-[15px] font-bold text-gray-900 whitespace-nowrap">
-            <Phone size={14} className="text-gray-500 shrink-0" />
+          <div className="flex items-center justify-center gap-2 mt-2 text-[15px] md:text-[17px] font-bold text-gray-900 whitespace-nowrap tracking-wide">
+            <Phone size={15} className="text-gray-500 shrink-0" />
             <span className="tabular-nums whitespace-nowrap">{company.phone}</span>
           </div>
         </div>

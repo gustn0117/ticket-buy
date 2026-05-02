@@ -44,7 +44,7 @@ function DemoCard({ item, index }: { item: typeof DEMO_COMPANIES[number]; index:
   return (
     <div className="company-card card-hover group flex flex-col">
       <Link href="/register-business" className="block">
-        <div className="relative h-[125px] md:h-[140px] overflow-hidden bg-gray-800">
+        <div className="relative h-[140px] md:h-[170px] overflow-hidden bg-gray-800">
           <img
             src={fallbackPhoto}
             alt=""
@@ -53,17 +53,17 @@ function DemoCard({ item, index }: { item: typeof DEMO_COMPANIES[number]; index:
           />
           <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-black/40 to-black/75" />
           <div className="absolute inset-0 flex items-center justify-center px-3">
-            <h3 className="text-white text-[14px] md:text-[15px] font-bold text-center leading-tight drop-shadow-md">
+            <h3 className="text-white text-[15px] md:text-[17px] font-bold text-center leading-tight drop-shadow-md">
               {item.title}
             </h3>
           </div>
         </div>
-        <div className="px-3 pt-2.5 pb-2">
-          <p className="text-[12.5px] text-gray-600 leading-tight text-center line-clamp-2 min-h-[32px] whitespace-pre-line">
+        <div className="px-4 pt-3 pb-3">
+          <p className="text-[13px] text-gray-600 leading-tight text-center line-clamp-2 min-h-[34px] whitespace-pre-line">
             {item.desc}
           </p>
-          <div className="flex items-center justify-center gap-1.5 mt-1 text-[14px] md:text-[15px] font-bold text-gray-900 whitespace-nowrap">
-            <Phone size={14} className="text-gray-500 shrink-0" />
+          <div className="flex items-center justify-center gap-2 mt-2 text-[15px] md:text-[17px] font-bold text-gray-900 whitespace-nowrap tracking-wide">
+            <Phone size={15} className="text-gray-500 shrink-0" />
             <span className="tabular-nums whitespace-nowrap">{item.phone}</span>
           </div>
         </div>
@@ -97,13 +97,13 @@ function DemoCard({ item, index }: { item: typeof DEMO_COMPANIES[number]; index:
   );
 }
 
-export default function MainCompaniesSection({ buyers, loading, compact = false, maxCount = 15 }: Props) {
+export default function MainCompaniesSection({ buyers, loading, compact = false, maxCount = 16 }: Props) {
   const realCount = buyers.length;
   const fillCount = Math.max(0, maxCount - realCount);
   const fillItems = DEMO_COMPANIES.slice(0, fillCount);
   const gridCls = compact
-    ? 'grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2.5'
-    : 'grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-2.5';
+    ? 'grid grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-3'
+    : 'grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3';
 
   return (
     <section className={compact ? '' : 'mb-6'}>
