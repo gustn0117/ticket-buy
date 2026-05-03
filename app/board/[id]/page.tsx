@@ -11,6 +11,7 @@ import { getCategoryName } from '@/data/mock';
 import { BrandLogo } from '@/components/BrandLogo';
 import LeftSidebar from '@/components/layout/LeftSidebar';
 import RightSidebar from '@/components/layout/RightSidebar';
+import BuyOfferComments from '@/components/board/BuyOfferComments';
 
 type PostWithAuthor = DBPost & { author: DBUser };
 
@@ -198,8 +199,8 @@ export default function PostDetailPage({ params }: { params: Promise<{ id: strin
               </div>
             </div>
 
-            {/* CTA */}
-            {!isAuthor && (
+            {/* CTA: 구매글(삽니다)만 전화/문자 직접 노출. 판매글(팝니다)은 번호 비공개 + 매입 제안 댓글 */}
+            {!isAuthor && !isSell && (
               <div className="px-5 py-5 bg-gray-50 space-y-2">
                 {contactPhone ? (
                   <>
@@ -216,7 +217,7 @@ export default function PostDetailPage({ params }: { params: Promise<{ id: strin
                       </button>
                     </div>
                     <p className="text-[11px] text-gray-500 text-center leading-relaxed">
-                      {isSell ? '판매자' : '구매자'}에게 직접 전화 또는 문자로 수량·금액·발송 조건을 협의하세요.
+                      구매자에게 직접 전화 또는 문자로 수량·금액·발송 조건을 협의하세요.
                     </p>
                   </>
                 ) : (
@@ -225,6 +226,17 @@ export default function PostDetailPage({ params }: { params: Promise<{ id: strin
                   </p>
                 )}
               </div>
+            )}
+
+            {/* 판매글: 매입 제안 댓글 시스템 (번호 비공개, 매입업체가 댓글로 연락) */}
+            {isSell && (
+              <BuyOfferComments
+                postId={post.id}
+                isAuthor={!!isAuthor}
+                currentUser={
+                  user ? { id: user.id, name: user.name, phone: user.phone } : null
+                }
+              />
             )}
 
             {/* Bottom nav */}
