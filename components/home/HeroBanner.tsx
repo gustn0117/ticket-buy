@@ -25,17 +25,17 @@ const TRUST_LINKS = [
 ];
 
 export default function HeroBanner() {
-  const [visitorInfo, setVisitorInfo] = useState({ today: 0, total: 0, totalCompanies: 0 });
+  const [visitorInfo, setVisitorInfo] = useState({ today: 0, total: 0, sellCount: 0 });
 
   useEffect(() => {
     fetch('/api/visitors')
       .then(r => r.json())
       .then(data => setVisitorInfo({
         today: data.today ?? 473,
-        total: data.total ?? 40571676,
-        totalCompanies: 11862,
+        total: data.total ?? 87320,
+        sellCount: data.sellCount ?? 0,
       }))
-      .catch(() => setVisitorInfo({ today: 473, total: 40571676, totalCompanies: 11862 }));
+      .catch(() => setVisitorInfo({ today: 473, total: 87320, sellCount: 0 }));
   }, []);
 
   const formatNumber = (n: number) => String(n).split('').map((d, i) => (
@@ -92,9 +92,9 @@ export default function HeroBanner() {
               <span>명</span>
             </div>
             <div className="flex items-center gap-1.5">
-              <span>총 등록업체 수</span>
-              <div className="flex gap-px">{formatNumber(visitorInfo.totalCompanies)}</div>
-              <span>개</span>
+              <span>총 판매문의</span>
+              <div className="flex gap-px">{formatNumber(visitorInfo.sellCount)}</div>
+              <span>건</span>
             </div>
           </div>
         </div>

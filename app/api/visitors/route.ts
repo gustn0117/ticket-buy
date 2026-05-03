@@ -52,9 +52,45 @@ export async function POST(req: NextRequest) {
   return NextResponse.json({ ok: true });
 }
 
+// 방문자 수 인플레이션 (마케팅 표시용 베이스라인)
+// 실제 방문자에 더해 자연스럽게 큰 숫자가 노출되도록 시간 가중치를 더한다.
+const LAUNCH_DATE = new Date('2026-04-01T00:00:00+09:00').getTime();
+const BASE_TODAY = 250;
+const BASE_TOTAL = 85000;
+const TODAY_PER_HOUR = 35;
+const TOTAL_PER_DAY = 220;
+
+function inflateToday(real: number): number {
+  const now = new Date();
+  const hourOfDay = now.getHours() + now.getMinutes() / 60;
+  const minute = now.getMinutes();
+  const jitter = (minute % 7) * 3; // 0~18 사이 변동
+  return Math.round(BASE_TODAY + hourOfDay * TODAY_PER_HOUR + jitter + real);
+}
+
+function inflateTotal(real: number): number {
+  const daysSinceLaunch = Math.max(0, Math.floor((Date.now() - LAUNCH_DATE) / 86400000));
+  const minuteJitter = new Date().getMinutes() * 4;
+  return BASE_TOTAL + daysSinceLaunch * TOTAL_PER_DAY + minuteJitter + real;
+}
+
+async function fetchSellCount(): Promise<number> {
+  try {
+    const supabase = createServiceClient();
+    const { count } = await supabase
+      .from('posts')
+      .select('*', { count: 'exact', head: true })
+      .eq('type', 'sell');
+    return count || 0;
+  } catch {
+    return 0;
+  }
+}
+
 // GET: 방문자 통계 조회
 export async function GET() {
   const today = new Date().toISOString().slice(0, 10);
+  const sellCount = await fetchSellCount();
 
   // Supabase 시도
   try {
@@ -82,7 +118,12 @@ export async function GET() {
     }
 
     if (totalCount !== null) {
-      return NextResponse.json({ total: totalCount, today: todayCount || 0, last30 });
+      return NextResponse.json({
+        total: inflateTotal(totalCount),
+        today: inflateToday(todayCount || 0),
+        sellCount,
+        last30,
+      });
     }
   } catch {
     // 폴백
@@ -96,13 +137,14 @@ export async function GET() {
     const d = new Date(Date.now() - i * 86400000).toISOString().slice(0, 10);
     last30.push({ date: d, count: data.daily[d] || 0 });
   }
-  // 오버라이드 값이 있으면 적용
+  // 오버라이드 값이 있으면 적용 (관리자가 직접 세팅한 값 우선)
   const override = (data as unknown as Record<string, unknown>)._override as { today?: number; total?: number; trades?: number } | undefined;
   return NextResponse.json({
-    total: override?.total ?? data.total,
-    today: override?.today ?? todayCount,
+    total: override?.total ?? inflateTotal(data.total || 0),
+    today: override?.today ?? inflateToday(todayCount),
     trades: override?.trades ?? 0,
-    last30
+    sellCount,
+    last30,
   });
 }
 
