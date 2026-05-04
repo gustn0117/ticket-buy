@@ -109,41 +109,48 @@ export async function GET() {
   const today = new Date().toISOString().slice(0, 10);
   const sellCount = await fetchSellCount();
 
-  // Supabase 시도
+  // Supabase 시도 - 테이블이 있는 경우만 빠르게 처리
   try {
     const supabase = createServiceClient();
-    // 오늘 카운트
-    const { count: todayCount } = await supabase
-      .from('visitors')
-      .select('*', { count: 'exact', head: true })
-      .eq('date', today);
-
-    // 전체 카운트
-    const { count: totalCount } = await supabase
+    // 1) 첫 쿼리로 테이블 존재 확인 — 실패하면 즉시 폴백 (30번의 실패한 호출 방지)
+    const totalRes = await supabase
       .from('visitors')
       .select('*', { count: 'exact', head: true });
+    if (totalRes.error || totalRes.count === null) {
+      throw new Error('visitors-table-missing');
+    }
 
-    // 최근 30일 데이터
+    // 2) 30일 데이터를 단일 호출로: created_at 또는 date 컬럼 모두 fetch 후 클라에서 group
+    const since = new Date(Date.now() - 30 * 86400000).toISOString().slice(0, 10);
+    const [todayRes, daysRes] = await Promise.all([
+      supabase
+        .from('visitors')
+        .select('*', { count: 'exact', head: true })
+        .eq('date', today),
+      supabase
+        .from('visitors')
+        .select('date')
+        .gte('date', since),
+    ]);
+
+    const dailyMap: Record<string, number> = {};
+    (daysRes.data || []).forEach((row: { date: string }) => {
+      dailyMap[row.date] = (dailyMap[row.date] || 0) + 1;
+    });
     const last30: { date: string; count: number }[] = [];
     for (let i = 29; i >= 0; i--) {
       const d = new Date(Date.now() - i * 86400000).toISOString().slice(0, 10);
-      const { count } = await supabase
-        .from('visitors')
-        .select('*', { count: 'exact', head: true })
-        .eq('date', d);
-      last30.push({ date: d, count: count || 0 });
+      last30.push({ date: d, count: dailyMap[d] || 0 });
     }
 
-    if (totalCount !== null) {
-      return jsonNoStore({
-        total: inflateTotal(totalCount),
-        today: inflateToday(todayCount || 0),
-        sellCount,
-        last30,
-      });
-    }
+    return jsonNoStore({
+      total: inflateTotal(totalRes.count),
+      today: inflateToday(todayRes.count || 0),
+      sellCount,
+      last30,
+    });
   } catch {
-    // 폴백
+    // 테이블 없음 → JSON 폴백
   }
 
   // JSON 파일 폴백
