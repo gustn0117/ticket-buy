@@ -3,6 +3,22 @@ import { createServiceClient } from '@/lib/supabase';
 import fs from 'fs';
 import path from 'path';
 
+// 시간이 지나야 카운트가 바뀌는 캐시 문제 차단
+// Next.js / Cloudflare / 브라우저 모든 레이어에서 캐시되지 않도록 강제
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
+export const fetchCache = 'force-no-store';
+
+const NO_CACHE_HEADERS = {
+  'Cache-Control': 'no-store, no-cache, must-revalidate, max-age=0',
+  Pragma: 'no-cache',
+  Expires: '0',
+};
+
+function jsonNoStore(body: unknown, init?: { status?: number }) {
+  return NextResponse.json(body, { status: init?.status, headers: NO_CACHE_HEADERS });
+}
+
 const DATA_FILE = path.join(process.cwd(), 'data', 'visitors.json');
 
 // ─── JSON 파일 폴백 ───
@@ -33,7 +49,7 @@ export async function POST(req: NextRequest) {
       { date: today, ip, visited_at: new Date().toISOString() },
       { onConflict: 'date,ip' }
     );
-    if (!error) return NextResponse.json({ ok: true });
+    if (!error) return jsonNoStore({ ok: true });
   } catch {
     // 테이블 없으면 폴백
   }
@@ -49,7 +65,7 @@ export async function POST(req: NextRequest) {
     data.total = (data.total || 0) + 1;
     writeData(data);
   }
-  return NextResponse.json({ ok: true });
+  return jsonNoStore({ ok: true });
 }
 
 // 방문자 수 인플레이션 (마케팅 표시용 베이스라인)
@@ -119,7 +135,7 @@ export async function GET() {
     }
 
     if (totalCount !== null) {
-      return NextResponse.json({
+      return jsonNoStore({
         total: inflateTotal(totalCount),
         today: inflateToday(todayCount || 0),
         sellCount,
@@ -139,7 +155,7 @@ export async function GET() {
     last30.push({ date: d, count: data.daily[d] || 0 });
   }
   // 인플레이션 항상 적용 (관리자 수동 override는 더 이상 노출 값에 반영 안함 — 마케팅 표시 일관성)
-  return NextResponse.json({
+  return jsonNoStore({
     total: inflateTotal(data.total || 0),
     today: inflateToday(todayCount),
     trades: 0,
@@ -155,5 +171,5 @@ export async function PUT(req: NextRequest) {
   const override = { today, total, trades };
   (data as unknown as Record<string, unknown>)._override = override;
   writeData(data);
-  return NextResponse.json({ ok: true, override });
+  return jsonNoStore({ ok: true, override });
 }

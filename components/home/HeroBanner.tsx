@@ -28,14 +28,23 @@ export default function HeroBanner() {
   const [visitorInfo, setVisitorInfo] = useState({ today: 0, total: 0, sellCount: 0 });
 
   useEffect(() => {
-    fetch('/api/visitors')
-      .then(r => r.json())
-      .then(data => setVisitorInfo({
-        today: data.today ?? 473,
-        total: data.total ?? 87320,
-        sellCount: data.sellCount ?? 0,
-      }))
-      .catch(() => setVisitorInfo({ today: 473, total: 87320, sellCount: 0 }));
+    let alive = true;
+    const load = () => {
+      fetch('/api/visitors', { cache: 'no-store' })
+        .then(r => r.json())
+        .then(data => {
+          if (!alive) return;
+          setVisitorInfo({
+            today: data.today ?? 473,
+            total: data.total ?? 87320,
+            sellCount: data.sellCount ?? 0,
+          });
+        })
+        .catch(() => alive && setVisitorInfo({ today: 473, total: 87320, sellCount: 0 }));
+    };
+    load();
+    const t = setInterval(load, 60_000); // 60초마다 갱신
+    return () => { alive = false; clearInterval(t); };
   }, []);
 
   const formatNumber = (n: number) => String(n).split('').map((d, i) => (
