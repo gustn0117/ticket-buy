@@ -54,24 +54,25 @@ export async function POST(req: NextRequest) {
 
 // 방문자 수 인플레이션 (마케팅 표시용 베이스라인)
 // 실제 방문자에 더해 자연스럽게 큰 숫자가 노출되도록 시간 가중치를 더한다.
-const LAUNCH_DATE = new Date('2026-04-01T00:00:00+09:00').getTime();
-const BASE_TODAY = 250;
-const BASE_TOTAL = 85000;
-const TODAY_PER_HOUR = 35;
-const TOTAL_PER_DAY = 220;
+const LAUNCH_DATE = new Date('2026-03-15T00:00:00+09:00').getTime();
+const BASE_TODAY = 380;
+const BASE_TOTAL = 95000;
+const TODAY_PER_HOUR = 55;
+const TOTAL_PER_DAY = 320;
 
 function inflateToday(real: number): number {
   const now = new Date();
   const hourOfDay = now.getHours() + now.getMinutes() / 60;
   const minute = now.getMinutes();
-  const jitter = (minute % 7) * 3; // 0~18 사이 변동
+  const jitter = (minute % 7) * 4; // 0~24 사이 변동
   return Math.round(BASE_TODAY + hourOfDay * TODAY_PER_HOUR + jitter + real);
 }
 
 function inflateTotal(real: number): number {
   const daysSinceLaunch = Math.max(0, Math.floor((Date.now() - LAUNCH_DATE) / 86400000));
-  const minuteJitter = new Date().getMinutes() * 4;
-  return BASE_TOTAL + daysSinceLaunch * TOTAL_PER_DAY + minuteJitter + real;
+  // 분 단위로도 누적이 미세하게 증가
+  const intraDay = Math.floor(((Date.now() - LAUNCH_DATE) % 86400000) / 60000) * 0.2;
+  return Math.round(BASE_TOTAL + daysSinceLaunch * TOTAL_PER_DAY + intraDay + real);
 }
 
 async function fetchSellCount(): Promise<number> {
@@ -137,12 +138,11 @@ export async function GET() {
     const d = new Date(Date.now() - i * 86400000).toISOString().slice(0, 10);
     last30.push({ date: d, count: data.daily[d] || 0 });
   }
-  // 오버라이드 값이 있으면 적용 (관리자가 직접 세팅한 값 우선)
-  const override = (data as unknown as Record<string, unknown>)._override as { today?: number; total?: number; trades?: number } | undefined;
+  // 인플레이션 항상 적용 (관리자 수동 override는 더 이상 노출 값에 반영 안함 — 마케팅 표시 일관성)
   return NextResponse.json({
-    total: override?.total ?? inflateTotal(data.total || 0),
-    today: override?.today ?? inflateToday(todayCount),
-    trades: override?.trades ?? 0,
+    total: inflateTotal(data.total || 0),
+    today: inflateToday(todayCount),
+    trades: 0,
     sellCount,
     last30,
   });
