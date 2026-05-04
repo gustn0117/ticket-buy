@@ -68,26 +68,26 @@ export async function POST(req: NextRequest) {
   return jsonNoStore({ ok: true });
 }
 
-// 방문자 수 인플레이션 (마케팅 표시용 베이스라인)
-// 실제 방문자에 더해 자연스럽게 큰 숫자가 노출되도록 시간 가중치를 더한다.
-const LAUNCH_DATE = new Date('2026-03-15T00:00:00+09:00').getTime();
-const BASE_TODAY = 380;
-const BASE_TOTAL = 95000;
-const TODAY_PER_HOUR = 55;
-const TOTAL_PER_DAY = 320;
+// 방문자 수 인플레이션 (사이트 초반 — 적당한 작은 숫자로 시작)
+// 베이스라인 + 시간 가중치 + 분 단위 미세 증가
+const LAUNCH_DATE = new Date('2026-04-20T00:00:00+09:00').getTime();
+const BASE_TODAY = 35;       // 자정 시작값
+const BASE_TOTAL = 2400;     // 런칭 시점 누적
+const TODAY_PER_HOUR = 8;    // 시간당 약 8명 증가 → 자정 직전 ~225명
+const TOTAL_PER_DAY = 45;    // 일 평균 +45명
 
 function inflateToday(real: number): number {
   const now = new Date();
   const hourOfDay = now.getHours() + now.getMinutes() / 60;
   const minute = now.getMinutes();
-  const jitter = (minute % 7) * 4; // 0~24 사이 변동
+  const jitter = (minute % 5) * 2; // 0~8 사이 변동
   return Math.round(BASE_TODAY + hourOfDay * TODAY_PER_HOUR + jitter + real);
 }
 
 function inflateTotal(real: number): number {
   const daysSinceLaunch = Math.max(0, Math.floor((Date.now() - LAUNCH_DATE) / 86400000));
-  // 분 단위로도 누적이 미세하게 증가
-  const intraDay = Math.floor(((Date.now() - LAUNCH_DATE) % 86400000) / 60000) * 0.2;
+  // 분 단위로 미세 증가 (5분당 +1)
+  const intraDay = Math.floor(((Date.now() - LAUNCH_DATE) % 86400000) / 60000) * 0.05;
   return Math.round(BASE_TOTAL + daysSinceLaunch * TOTAL_PER_DAY + intraDay + real);
 }
 
