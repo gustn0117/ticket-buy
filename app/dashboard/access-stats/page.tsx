@@ -26,10 +26,14 @@ export default function AccessStatsPage() {
     fetch('/api/visitors')
       .then((r) => r.json())
       .then((res) => {
-        const days = res.last30Days ?? [];
+        // API는 last30 (필드명 일치), 마지막이 오늘
+        const days: { date: string; count: number }[] = res.last30 ?? res.last30Days ?? [];
         const periodDays = period === '1' ? 1 : period === '7' ? 7 : 30;
-        const filtered = days.slice(0, periodDays);
-        const totalVisitors = filtered.reduce((s: number, d: { count: number }) => s + d.count, 0);
+        // 가장 최근 N일 (배열 끝에서 N개)
+        const filtered = days.slice(-periodDays);
+        const realSum = filtered.reduce((s, d) => s + d.count, 0);
+        // 1일 기준이면 API의 today 값(인플레이션 적용된)을 그대로 사용
+        const totalVisitors = period === '1' ? (res.today ?? realSum) : Math.max(realSum, res.today ?? 0);
         setData({
           views: totalVisitors * 3, // estimate: 3 pageviews per visitor
           visitors: totalVisitors,
