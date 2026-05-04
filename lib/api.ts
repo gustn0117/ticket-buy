@@ -25,6 +25,11 @@ export async function getPost(id: string) {
     .eq('id', id)
     .single();
   if (error) throw error;
+  // 판매글(팝니다)은 작성자 연락처 비공개 — 매입업체는 댓글로만 연락 가능
+  if (data && data.type === 'sell') {
+    if (data.guest_phone) data.guest_phone = null;
+    if (data.author && data.author.phone) data.author.phone = null;
+  }
   return data as DBPost & { author: DBUser };
 }
 
