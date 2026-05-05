@@ -12,6 +12,7 @@ import { BrandLogo } from '@/components/BrandLogo';
 import LeftSidebar from '@/components/layout/LeftSidebar';
 import RightSidebar from '@/components/layout/RightSidebar';
 import BuyOfferComments from '@/components/board/BuyOfferComments';
+import AdBanner from '@/components/ads/AdBanner';
 
 type PostWithAuthor = DBPost & { author: DBUser };
 
@@ -249,6 +250,9 @@ export default function PostDetailPage({ params }: { params: Promise<{ id: strin
               </Link>
             </div>
           </article>
+
+          {/* AD: 게시글 상세 하단 (740x90) */}
+          <AdBanner slot="detail_bottom" hideEmpty className="mb-4" />
         </div>
 
         <RightSidebar />

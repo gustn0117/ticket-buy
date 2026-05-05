@@ -13,6 +13,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import type { DBPost, DBUser, DBPremiumBuyer } from '@/lib/types';
 import { getCache, setCache } from '@/lib/cache';
 import { PostRowSkeleton } from '@/components/Skeleton';
+import AdBanner from '@/components/ads/AdBanner';
 
 const PER_PAGE = 15;
 type PostWithAuthor = DBPost & { author: DBUser };
@@ -66,6 +67,9 @@ function BoardContent() {
         <LeftSidebar />
 
         <div className="flex-1 min-w-0">
+          {/* AD: 게시판 상단 (960x90) */}
+          <AdBanner slot="board_top" hideEmpty className="mb-4" />
+
           {/* Tabs */}
           <div className="bg-white border border-gray-200 mb-4">
             <div className="flex border-b border-gray-200">
@@ -151,14 +155,23 @@ function BoardContent() {
                   <span className="hidden lg:block ml-3 w-24 text-right">날짜</span>
                 </div>
 
-                {pagedPosts.map((post, idx) => (
-                  <SellPostItem
-                    key={post.id}
-                    post={post}
-                    num={(page - 1) * PER_PAGE + idx + 1}
-                    showStatus={activeTab === 'sell'}
-                  />
-                ))}
+                {pagedPosts.map((post, idx) => {
+                  const globalIdx = (page - 1) * PER_PAGE + idx;
+                  const showInlineAd = idx === Math.floor(pagedPosts.length / 2);
+                  return (
+                    <div key={post.id}>
+                      <SellPostItem
+                        post={post}
+                        num={globalIdx + 1}
+                        showStatus={activeTab === 'sell'}
+                      />
+                      {/* AD: 게시판 목록 사이 (960x60) — 페이지 중앙에 1회 삽입 */}
+                      {showInlineAd && (
+                        <AdBanner slot="board_between" hideEmpty className="mx-4 my-2" />
+                      )}
+                    </div>
+                  );
+                })}
 
                 {/* Pagination */}
                 {totalPages > 1 && (

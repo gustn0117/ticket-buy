@@ -8,6 +8,7 @@ import MainCompaniesSection from '@/components/home/MainCompaniesSection';
 import BuyerFinder from '@/components/home/BuyerFinder';
 import RealtimeSellPosts from '@/components/home/RealtimeSellPosts';
 import SellPostItem from '@/components/home/SellPostItem';
+import AdBanner from '@/components/ads/AdBanner';
 import { getPosts, getPremiumBuyers } from '@/lib/api';
 import type { DBPost, DBUser, DBPremiumBuyer } from '@/lib/types';
 import { getCache, setCache } from '@/lib/cache';
@@ -38,11 +39,20 @@ export default function Home() {
       <HeroBanner />
 
       <div className="container-main py-6">
+        {/* AD: 메인 히어로 배너 (1140 x 200) */}
+        <AdBanner slot="hero_banner" hideEmpty className="mb-5" />
+
         {/* 1. 지역으로 / 상품으로 업체찾기 */}
         <BuyerFinder />
 
+        {/* AD: 메인 상단 (1140 x 90) */}
+        <AdBanner slot="main_top" hideEmpty className="mb-5" />
+
         {/* 2. 메인 등록업체 (전체 폭) */}
         <MainCompaniesSection buyers={buyers} loading={loading} />
+
+        {/* AD: 메인 중간 (1140 x 90) */}
+        <AdBanner slot="main_middle" hideEmpty className="mb-5" />
 
         {/* 3. 상품권 삽니다 (줄광고) */}
         <section className="mb-6">

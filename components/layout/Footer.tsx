@@ -1,9 +1,15 @@
 import Link from 'next/link';
 import Image from 'next/image';
+import AdBanner from '@/components/ads/AdBanner';
 
 export default function Footer() {
   return (
     <footer className="border-t border-gray-300 bg-white mt-auto hidden md:block">
+      {/* AD: 푸터 상단 배너 (1140x80) */}
+      <div className="container-main pt-4">
+        <AdBanner slot="footer_banner" hideEmpty />
+      </div>
+
       {/* Footer links bar */}
       <div className="border-b border-gray-200">
         <div className="container-main flex items-center justify-between py-3">

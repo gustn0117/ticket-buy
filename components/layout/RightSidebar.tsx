@@ -2,11 +2,15 @@
 
 import Link from 'next/link';
 import { ExternalLink, Phone } from 'lucide-react';
+import AdBanner from '@/components/ads/AdBanner';
 
 export default function RightSidebar() {
   return (
     <aside className="w-[180px] shrink-0 hidden xl:block space-y-2.5">
-      {/* 스폰서링크 */}
+      {/* AD: 사이드바 상단 (300x250) — 폭에 맞춰 자동 축소 */}
+      <AdBanner slot="sidebar_top" hideEmpty />
+
+      {/* 스폰서링크 (자체 promo) */}
       <div className="sidebar-box">
         <div className="px-3 py-2 border-b border-gray-200">
           <span className="text-[11px] font-bold text-gray-500">스폰서링크</span>
@@ -24,6 +28,9 @@ export default function RightSidebar() {
           </div>
         </div>
       </div>
+
+      {/* AD: 사이드바 하단 (300x250) */}
+      <AdBanner slot="sidebar_bottom" hideEmpty />
     </aside>
   );
 }
