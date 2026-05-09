@@ -4,7 +4,19 @@ import AdBanner from '@/components/ads/AdBanner';
 
 export default function Footer() {
   return (
-    <footer className="border-t border-gray-300 bg-white mt-auto hidden md:block">
+    <footer className="border-t border-gray-300 bg-white mt-auto">
+      {/* 모바일 전용: 고객센터 박스 (작은 사이즈) — 첫 페이지 제일 하단 */}
+      <div className="md:hidden px-4 py-5 border-b border-gray-200 text-center">
+        <p className="text-[12px] font-bold text-gray-800 mb-1">고객센터</p>
+        <p className="text-[18px] font-bold text-accent tabular-nums whitespace-nowrap mb-1">1599-9687</p>
+        <p className="text-[11px] text-gray-500 leading-snug">
+          평일 10:00 - 17:00 (점심 12:30 - 13:30)<br />
+          주말 및 공휴일 휴무
+        </p>
+      </div>
+
+      {/* PC 전용 영역 */}
+      <div className="hidden md:block">
       {/* AD: 푸터 상단 배너 (1140x80) */}
       <div className="container-main pt-4">
         <AdBanner slot="footer_banner" hideEmpty />
@@ -89,6 +101,16 @@ export default function Footer() {
             </p>
           </div>
         </div>
+      </div>
+      </div>{/* End PC 전용 영역 */}
+
+      {/* 모바일 전용: 사업자 정보 풋터 (작게) */}
+      <div className="md:hidden px-4 py-3 text-center bg-gray-50">
+        <p className="text-[10px] text-gray-500 leading-relaxed">
+          티켓바이 | 사업자등록번호 255-62-00840<br />
+          통신판매업 제2025-서울강남-03876호<br />
+          COPYRIGHT &copy; 2026. ALL RIGHTS RESERVED.
+        </p>
       </div>
     </footer>
   );

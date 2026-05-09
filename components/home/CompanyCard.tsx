@@ -39,7 +39,7 @@ export default function CompanyCard({ company, isNew, fallbackIndex = 0 }: Compa
         className="block"
       >
         {/* Image header with overlay title */}
-        <div className="relative h-[140px] md:h-[170px] overflow-hidden bg-gray-800">
+        <div className="relative h-[110px] md:h-[170px] overflow-hidden bg-gray-800">
           <img
             src={company.image_url || fallbackPhoto}
             alt={company.name}
@@ -65,12 +65,13 @@ export default function CompanyCard({ company, isNew, fallbackIndex = 0 }: Compa
         </div>
 
         {/* Body */}
-        <div className="px-4 pt-3 pb-3">
-          <p className="text-[13px] text-gray-600 leading-tight text-center line-clamp-2 min-h-[34px]">
+        <div className="px-2.5 md:px-4 pt-2 md:pt-3 pb-2 md:pb-3">
+          <p className="text-[12px] md:text-[13px] text-gray-600 leading-tight text-center line-clamp-2 min-h-[28px] md:min-h-[34px]">
             {company.description || '상품권 매입 전문 업체입니다.'}
           </p>
-          <div className="flex items-center justify-center gap-2 mt-2 text-[15px] md:text-[17px] font-bold text-gray-900 whitespace-nowrap tracking-wide">
-            <Phone size={15} className="text-gray-500 shrink-0" />
+          <div className="flex items-center justify-center gap-1.5 md:gap-2 mt-1.5 md:mt-2 text-[13px] md:text-[17px] font-bold text-gray-900 whitespace-nowrap tracking-tight md:tracking-wide">
+            <Phone size={13} className="text-gray-500 shrink-0 md:hidden" />
+            <Phone size={15} className="text-gray-500 shrink-0 hidden md:inline" />
             <span className="tabular-nums whitespace-nowrap">{company.phone}</span>
           </div>
         </div>

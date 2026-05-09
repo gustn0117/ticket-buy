@@ -61,7 +61,7 @@ export default function AdminPage() {
   // Premium buyer form
   const [showPremiumForm, setShowPremiumForm] = useState(false);
   const [editingPremium, setEditingPremium] = useState<DBPremiumBuyer | null>(null);
-  const [premiumForm, setPremiumForm] = useState({ name: '', headline: '', description: '', phone: '', region: '', brands: '', image_url: '', user_id: '', priority: 0, is_active: true, tier: 'standard' as 'premium' | 'standard' | 'basic' });
+  const [premiumForm, setPremiumForm] = useState({ name: '', headline: '', description: '', phone: '', region: '', brands: '', image_url: '', user_id: '', priority: 0, is_active: true, tier: 'standard' as 'premium' | 'standard' | 'basic', business_number: '', telecom_number: '', office_address: '', supplementary_info: '' });
 
   // Ad form
   const [showAdForm, setShowAdForm] = useState(false);
@@ -210,11 +210,27 @@ export default function AdminPage() {
   useEffect(() => { msgEndRef.current?.scrollIntoView({ behavior: 'smooth' }); }, [chatMessages]);
 
   // Premium Buyer CRUD
-  const resetPremiumForm = () => { setPremiumForm({ name: '', headline: '', description: '', phone: '', region: '', brands: '', image_url: '', user_id: '', priority: 0, is_active: true, tier: 'standard' }); setEditingPremium(null); setShowPremiumForm(false); };
-  const startEditPremium = (b: DBPremiumBuyer) => { setPremiumForm({ name: b.name, headline: b.headline || '', description: b.description, phone: b.phone, region: b.region, brands: b.brands?.join(', ') || '', image_url: b.image_url, user_id: b.user_id || '', priority: b.priority, is_active: b.is_active, tier: b.tier || 'standard' }); setEditingPremium(b); setShowPremiumForm(true); };
+  const resetPremiumForm = () => { setPremiumForm({ name: '', headline: '', description: '', phone: '', region: '', brands: '', image_url: '', user_id: '', priority: 0, is_active: true, tier: 'standard', business_number: '', telecom_number: '', office_address: '', supplementary_info: '' }); setEditingPremium(null); setShowPremiumForm(false); };
+  const startEditPremium = (b: DBPremiumBuyer) => { setPremiumForm({ name: b.name, headline: b.headline || '', description: b.description, phone: b.phone, region: b.region, brands: b.brands?.join(', ') || '', image_url: b.image_url, user_id: b.user_id || '', priority: b.priority, is_active: b.is_active, tier: b.tier || 'standard', business_number: b.business_number || '', telecom_number: b.telecom_number || '', office_address: b.office_address || '', supplementary_info: b.supplementary_info || '' }); setEditingPremium(b); setShowPremiumForm(true); };
   const savePremium = async (e: React.FormEvent) => {
     e.preventDefault();
-    const payload = { name: premiumForm.name, headline: premiumForm.headline.trim() || null, description: premiumForm.description, phone: premiumForm.phone, region: premiumForm.region, brands: premiumForm.brands.split(',').map(s => s.trim()).filter(Boolean), image_url: premiumForm.image_url, user_id: premiumForm.user_id || null, priority: premiumForm.priority, is_active: premiumForm.is_active, tier: premiumForm.tier };
+    const payload = {
+      name: premiumForm.name,
+      headline: premiumForm.headline.trim() || null,
+      description: premiumForm.description,
+      phone: premiumForm.phone,
+      region: premiumForm.region,
+      brands: premiumForm.brands.split(',').map(s => s.trim()).filter(Boolean),
+      image_url: premiumForm.image_url,
+      user_id: premiumForm.user_id || null,
+      priority: premiumForm.priority,
+      is_active: premiumForm.is_active,
+      tier: premiumForm.tier,
+      business_number: premiumForm.business_number.trim() || null,
+      telecom_number: premiumForm.telecom_number.trim() || null,
+      office_address: premiumForm.office_address.trim() || null,
+      supplementary_info: premiumForm.supplementary_info.trim() || null,
+    };
     if (editingPremium) {
       await updatePremiumBuyer(editingPremium.id, payload);
     } else {
@@ -907,6 +923,36 @@ export default function AdminPage() {
               </div>
               <div>
                 <ImageUpload label="업체 이미지" folder="buyers" value={premiumForm.image_url} onChange={(url) => setPremiumForm(p => ({ ...p, image_url: url }))} />
+              </div>
+
+              {/* 업체 정보 — 사업자등록번호 / 통신판매업신고 / 영업소 */}
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-[11px] font-medium text-zinc-500 mb-1">사업자등록번호</label>
+                  <input value={premiumForm.business_number} onChange={e => setPremiumForm(p => ({ ...p, business_number: e.target.value }))} className="input h-9" placeholder="000-00-00000" />
+                </div>
+                <div>
+                  <label className="block text-[11px] font-medium text-zinc-500 mb-1">통신판매업신고번호</label>
+                  <input value={premiumForm.telecom_number} onChange={e => setPremiumForm(p => ({ ...p, telecom_number: e.target.value }))} className="input h-9" placeholder="제0000-서울강남-00000호" />
+                </div>
+              </div>
+              <div>
+                <label className="block text-[11px] font-medium text-zinc-500 mb-1">영업소 주소</label>
+                <input value={premiumForm.office_address} onChange={e => setPremiumForm(p => ({ ...p, office_address: e.target.value }))} className="input h-9" placeholder="서울특별시 강남구 ..." />
+              </div>
+
+              {/* 부가설명 — 업체가 직접 작성/수정. 어드민에서도 수정 가능 */}
+              <div>
+                <label className="block text-[11px] font-medium text-zinc-500 mb-1">부가설명</label>
+                <textarea
+                  value={premiumForm.supplementary_info}
+                  onChange={e => setPremiumForm(p => ({ ...p, supplementary_info: e.target.value }))}
+                  className="input"
+                  rows={6}
+                  placeholder={`업체 특장점·인사말을 자유롭게 작성하세요.\n\n예시)\n※ 안녕하세요! 모범매입대행입니다 ※\n☞ 모든 종목 매입 가능\n▶ 전국 무방문 당일 매입\n▶ 전화상담 후 즉시입금\n...`}
+                  style={{ height: 'auto', minHeight: '160px', padding: '10px 12px' }}
+                />
+                <p className="text-[10px] text-zinc-400 mt-1">업체 상세 페이지 부가설명 영역에 그대로 노출됩니다. 줄바꿈은 보존됩니다.</p>
               </div>
               <div className="grid grid-cols-4 gap-3">
                 <div>

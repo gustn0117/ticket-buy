@@ -93,7 +93,6 @@ export default function RegisterBusinessPage() {
           <div className="card bg-blue-50 border-blue-100 p-4 text-[13px] text-zinc-900 mb-5 leading-relaxed">
             <p className="font-semibold text-blue-700 mb-1">안내</p>
             <p>상품권 <strong>매입(삽니다)</strong> 업체로 등록하시려면 아래 정보와 <strong>업체 로그인에 사용할 비밀번호</strong>를 입력해 주세요. 승인 시 이 비밀번호로 바로 로그인할 수 있습니다.</p>
-            <p className="mt-2 font-medium">담당 연락용 <strong>메신저 종류·아이디</strong>는 필수입니다.</p>
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-4">
@@ -147,34 +146,7 @@ export default function RegisterBusinessPage() {
               <p className="text-[11px] text-zinc-400 mt-1">숫자만 입력 · 하이픈 자동</p>
             </div>
 
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <label className="block text-[12px] font-medium text-zinc-600 mb-1">메신저 종류 *</label>
-                <select
-                  value={form.messenger}
-                  onChange={(e) => handleChange('messenger', e.target.value)}
-                  className="input"
-                  required
-                >
-                  <option value="">선택하세요</option>
-                  <option value="kakaotalk">카카오톡</option>
-                  <option value="line">라인 (LINE)</option>
-                  <option value="telegram">텔레그램</option>
-                </select>
-              </div>
-
-              <div>
-                <label className="block text-[12px] font-medium text-zinc-600 mb-1">메신저 아이디 *</label>
-                <input
-                  type="text"
-                  value={form.messengerId}
-                  onChange={(e) => handleChange('messengerId', e.target.value)}
-                  placeholder="메신저 아이디"
-                  className="input"
-                  required
-                />
-              </div>
-            </div>
+            {/* 메신저 종류 / 아이디 필드 삭제됨 — 거래는 전화/문자로만 진행 */}
 
             <div>
               <label className="block text-[12px] font-medium text-zinc-600 mb-1">로그인 비밀번호 *</label>

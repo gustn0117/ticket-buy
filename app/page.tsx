@@ -9,6 +9,7 @@ import BuyerFinder from '@/components/home/BuyerFinder';
 import RealtimeSellPosts from '@/components/home/RealtimeSellPosts';
 import SellPostItem from '@/components/home/SellPostItem';
 import AdBanner from '@/components/ads/AdBanner';
+import PremiumBannerSlider from '@/components/home/PremiumBannerSlider';
 import { getPosts, getPremiumBuyers } from '@/lib/api';
 import type { DBPost, DBUser, DBPremiumBuyer } from '@/lib/types';
 import { getCache, setCache } from '@/lib/cache';
@@ -42,16 +43,19 @@ export default function Home() {
         {/* AD: 메인 히어로 배너 (1140 x 200) */}
         <AdBanner slot="hero_banner" hideEmpty className="mb-5" />
 
-        {/* 1. 지역으로 / 상품으로 업체찾기 — PC에서만 상단 노출 (모바일은 실시간 판매문의 아래로) */}
+        {/* 메인 등록업체 (가장 위) */}
+        <MainCompaniesSection buyers={buyers} loading={loading} />
+
+        {/* 프리미엄 배너광고 슬라이더 — 메인 등록업체 아래 (옆으로 넘기기, 2줄씩) */}
+        <PremiumBannerSlider buyers={buyers} />
+
+        {/* 지역별 / 상품별 업체찾기 (좌·우 탭) — PC */}
         <div className="hidden md:block">
           <BuyerFinder />
         </div>
 
-        {/* AD: 메인 상단 (1140 x 90) */}
+        {/* AD: 메인 상단 — 수정된 BuyerFinder 밑 일반 배너 1개 (1140 x 90) */}
         <AdBanner slot="main_top" hideEmpty className="mb-5" />
-
-        {/* 2. 메인 등록업체 (전체 폭) */}
-        <MainCompaniesSection buyers={buyers} loading={loading} />
 
         {/* AD: 메인 중간 (1140 x 90) */}
         <AdBanner slot="main_middle" hideEmpty className="mb-5" />

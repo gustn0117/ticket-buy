@@ -74,6 +74,10 @@ export interface DBPremiumBuyer {
   is_active: boolean;
   priority: number;
   tier: 'premium' | 'standard' | 'basic';
+  business_number: string | null;
+  telecom_number: string | null;
+  office_address: string | null;
+  supplementary_info: string | null;
   created_at: string;
   updated_at: string;
 }
