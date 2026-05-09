@@ -28,8 +28,8 @@ export default function BuyerFinder() {
             <Plus size={13} />
           </Link>
         </div>
-        <div className="px-5 py-4">
-          <div className="flex flex-wrap gap-x-1.5 gap-y-2.5 text-[13px]">
+        <div className="px-4 py-3">
+          <div className="flex flex-wrap gap-x-1 gap-y-2 text-[12.5px] tracking-tight">
             {REGIONS.map((r, i) => (
               <span key={r} className="flex items-center">
                 <Link
@@ -38,7 +38,7 @@ export default function BuyerFinder() {
                 >
                   {r}
                 </Link>
-                {i < REGIONS.length - 1 && <span className="text-gray-300 mx-1.5">·</span>}
+                {i < REGIONS.length - 1 && <span className="text-gray-300 mx-1">·</span>}
               </span>
             ))}
           </div>
@@ -57,8 +57,8 @@ export default function BuyerFinder() {
             <Plus size={13} />
           </Link>
         </div>
-        <div className="px-5 py-4">
-          <div className="flex flex-wrap gap-x-1.5 gap-y-2.5 text-[13px]">
+        <div className="px-4 py-3">
+          <div className="flex flex-wrap gap-x-1 gap-y-2 text-[12.5px] tracking-tight">
             {BRANDS.map((b, i) => (
               <span key={b} className="flex items-center">
                 <Link
@@ -67,7 +67,7 @@ export default function BuyerFinder() {
                 >
                   {b}
                 </Link>
-                {i < BRANDS.length - 1 && <span className="text-gray-300 mx-1.5">·</span>}
+                {i < BRANDS.length - 1 && <span className="text-gray-300 mx-1">·</span>}
               </span>
             ))}
           </div>

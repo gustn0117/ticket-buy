@@ -42,8 +42,10 @@ export default function Home() {
         {/* AD: 메인 히어로 배너 (1140 x 200) */}
         <AdBanner slot="hero_banner" hideEmpty className="mb-5" />
 
-        {/* 1. 지역으로 / 상품으로 업체찾기 */}
-        <BuyerFinder />
+        {/* 1. 지역으로 / 상품으로 업체찾기 — PC에서만 상단 노출 (모바일은 실시간 판매문의 아래로) */}
+        <div className="hidden md:block">
+          <BuyerFinder />
+        </div>
 
         {/* AD: 메인 상단 (1140 x 90) */}
         <AdBanner slot="main_top" hideEmpty className="mb-5" />
@@ -97,6 +99,11 @@ export default function Home() {
 
         {/* 4. 실시간 판매문의 (맨 밑) */}
         <RealtimeSellPosts posts={sellPosts} loading={loading} />
+
+        {/* 모바일 전용: 실시간 판매문의 아래에 지역/상품으로 업체찾기 */}
+        <div className="block md:hidden mt-5">
+          <BuyerFinder />
+        </div>
       </div>
     </div>
   );

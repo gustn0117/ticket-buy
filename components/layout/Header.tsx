@@ -4,9 +4,10 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { useState, useEffect } from 'react';
-import { Search, User, Menu, X, Clock, Eye, ShieldAlert, Megaphone } from 'lucide-react';
+import { Search, User, Menu, X, Clock, Eye, ShieldAlert, Megaphone, Home as HomeIcon, ExternalLink } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import MegaMenuBar, { type MegaMenuColumn } from './MegaMenuBar';
+import { TRUST_LINKS } from '@/lib/trustLinks';
 
 const HOT_BADGE = <span className="text-[10px] text-white bg-accent px-1 rounded-sm">HOT</span>;
 const NEW_BADGE = <span className="text-[10px] text-white bg-green-600 px-1 rounded-sm">N</span>;
@@ -128,10 +129,34 @@ export default function Header() {
       {/* Main header */}
       <div className="border-b border-gray-200 bg-white">
         <div className="container-main">
-          <div className="flex items-center justify-between h-[70px] md:h-[80px]">
+          {/* 모바일 헤더: [홈/돋보기 | 로고(가운데) | 전체메뉴(햄버거)] */}
+          <div className="md:hidden grid grid-cols-3 items-center h-[60px]">
+            <div className="flex items-center gap-1">
+              <Link href="/" aria-label="홈" className="w-9 h-9 flex items-center justify-center border border-gray-300 text-gray-600 hover:text-accent hover:border-accent">
+                <HomeIcon size={16} />
+              </Link>
+              <Link href="/search" aria-label="검색" className="w-9 h-9 flex items-center justify-center border border-gray-300 text-gray-600 hover:text-accent hover:border-accent">
+                <Search size={16} />
+              </Link>
+            </div>
+            <Link href="/" className="flex items-center justify-center">
+              <Image src="/logo-dark.png" alt="티켓바이" width={140} height={32} className="h-7 w-auto object-contain" priority />
+            </Link>
+            <button
+              type="button"
+              aria-label="전체메뉴"
+              onClick={() => setMobileMenuOpen(true)}
+              className="ml-auto flex items-center gap-1 px-2.5 h-9 border border-gray-300 text-gray-700 hover:text-accent hover:border-accent text-[12px]"
+            >
+              <Menu size={14} /> 전체메뉴
+            </button>
+          </div>
+
+          {/* PC 헤더 */}
+          <div className="hidden md:flex items-center justify-between h-[80px]">
             {/* Logo */}
             <Link href="/" className="flex items-center shrink-0">
-              <Image src="/logo-dark.png" alt="티켓바이" width={180} height={40} className="h-8 md:h-10 w-auto object-contain" priority />
+              <Image src="/logo-dark.png" alt="티켓바이" width={180} height={40} className="h-10 w-auto object-contain" priority />
             </Link>
 
             {/* Search bars - Desktop */}
@@ -196,32 +221,7 @@ export default function Header() {
               </Link>
             </div>
 
-            {/* Mobile menu button */}
-            <button className="md:hidden p-1.5 text-gray-500" onClick={() => setMobileMenuOpen(!mobileMenuOpen)}>
-              {mobileMenuOpen ? <X size={22} /> : <Menu size={22} />}
-            </button>
           </div>
-
-          {/* Mobile search */}
-          <form onSubmit={handleSearchSubmit} className="md:hidden pb-3">
-            <div className="relative">
-              <input
-                type="text"
-                placeholder="상품권, 업체, 커뮤니티 검색"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                maxLength={80}
-                className="w-full h-[38px] pl-3 pr-10 border border-gray-300 text-[13px] focus:border-accent focus:outline-none"
-              />
-              <button
-                type="submit"
-                className="absolute right-0 top-0 h-full w-[38px] flex items-center justify-center bg-accent text-white"
-                aria-label="검색"
-              >
-                <Search size={16} />
-              </button>
-            </div>
-          </form>
         </div>
       </div>
 
@@ -244,49 +244,140 @@ export default function Header() {
         </div>
       </div>
 
-      {/* Mobile menu */}
+      {/* 모바일 우측 슬라이드 드로어 — 이전 페이지는 움직이지 않고 메뉴만 우측에서 슬라이드 */}
       {mobileMenuOpen && (
-        <div className="md:hidden border-t border-gray-200 bg-white shadow-lg">
-          <div className="px-4 py-2">
-            <Link href="/board?tab=sell" className="block py-2.5 text-[13px] text-gray-700 font-bold border-b border-gray-100" onClick={() => setMobileMenuOpen(false)}>
-              상품권 팝니다
-            </Link>
-            <Link href="/board?tab=buy" className="block py-2.5 text-[13px] text-gray-700 font-bold border-b border-gray-100" onClick={() => setMobileMenuOpen(false)}>
-              상품권 삽니다
-            </Link>
-            <Link href="/recommended" className="block py-2.5 text-[13px] text-gray-700 font-medium border-b border-gray-100" onClick={() => setMobileMenuOpen(false)}>
-              매입업체
-            </Link>
-            <Link href="/community" className="block py-2.5 text-[13px] text-gray-700 font-medium border-b border-gray-100" onClick={() => setMobileMenuOpen(false)}>
-              커뮤니티
-            </Link>
-            <Link href="/custom-search" className="block py-2.5 text-[13px] text-gray-700 font-medium border-b border-gray-100" onClick={() => setMobileMenuOpen(false)}>
-              상세검색
-            </Link>
-            <Link href="/guide" className="block py-2.5 text-[13px] text-gray-700 font-medium border-b border-gray-100" onClick={() => setMobileMenuOpen(false)}>
-              이용안내
-            </Link>
-            <Link href="/faq" className="block py-2.5 text-[13px] text-gray-700 font-medium border-b border-gray-100" onClick={() => setMobileMenuOpen(false)}>
-              고객센터
-            </Link>
-            <Link href="/fraud" className="block py-2.5 text-[13px] text-gray-700 font-medium border-b border-gray-100" onClick={() => setMobileMenuOpen(false)}>
-              사기방지 가이드
-            </Link>
-            <div className="border-t border-gray-200 mt-1 pt-2">
+        <div className="md:hidden fixed inset-0 z-[70]" onClick={() => setMobileMenuOpen(false)}>
+          {/* 어두운 배경 오버레이 */}
+          <div className="absolute inset-0 bg-black/40" />
+
+          {/* 우측 슬라이드 패널 */}
+          <aside
+            onClick={(e) => e.stopPropagation()}
+            className="absolute right-0 top-0 bottom-0 w-[78%] max-w-[340px] bg-white shadow-2xl overflow-y-auto"
+          >
+            {/* 드로어 헤더 */}
+            <div className="flex items-center justify-between px-4 py-3 border-b border-gray-200 bg-accent text-white">
+              <span className="text-[14px] font-bold">티켓바이 전체메뉴</span>
+              <button
+                type="button"
+                onClick={() => setMobileMenuOpen(false)}
+                aria-label="닫기"
+                className="text-white/90 hover:text-white"
+              >
+                <X size={18} />
+              </button>
+            </div>
+
+            {/* 검색 폼 */}
+            <form onSubmit={handleSearchSubmit} className="px-4 py-3 border-b border-gray-100">
+              <div className="relative">
+                <input
+                  type="text"
+                  placeholder="상품권, 업체, 커뮤니티 검색"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  maxLength={80}
+                  className="w-full h-9 pl-3 pr-9 border border-gray-300 text-[12.5px] focus:border-accent focus:outline-none"
+                />
+                <button
+                  type="submit"
+                  className="absolute right-0 top-0 h-full w-9 flex items-center justify-center bg-accent text-white"
+                  aria-label="검색"
+                >
+                  <Search size={14} />
+                </button>
+              </div>
+            </form>
+
+            {/* 1차 메뉴 */}
+            <nav className="py-2">
+              {[
+                { label: '상품권 팝니다', href: '/board?tab=sell' },
+                { label: '상품권 삽니다', href: '/board?tab=buy' },
+                { label: '지역별 업체찾기', href: '/category/area' },
+                { label: '상품별 업체찾기', href: '/category/product' },
+                { label: '매입업체', href: '/recommended' },
+                { label: '커뮤니티', href: '/community' },
+                { label: '상세검색', href: '/custom-search' },
+                { label: '이용안내', href: '/guide' },
+                { label: '고객센터', href: '/faq' },
+                { label: '사기방지 가이드', href: '/fraud' },
+                { label: '광고문의', href: '/advertising' },
+              ].map((m) => (
+                <Link
+                  key={m.href}
+                  href={m.href}
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="block px-4 py-2.5 text-[13px] text-gray-800 hover:bg-gray-50 border-b border-gray-100"
+                >
+                  {m.label}
+                </Link>
+              ))}
+            </nav>
+
+            {/* 인증 영역 */}
+            <div className="px-4 py-3 border-t border-gray-200 bg-gray-50">
               {isLoggedIn ? (
-                <>
-                  <Link href="/dashboard" className="block py-2.5 text-[13px] font-bold text-gray-900" onClick={() => setMobileMenuOpen(false)}>내 대시보드</Link>
-                  <button onClick={() => { logout(); setMobileMenuOpen(false); }} className="text-[13px] text-red-500 py-2.5">로그아웃</button>
-                </>
+                <div className="flex items-center justify-between gap-2">
+                  <Link
+                    href="/dashboard"
+                    onClick={() => setMobileMenuOpen(false)}
+                    className="text-[13px] font-bold text-gray-900"
+                  >
+                    내 대시보드
+                  </Link>
+                  <button
+                    onClick={() => { logout(); setMobileMenuOpen(false); }}
+                    className="text-[12px] text-red-500"
+                  >
+                    업체 로그아웃
+                  </button>
+                </div>
               ) : (
-                <>
-                  <Link href="/login" className="block py-2.5 text-[13px] text-gray-700 font-medium" onClick={() => setMobileMenuOpen(false)}>로그인</Link>
-                  <Link href="/register" className="block py-2.5 text-[13px] font-bold text-accent" onClick={() => setMobileMenuOpen(false)}>개인 회원가입</Link>
-                  <Link href="/register-business" className="block py-2.5 text-[13px] text-gray-700" onClick={() => setMobileMenuOpen(false)}>업체 회원가입 (매입 업체)</Link>
-                </>
+                <div className="grid grid-cols-2 gap-2">
+                  <Link
+                    href="/login"
+                    onClick={() => setMobileMenuOpen(false)}
+                    className="btn-accent h-9 text-[12.5px] inline-flex items-center justify-center"
+                  >
+                    업체 로그인
+                  </Link>
+                  <Link
+                    href="/register-business"
+                    onClick={() => setMobileMenuOpen(false)}
+                    className="btn-secondary h-9 text-[12.5px] inline-flex items-center justify-center"
+                  >
+                    업체 회원가입
+                  </Link>
+                </div>
               )}
             </div>
-          </div>
+
+            {/* 신뢰기관 바로가기 — 메뉴 제일 하단 */}
+            <div className="px-4 py-4 border-t border-gray-200">
+              <p className="text-[11px] font-bold text-gray-500 mb-2">신뢰기관 바로가기</p>
+              <div className="grid grid-cols-3 gap-2">
+                {TRUST_LINKS.map(({ label, desc, href, Icon }) => (
+                  <a
+                    key={label}
+                    href={href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    onClick={() => setMobileMenuOpen(false)}
+                    className="flex flex-col items-center gap-1 px-2 py-2.5 border border-gray-200 hover:border-accent transition-colors text-center"
+                  >
+                    <Icon size={14} className="text-accent" />
+                    <span className="text-[11px] font-bold text-gray-800 whitespace-nowrap">{label}</span>
+                    <span className="text-[9.5px] text-gray-500 leading-tight whitespace-nowrap">{desc}</span>
+                  </a>
+                ))}
+              </div>
+              <p className="text-[10px] text-gray-400 mt-2 leading-relaxed">
+                <ExternalLink size={9} className="inline -mt-0.5 mr-0.5" />
+                새 탭에서 외부 사이트로 연결됩니다.
+              </p>
+            </div>
+          </aside>
         </div>
       )}
     </header>
