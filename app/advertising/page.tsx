@@ -1,9 +1,21 @@
 'use client';
 
 import Link from 'next/link';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { ArrowRight, Smartphone, BarChart3, Shield, Clock, CheckCircle2, AlertCircle, Megaphone, ChevronDown } from 'lucide-react';
 
+interface AdPricing {
+  id: string;
+  slot: string;
+  label: string;
+  period: string;
+  price: number;
+  description: string | null;
+  is_active: boolean;
+  sort_order: number;
+}
+
+/** 어드민 미설정 환경에서도 보이도록 두는 폴백 — DB 응답이 비어있을 때만 사용 */
 const AD_PRODUCTS = [
   {
     id: 'hero_banner',
@@ -129,6 +141,16 @@ export default function AdvertisingPage() {
   const [submitting, setSubmitting] = useState(false);
   const [result, setResult] = useState<null | { ok: boolean; msg: string }>(null);
   const [openFaq, setOpenFaq] = useState<number | null>(0);
+  const [pricing, setPricing] = useState<AdPricing[]>([]);
+
+  useEffect(() => {
+    fetch('/api/ad-pricing', { cache: 'no-store' })
+      .then((r) => r.json())
+      .then((data) => {
+        if (Array.isArray(data)) setPricing(data.filter((p: AdPricing) => p.is_active));
+      })
+      .catch(() => {});
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -198,6 +220,43 @@ export default function AdvertisingPage() {
           </div>
         ))}
       </div>
+
+      {/* 광고위치 및 비용안내 — 어드민 수정 가능한 가격표 (제일 중요) */}
+      {pricing.length > 0 && (
+        <div className="mb-10">
+          <div className="text-center mb-5">
+            <h2 className="text-[20px] font-semibold text-zinc-900 mb-1">광고위치 및 비용안내</h2>
+            <p className="text-[13px] text-zinc-500">슬롯별 노출 위치와 게재 비용입니다. 부가세 별도, 30일 단위 게재 기준.</p>
+          </div>
+          <div className="card overflow-hidden">
+            <table className="w-full text-[12.5px]">
+              <thead>
+                <tr className="bg-zinc-50 border-b border-zinc-200">
+                  <th className="text-left font-bold text-zinc-700 px-4 py-2.5">슬롯명</th>
+                  <th className="text-left font-bold text-zinc-700 px-4 py-2.5">위치 안내</th>
+                  <th className="text-right font-bold text-zinc-700 px-4 py-2.5 w-[120px] whitespace-nowrap">단가</th>
+                  <th className="text-center font-bold text-zinc-700 px-4 py-2.5 w-[90px] whitespace-nowrap">기준</th>
+                </tr>
+              </thead>
+              <tbody>
+                {pricing.map((row) => (
+                  <tr key={row.id} className="border-b border-zinc-100 last:border-b-0 hover:bg-zinc-50">
+                    <td className="px-4 py-2.5 font-bold text-zinc-900 whitespace-nowrap">{row.label}</td>
+                    <td className="px-4 py-2.5 text-zinc-600">{row.description || '-'}</td>
+                    <td className="px-4 py-2.5 text-right font-bold text-accent tabular-nums whitespace-nowrap">
+                      {row.price.toLocaleString()}원
+                    </td>
+                    <td className="px-4 py-2.5 text-center text-[11px] text-zinc-400 whitespace-nowrap">{row.period}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+          <p className="text-[11px] text-zinc-400 mt-2 text-center">
+            ※ 가격은 운영 정책에 따라 변경될 수 있습니다. 정확한 견적은 1:1 문의로 확인해 주세요.
+          </p>
+        </div>
+      )}
 
       {/* Products */}
       <div className="mb-10">
