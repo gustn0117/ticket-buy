@@ -56,10 +56,10 @@ export default function HeroBanner() {
       <div className="container-main py-10 md:py-14 relative z-10">
         <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
           <div className="text-center lg:text-left">
-            <h1 className="text-white text-[22px] md:text-[30px] font-bold mb-3 leading-tight">
+            <h1 className="text-white text-[18px] md:text-[24px] font-bold mb-2 leading-tight">
               전국 최대 규모! 상품권 업체가 모두 한곳에!
             </h1>
-            <p className="text-gray-300 text-[12px] md:text-[14px]">
+            <p className="text-gray-300 text-[11px] md:text-[13px]">
               나에게 맞는 상품권 업체 찾기! 상품권 매입 중개 플랫폼 1위!
             </p>
           </div>
@@ -85,10 +85,10 @@ export default function HeroBanner() {
           </div>
         </div>
       </div>
-      {/* Stats bar - 별도 구간 */}
+      {/* Stats bar — 한 줄로 깔끔히 (현재 기준 ~ 누적 방문자만) */}
       <div className="border-t border-white/10 bg-black/30 relative z-10">
-        <div className="container-main py-3">
-          <div className="flex flex-wrap items-center gap-x-6 gap-y-1.5 text-[11px] text-gray-300">
+        <div className="container-main py-2.5">
+          <div className="flex flex-wrap items-center gap-x-5 gap-y-1 text-[11px] text-gray-300 whitespace-nowrap">
             <span className="text-gray-400">현재 기준</span>
             <div className="flex items-center gap-1.5">
               <span>오늘 방문자</span>
@@ -99,11 +99,6 @@ export default function HeroBanner() {
               <span>누적 방문자</span>
               <div className="flex gap-px">{formatNumber(visitorInfo.total)}</div>
               <span>명</span>
-            </div>
-            <div className="flex items-center gap-1.5">
-              <span>총 판매문의</span>
-              <div className="flex gap-px">{formatNumber(visitorInfo.sellCount)}</div>
-              <span>건</span>
             </div>
           </div>
         </div>

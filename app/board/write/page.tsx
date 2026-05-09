@@ -286,12 +286,12 @@ function WritePostContent() {
 
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-[12px] font-medium text-zinc-600 mb-1">개당 상품권 금액 (원) *</label>
+              <label className="block text-[12px] font-medium text-zinc-600 mb-1">상품권 금액 (원) *</label>
               <input type="text" inputMode="numeric" value={formatNumber(form.faceValue)}
                 onChange={(e) => handleChange('faceValue', parseNumber(e.target.value))} placeholder="100,000" className="input" required />
             </div>
             <div>
-              <label className="block text-[12px] font-medium text-zinc-600 mb-1">개당 구매금액 (원) *</label>
+              <label className="block text-[12px] font-medium text-zinc-600 mb-1">{form.type === 'sell' ? '판매금액' : '희망 매입금액'} (원) *</label>
               <input type="text" inputMode="numeric" value={formatNumber(form.price)}
                 onChange={(e) => handleChange('price', parseNumber(e.target.value))} placeholder="70,000" className="input" required />
             </div>
@@ -345,19 +345,13 @@ function WritePostContent() {
           {!isLoggedIn && !isEdit && form.type === 'sell' && (
             <div className="card bg-zinc-50 border-zinc-200 p-4">
               <p className="text-[12px] font-semibold text-zinc-700 mb-2">비회원 작성 정보</p>
-              <p className="text-[11px] text-zinc-500 mb-3">글 수정·삭제 시 아래 정보가 필요합니다. 회원가입 없이 작성할 수 있습니다.</p>
+              <p className="text-[11px] text-zinc-500 mb-3">회원가입 없이 글을 작성할 수 있습니다. 글 수정·삭제 시에는 아래 비밀번호가 필요합니다.</p>
               <div className="space-y-3">
                 <div>
                   <label className="block text-[12px] font-medium text-zinc-600 mb-1">이름/닉네임 *</label>
                   <input type="text" value={form.guestName}
                     onChange={(e) => handleChange('guestName', e.target.value)}
                     placeholder="게시글에 표시됩니다" className="input" required />
-                </div>
-                <div>
-                  <label className="block text-[12px] font-medium text-zinc-600 mb-1">연락처</label>
-                  <input type="text" value={form.guestPhone}
-                    onChange={(e) => handleChange('guestPhone', e.target.value)}
-                    placeholder="010-0000-0000 (선택)" className="input" />
                 </div>
                 <div>
                   <label className="block text-[12px] font-medium text-zinc-600 mb-1">비밀번호 * (4자 이상)</label>

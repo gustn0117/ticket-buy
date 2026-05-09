@@ -123,31 +123,7 @@ export default function Header() {
 
   return (
     <header className="bg-white sticky top-0 z-50">
-      {/* Top utility bar - Desktop only */}
-      <div className="hidden md:block border-b border-gray-200 bg-white">
-        <div className="container-main flex justify-between items-center h-8">
-          <div className="text-[11px] text-gray-500">
-            티켓바이 - 상품권 매입/매도 중개 플랫폼
-          </div>
-          <div className="flex items-center gap-3 text-[11px] text-gray-500">
-            <Link href="/guide" className="hover:text-gray-900">이용안내</Link>
-            <span className="text-gray-300">|</span>
-            {isLoggedIn ? (
-              <>
-                <Link href="/dashboard" className="hover:text-gray-900">{user?.name}</Link>
-                <span className="text-gray-300">|</span>
-                <button onClick={logout} className="hover:text-gray-900">로그아웃</button>
-              </>
-            ) : (
-              <>
-                <Link href="/register" className="hover:text-gray-900">회원가입</Link>
-                <span className="text-gray-300">|</span>
-                <Link href="/login" className="hover:text-gray-900">로그인</Link>
-              </>
-            )}
-          </div>
-        </div>
-      </div>
+      {/* 상단 유틸리티 바 — 요청대로 '티켓바이 - 상품권 매입/매도 중개플랫폼 ~ 회원가입 로그인' 문구 일괄 제거 */}
 
       {/* Main header */}
       <div className="border-b border-gray-200 bg-white">
@@ -192,12 +168,12 @@ export default function Header() {
               {isLoggedIn ? (
                 <button onClick={logout} className="flex flex-col items-center gap-1 text-gray-600 hover:text-accent transition-colors">
                   <User size={22} strokeWidth={1.5} />
-                  <span className="text-[10px]">로그아웃</span>
+                  <span className="text-[10px]">업체 로그아웃</span>
                 </button>
               ) : (
                 <Link href="/login" className="flex flex-col items-center gap-1 text-gray-600 hover:text-accent transition-colors">
                   <User size={22} strokeWidth={1.5} />
-                  <span className="text-[10px]">로그인</span>
+                  <span className="text-[10px]">업체 로그인</span>
                 </Link>
               )}
               {isLoggedIn && (
