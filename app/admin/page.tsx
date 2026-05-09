@@ -12,6 +12,7 @@ import { Users, FileText, Bell, MessageCircle, Trash2, Shield, Megaphone, Pencil
 import { getCategoryName } from '@/data/mock';
 import { getCache, setCache } from '@/lib/cache';
 import AdPricingEditor from '@/components/admin/AdPricingEditor';
+import LineAdPricingEditor from '@/components/admin/LineAdPricingEditor';
 
 const ADMIN_CACHE_TTL = 30 * 1000; // 30초 (관리자라 너무 길면 변경사항 반영이 늦음)
 
@@ -1049,6 +1050,9 @@ export default function AdminPage() {
         <div className="space-y-4">
           {/* 광고위치 및 비용안내 — 인라인 편집 */}
           <AdPricingEditor />
+
+          {/* 줄광고 점프 안내 — 인라인 편집 */}
+          <LineAdPricingEditor />
 
           {/* Ad Form */}
           {showAdForm && (

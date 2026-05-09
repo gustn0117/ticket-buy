@@ -10,6 +10,8 @@ import RealtimeSellPosts from '@/components/home/RealtimeSellPosts';
 import SellPostItem from '@/components/home/SellPostItem';
 import AdBanner from '@/components/ads/AdBanner';
 import PremiumBannerSlider from '@/components/home/PremiumBannerSlider';
+import LeftSidebar from '@/components/layout/LeftSidebar';
+import RightSidebar from '@/components/layout/RightSidebar';
 import { getPosts, getPremiumBuyers } from '@/lib/api';
 import type { DBPost, DBUser, DBPremiumBuyer } from '@/lib/types';
 import { getCache, setCache } from '@/lib/cache';
@@ -40,11 +42,16 @@ export default function Home() {
       <HeroBanner />
 
       <div className="container-main py-6">
-        {/* AD: 메인 히어로 배너 (1140 x 200) */}
-        <AdBanner slot="hero_banner" hideEmpty className="mb-5" />
+        <div className="flex gap-4">
+          {/* 좌측 사이드바 (프리미엄 업체 + 회원가입 + 최근 본 업체) */}
+          <LeftSidebar />
 
-        {/* 메인 등록업체 (가장 위) */}
-        <MainCompaniesSection buyers={buyers} loading={loading} />
+          <div className="flex-1 min-w-0">
+            {/* AD: 메인 히어로 배너 (1140 x 200) */}
+            <AdBanner slot="hero_banner" hideEmpty className="mb-5" />
+
+            {/* 메인 등록업체 (가장 위) */}
+            <MainCompaniesSection buyers={buyers} loading={loading} />
 
         {/* 프리미엄 배너광고 슬라이더 — 메인 등록업체 아래 (옆으로 넘기기, 2줄씩) */}
         <PremiumBannerSlider buyers={buyers} />
@@ -101,12 +108,17 @@ export default function Home() {
           )}
         </section>
 
-        {/* 4. 실시간 판매문의 (맨 밑) */}
-        <RealtimeSellPosts posts={sellPosts} loading={loading} />
+            {/* 4. 실시간 판매문의 (맨 밑) */}
+            <RealtimeSellPosts posts={sellPosts} loading={loading} />
 
-        {/* 모바일 전용: 실시간 판매문의 아래에 지역/상품으로 업체찾기 */}
-        <div className="block md:hidden mt-5">
-          <BuyerFinder />
+            {/* 모바일 전용: 실시간 판매문의 아래에 지역/상품으로 업체찾기 */}
+            <div className="block md:hidden mt-5">
+              <BuyerFinder />
+            </div>
+          </div>
+
+          {/* 우측 사이드바 (스폰서링크 + 광고 슬롯) */}
+          <RightSidebar />
         </div>
       </div>
     </div>

@@ -69,15 +69,16 @@ function DemoCard({ item, index }: { item: typeof DEMO_COMPANIES[number]; index:
             </h3>
           </div>
         </div>
-        <div className="px-2.5 md:px-4 pt-2 md:pt-3 pb-2 md:pb-3">
+        <div className="px-2.5 md:px-4 pt-2 md:pt-3 pb-0">
           <p className="text-[12px] md:text-[13px] text-gray-600 leading-tight text-center line-clamp-2 min-h-[28px] md:min-h-[34px] whitespace-pre-line">
             {item.desc}
           </p>
-          <div className="flex items-center justify-center gap-1.5 md:gap-2 mt-1.5 md:mt-2 text-[13px] md:text-[17px] font-bold text-gray-900 whitespace-nowrap tracking-tight md:tracking-wide">
-            <Phone size={13} className="text-gray-500 shrink-0 md:hidden" />
-            <Phone size={15} className="text-gray-500 shrink-0 hidden md:inline" />
-            <span className="tabular-nums whitespace-nowrap">{item.phone}</span>
-          </div>
+        </div>
+        <div className="mx-2.5 md:mx-4 my-2 md:my-2.5 border-t border-gray-200" />
+        <div className="flex items-center justify-center gap-1.5 md:gap-2 px-2.5 md:px-4 pb-2 md:pb-2.5 text-[13px] md:text-[17px] font-bold text-gray-900 whitespace-nowrap tracking-tight md:tracking-wide">
+          <Phone size={13} className="text-gray-500 shrink-0 md:hidden" />
+          <Phone size={15} className="text-gray-500 shrink-0 hidden md:inline" />
+          <span className="tabular-nums whitespace-nowrap">{item.phone}</span>
         </div>
         <div className="flex justify-between items-center px-3 py-2 border-t border-gray-100 text-[11px]">
           <span className="text-accent font-bold flex items-center gap-1 truncate">

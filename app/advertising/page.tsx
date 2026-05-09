@@ -2,7 +2,10 @@
 
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
-import { ArrowRight, Smartphone, BarChart3, Shield, Clock, CheckCircle2, AlertCircle, Megaphone, ChevronDown } from 'lucide-react';
+import { ArrowRight, Smartphone, BarChart3, Shield, Clock, CheckCircle2, AlertCircle, Megaphone, ChevronDown, Zap } from 'lucide-react';
+import SlotPreviewMap from '@/components/advertising/SlotPreviewMap';
+
+interface LineAdRow { id: string; tier_label: string; threshold_text: string; jump_count: number; sort_order: number; }
 
 interface AdPricing {
   id: string;
@@ -142,12 +145,19 @@ export default function AdvertisingPage() {
   const [result, setResult] = useState<null | { ok: boolean; msg: string }>(null);
   const [openFaq, setOpenFaq] = useState<number | null>(0);
   const [pricing, setPricing] = useState<AdPricing[]>([]);
+  const [lineAds, setLineAds] = useState<LineAdRow[]>([]);
 
   useEffect(() => {
     fetch('/api/ad-pricing', { cache: 'no-store' })
       .then((r) => r.json())
       .then((data) => {
         if (Array.isArray(data)) setPricing(data.filter((p: AdPricing) => p.is_active));
+      })
+      .catch(() => {});
+    fetch('/api/line-ad-pricing', { cache: 'no-store' })
+      .then((r) => r.json())
+      .then((data) => {
+        if (Array.isArray(data)) setLineAds(data);
       })
       .catch(() => {});
   }, []);
@@ -254,6 +264,56 @@ export default function AdvertisingPage() {
           </div>
           <p className="text-[11px] text-zinc-400 mt-2 text-center">
             ※ 가격은 운영 정책에 따라 변경될 수 있습니다. 정확한 견적은 1:1 문의로 확인해 주세요.
+          </p>
+        </div>
+      )}
+
+      {/* 슬롯 위치 시각화 — GIF 대체 인터랙티브 미리보기 */}
+      <div className="mb-10">
+        <div className="text-center mb-5">
+          <h2 className="text-[20px] font-semibold text-zinc-900 mb-1">광고 노출 위치 확인</h2>
+          <p className="text-[13px] text-zinc-500">슬롯 이름을 누르거나 자동 회전을 보면서 페이지 어디에 노출되는지 확인하세요.</p>
+        </div>
+        <SlotPreviewMap />
+      </div>
+
+      {/* 줄광고 점프 기능 안내 — DB 기반, admin 수정 가능 */}
+      {lineAds.length > 0 && (
+        <div className="mb-10">
+          <div className="text-center mb-5">
+            <h2 className="text-[20px] font-semibold text-zinc-900 mb-1 flex items-center justify-center gap-1.5">
+              <Zap size={18} className="text-accent" />
+              줄광고 — 유료 배너광고 등록 시 무료
+            </h2>
+            <p className="text-[13px] text-zinc-500">
+              유료 배너광고 등록 시 모든 업체 광고비용 상관없이 줄광고 1개 등록 가능하며,<br />
+              줄광고 점프 사용 횟수는 광고비에 따라 차등 지급됩니다.
+            </p>
+          </div>
+          <div className="card overflow-hidden">
+            <table className="w-full text-[13px]">
+              <thead>
+                <tr className="bg-zinc-50 border-b border-zinc-200">
+                  <th className="text-left font-bold text-zinc-700 px-4 py-2.5 w-[100px]">등급</th>
+                  <th className="text-left font-bold text-zinc-700 px-4 py-2.5">광고비 기준</th>
+                  <th className="text-right font-bold text-zinc-700 px-4 py-2.5 w-[140px] whitespace-nowrap">무료 점프 횟수</th>
+                </tr>
+              </thead>
+              <tbody>
+                {lineAds.map((row) => (
+                  <tr key={row.id} className="border-b border-zinc-100 last:border-b-0 hover:bg-zinc-50">
+                    <td className="px-4 py-3 font-bold text-zinc-700 whitespace-nowrap">{row.tier_label}</td>
+                    <td className="px-4 py-3 text-zinc-700">{row.threshold_text}</td>
+                    <td className="px-4 py-3 text-right font-bold text-accent tabular-nums whitespace-nowrap">
+                      {row.jump_count}회
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+          <p className="text-[11px] text-zinc-400 mt-2 text-center">
+            ※ 줄광고는 PC/모바일 동일하게 노출되며, 무료 점프 횟수는 광고비 등급에 따라 자동 적용됩니다.
           </p>
         </div>
       )}
