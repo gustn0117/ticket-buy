@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
 import { ChevronLeft, ChevronRight, Phone, Search, HelpCircle } from 'lucide-react';
 import type { DBPremiumBuyer } from '@/lib/types';
@@ -12,10 +12,21 @@ interface Props {
 const stripPhone = (p: string) => p.replace(/[^0-9+]/g, '');
 const PER_SLIDE = 2; // 한 슬라이드에 2줄
 
+/** Fisher-Yates 셔플 — 새로고침마다 노출 순서 100% 랜덤 */
+function shuffle<T>(arr: T[]): T[] {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
 /** 메인 등록업체 밑에 노출되는 프리미엄 배너 슬라이더 (옆으로 넘기기, 2줄씩) */
 export default function PremiumBannerSlider({ buyers }: Props) {
   const [page, setPage] = useState(0);
-  const featured = buyers.slice(0, 12); // 최대 12개 (6 페이지)
+  // 새로고침마다 위치 100% 랜덤 (PDF 요청)
+  const featured = useMemo(() => shuffle(buyers).slice(0, 12), [buyers]); // 최대 12개
   const totalPages = Math.max(1, Math.ceil(featured.length / PER_SLIDE));
 
   // 6초마다 자동 슬라이드

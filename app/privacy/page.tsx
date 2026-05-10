@@ -10,7 +10,7 @@ export default function PrivacyPage() {
           <p className="mb-2">회사는 서비스 제공을 위해 다음과 같은 개인정보를 수집합니다.</p>
           <ul className="list-disc pl-4 space-y-1">
             <li><strong>필수항목:</strong> 이메일, 비밀번호, 이름, 연락처</li>
-            <li><strong>업체 회원 추가항목:</strong> 사업자등록번호, 대표자명, 사업장 주소, 메신저 정보</li>
+            <li><strong>업체 회원 추가항목:</strong> 사업자등록번호, 대표자명, 사업장 주소</li>
             <li><strong>자동 수집항목:</strong> 접속 IP, 접속 시간, 서비스 이용 기록</li>
           </ul>
         </section>

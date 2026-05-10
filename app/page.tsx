@@ -1,9 +1,11 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import Link from 'next/link';
 import { ChevronRight, ShoppingCart, PenSquare } from 'lucide-react';
+import { ExternalLink } from 'lucide-react';
 import HeroBanner from '@/components/home/HeroBanner';
+import { TRUST_LINKS } from '@/lib/trustLinks';
 import MainCompaniesSection from '@/components/home/MainCompaniesSection';
 import BuyerFinder from '@/components/home/BuyerFinder';
 import RealtimeSellPosts from '@/components/home/RealtimeSellPosts';
@@ -24,6 +26,16 @@ export default function Home() {
   const [buyPosts, setBuyPosts] = useState<PostWithAuthor[]>(() => getCache<PostWithAuthor[]>('home_buy') ?? []);
   const [buyers, setBuyers] = useState<DBPremiumBuyer[]>(() => getCache<DBPremiumBuyer[]>('home_buyers') ?? []);
   const [loading, setLoading] = useState(() => !getCache('home_sell'));
+
+  // 새로고침마다 100% 랜덤 노출 (PDF: '모든 광고에서 업체 위치 랜덤')
+  const shuffledBuyPosts = useMemo(() => {
+    const a = [...buyPosts];
+    for (let i = a.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [a[i], a[j]] = [a[j], a[i]];
+    }
+    return a;
+  }, [buyPosts]);
 
   useEffect(() => {
     Promise.allSettled([
@@ -96,7 +108,7 @@ export default function Home() {
             </div>
           ) : (
             <div className="bg-white border border-gray-200 overflow-hidden">
-              {buyPosts.slice(0, 10).map((post, idx) => (
+              {shuffledBuyPosts.slice(0, 10).map((post, idx) => (
                 <SellPostItem key={post.id} post={post} num={idx + 1} />
               ))}
               {buyPosts.length > 10 && (
@@ -119,6 +131,30 @@ export default function Home() {
 
           {/* 우측 사이드바 (스폰서링크 + 광고 슬롯) */}
           <RightSidebar />
+        </div>
+
+        {/* 모바일 전용: 신뢰기관 바로가기 — 페이지 제일 하단 */}
+        <div className="block md:hidden mt-6 border-t border-gray-200 pt-5">
+          <p className="text-[11px] font-bold text-gray-500 mb-2 px-1">신뢰기관 바로가기</p>
+          <div className="grid grid-cols-3 gap-2">
+            {TRUST_LINKS.map(({ label, desc, href, Icon }) => (
+              <a
+                key={label}
+                href={href}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex flex-col items-center gap-1 px-2 py-2.5 border border-gray-200 bg-white hover:border-accent transition-colors text-center"
+              >
+                <Icon size={14} className="text-accent" />
+                <span className="text-[11px] font-bold text-gray-800 whitespace-nowrap">{label}</span>
+                <span className="text-[9.5px] text-gray-500 leading-tight whitespace-nowrap">{desc}</span>
+              </a>
+            ))}
+          </div>
+          <p className="text-[10px] text-gray-400 mt-2 px-1">
+            <ExternalLink size={9} className="inline -mt-0.5 mr-0.5" />
+            새 탭에서 외부 사이트로 연결됩니다.
+          </p>
         </div>
       </div>
     </div>

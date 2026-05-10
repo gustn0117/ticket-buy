@@ -19,6 +19,9 @@ export interface Ad {
   image_url: string;
   link_url: string;
   advertiser: string;
+  advertiser_phone?: string | null;
+  advertiser_email?: string | null;
+  internal_memo?: string | null;
   is_active: boolean;
   start_date: string;
   end_date: string;

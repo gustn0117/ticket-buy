@@ -285,6 +285,7 @@ export default function AdvertisingPage() {
               <Zap size={18} className="text-accent" />
               줄광고 — 유료 배너광고 등록 시 무료
             </h2>
+            <p className="text-[12px] text-accent font-semibold mb-1">(점프추가 없이) 랜덤으로 돌아갑니다.</p>
             <p className="text-[13px] text-zinc-500">
               유료 배너광고 등록 시 모든 업체 광고비용 상관없이 줄광고 1개 등록 가능하며,<br />
               줄광고 점프 사용 횟수는 광고비에 따라 차등 지급됩니다.

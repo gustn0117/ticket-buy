@@ -34,7 +34,15 @@ export default function LeftSidebar() {
       .catch(() => {});
   }, [premium.length]);
 
-  const featured = premium.slice(0, 4);
+  // 새로고침마다 위치 100% 랜덤 (PDF: 모든 광고 위치 랜덤)
+  const featured = (() => {
+    const arr = [...premium];
+    for (let i = arr.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [arr[i], arr[j]] = [arr[j], arr[i]];
+    }
+    return arr.slice(0, 4);
+  })();
 
   return (
     <aside className="w-[200px] shrink-0 hidden lg:block space-y-2.5">

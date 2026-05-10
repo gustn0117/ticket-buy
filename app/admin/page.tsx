@@ -75,6 +75,9 @@ export default function AdminPage() {
     image_url: '',
     link_url: '',
     advertiser: '',
+    advertiser_phone: '',
+    advertiser_email: '',
+    internal_memo: '',
     start_date: new Date().toISOString().slice(0, 10),
     end_date: new Date(Date.now() + 30 * 86400000).toISOString().slice(0, 10),
     priority: 0,
@@ -246,13 +249,13 @@ export default function AdminPage() {
 
   // Ad CRUD
   const resetAdForm = () => {
-    setAdForm({ slot: 'hero_banner', title: '', description: '', image_url: '', link_url: '', advertiser: '', start_date: new Date().toISOString().slice(0, 10), end_date: new Date(Date.now() + 30 * 86400000).toISOString().slice(0, 10), priority: 0, is_active: true });
+    setAdForm({ slot: 'hero_banner', title: '', description: '', image_url: '', link_url: '', advertiser: '', advertiser_phone: '', advertiser_email: '', internal_memo: '', start_date: new Date().toISOString().slice(0, 10), end_date: new Date(Date.now() + 30 * 86400000).toISOString().slice(0, 10), priority: 0, is_active: true });
     setEditingAd(null);
     setShowAdForm(false);
   };
 
   const startEditAd = (ad: Ad) => {
-    setAdForm({ slot: ad.slot, title: ad.title, description: ad.description, image_url: ad.image_url, link_url: ad.link_url, advertiser: ad.advertiser, start_date: ad.start_date.slice(0, 10), end_date: ad.end_date.slice(0, 10), priority: ad.priority, is_active: ad.is_active });
+    setAdForm({ slot: ad.slot, title: ad.title, description: ad.description, image_url: ad.image_url, link_url: ad.link_url, advertiser: ad.advertiser, advertiser_phone: ad.advertiser_phone || '', advertiser_email: ad.advertiser_email || '', internal_memo: ad.internal_memo || '', start_date: ad.start_date.slice(0, 10), end_date: ad.end_date.slice(0, 10), priority: ad.priority, is_active: ad.is_active });
     setEditingAd(ad);
     setShowAdForm(true);
   };
@@ -945,7 +948,19 @@ export default function AdminPage() {
 
               {/* 부가설명 — 업체가 직접 작성/수정. 어드민에서도 수정 가능 */}
               <div>
-                <label className="block text-[11px] font-medium text-zinc-500 mb-1">부가설명</label>
+                <div className="flex items-center justify-between mb-1">
+                  <label className="block text-[11px] font-medium text-zinc-500">부가설명</label>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const tpl = `※ 안녕하세요! ${premiumForm.name || '[업체명]'} 입니다 !※\n☞ 모든 직종 다 가능합니다\n▶ 전국 무방문 당일 매입상담\n▶ 전화상담 후 즉시입금\n▶ 정확한 시세, 친절한 상담\n▶ 1회성 거래가 아닌 평생 거래처를 만들어 드립니다\n\n※ 상담문의 ${premiumForm.phone || '[연락처]'} ※`;
+                      setPremiumForm(p => ({ ...p, supplementary_info: tpl }));
+                    }}
+                    className="text-[10px] text-accent hover:underline"
+                  >
+                    기본 템플릿 채우기
+                  </button>
+                </div>
                 <textarea
                   value={premiumForm.supplementary_info}
                   onChange={e => setPremiumForm(p => ({ ...p, supplementary_info: e.target.value }))}
@@ -1074,6 +1089,20 @@ export default function AdminPage() {
                   <label className="block text-[12px] font-medium text-zinc-600 mb-1">광고주</label>
                   <input value={adForm.advertiser} onChange={e => setAdForm(p => ({ ...p, advertiser: e.target.value }))} className="input" placeholder="광고주명" />
                 </div>
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-[12px] font-medium text-zinc-600 mb-1">광고주 연락처</label>
+                  <input value={adForm.advertiser_phone} onChange={e => setAdForm(p => ({ ...p, advertiser_phone: e.target.value }))} className="input" placeholder="010-0000-0000" />
+                </div>
+                <div>
+                  <label className="block text-[12px] font-medium text-zinc-600 mb-1">광고주 이메일</label>
+                  <input type="email" value={adForm.advertiser_email} onChange={e => setAdForm(p => ({ ...p, advertiser_email: e.target.value }))} className="input" placeholder="contact@example.com" />
+                </div>
+              </div>
+              <div>
+                <label className="block text-[12px] font-medium text-zinc-600 mb-1">내부 메모 (관리자용)</label>
+                <textarea value={adForm.internal_memo} onChange={e => setAdForm(p => ({ ...p, internal_memo: e.target.value }))} className="input min-h-15 py-2" placeholder="결제 상태, 계약 조건 등 내부 기록" />
               </div>
               <div>
                 <label className="block text-[12px] font-medium text-zinc-600 mb-1">광고 제목 *</label>

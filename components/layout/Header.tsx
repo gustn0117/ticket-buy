@@ -4,10 +4,9 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { useState, useEffect } from 'react';
-import { Search, User, Menu, X, Clock, Eye, ShieldAlert, Megaphone, Home as HomeIcon, ExternalLink } from 'lucide-react';
+import { Search, User, Menu, X, Clock, Eye, ShieldAlert, Megaphone, Home as HomeIcon } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import MegaMenuBar, { type MegaMenuColumn } from './MegaMenuBar';
-import { TRUST_LINKS } from '@/lib/trustLinks';
 
 const HOT_BADGE = <span className="text-[10px] text-white bg-accent px-1 rounded-sm">HOT</span>;
 const NEW_BADGE = <span className="text-[10px] text-white bg-green-600 px-1 rounded-sm">N</span>;
@@ -289,29 +288,77 @@ export default function Header() {
               </div>
             </form>
 
-            {/* 1차 메뉴 */}
-            <nav className="py-2">
+            {/* 그룹형 메뉴 (대출나라 스타일) */}
+            <nav className="py-1">
               {[
-                { label: '상품권 팝니다', href: '/board?tab=sell' },
-                { label: '상품권 삽니다', href: '/board?tab=buy' },
-                { label: '지역별 업체찾기', href: '/category/area' },
-                { label: '상품별 업체찾기', href: '/category/product' },
-                { label: '매입업체', href: '/recommended' },
-                { label: '커뮤니티', href: '/community' },
-                { label: '상세검색', href: '/custom-search' },
-                { label: '이용안내', href: '/guide' },
-                { label: '고객센터', href: '/faq' },
-                { label: '사기방지 가이드', href: '/fraud' },
-                { label: '광고문의', href: '/advertising' },
-              ].map((m) => (
-                <Link
-                  key={m.href}
-                  href={m.href}
-                  onClick={() => setMobileMenuOpen(false)}
-                  className="block px-4 py-2.5 text-[13px] text-gray-800 hover:bg-gray-50 border-b border-gray-100"
-                >
-                  {m.label}
-                </Link>
+                {
+                  group: '최근본업체',
+                  items: [
+                    { label: '최근본업체', href: '/recommended' },
+                    { label: '주의사항', href: '/fraud' },
+                  ],
+                },
+                {
+                  group: '매입업체찾기',
+                  items: [
+                    { label: '지역별 업체찾기', href: '/category/area' },
+                    { label: '상품별 업체찾기', href: '/category/product' },
+                    { label: '상호명 업체찾기', href: '/search' },
+                    { label: '업체 연락처 검색', href: '/custom-search' },
+                  ],
+                },
+                {
+                  group: '오늘의 추천업체',
+                  items: [{ label: '오늘의 추천업체', href: '/recommended' }],
+                },
+                {
+                  group: '사기번호검색',
+                  items: [
+                    { label: '사기번호검색', href: '/fraud' },
+                    { label: '피해신고하기', href: '/fraud#report' },
+                    { label: '불법금융대응', href: '/fraud#response' },
+                  ],
+                },
+                {
+                  group: '정식업체조회',
+                  items: [
+                    { label: '정식업체조회', href: '/guide' },
+                    { label: '업체확인방법', href: '/guide#verify' },
+                  ],
+                },
+                {
+                  group: '커뮤니티',
+                  items: [{ label: '커뮤니티', href: '/community' }],
+                },
+                {
+                  group: '게시판',
+                  items: [
+                    { label: '상품권 팝니다', href: '/board?tab=sell' },
+                    { label: '상품권 삽니다', href: '/board?tab=buy' },
+                  ],
+                },
+                {
+                  group: '고객센터',
+                  items: [
+                    { label: '이용안내', href: '/guide' },
+                    { label: '자주묻는질문', href: '/faq' },
+                    { label: '광고문의', href: '/advertising' },
+                  ],
+                },
+              ].map((g) => (
+                <div key={g.group} className="border-b border-gray-200">
+                  <p className="px-4 pt-3 pb-1 text-[12px] font-bold text-accent">{g.group}</p>
+                  {g.items.map((m) => (
+                    <Link
+                      key={m.label + m.href}
+                      href={m.href}
+                      onClick={() => setMobileMenuOpen(false)}
+                      className="block px-5 py-2 text-[12.5px] text-gray-700 hover:bg-gray-50"
+                    >
+                      · {m.label}
+                    </Link>
+                  ))}
+                </div>
               ))}
             </nav>
 
@@ -353,30 +400,6 @@ export default function Header() {
               )}
             </div>
 
-            {/* 신뢰기관 바로가기 — 메뉴 제일 하단 */}
-            <div className="px-4 py-4 border-t border-gray-200">
-              <p className="text-[11px] font-bold text-gray-500 mb-2">신뢰기관 바로가기</p>
-              <div className="grid grid-cols-3 gap-2">
-                {TRUST_LINKS.map(({ label, desc, href, Icon }) => (
-                  <a
-                    key={label}
-                    href={href}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    onClick={() => setMobileMenuOpen(false)}
-                    className="flex flex-col items-center gap-1 px-2 py-2.5 border border-gray-200 hover:border-accent transition-colors text-center"
-                  >
-                    <Icon size={14} className="text-accent" />
-                    <span className="text-[11px] font-bold text-gray-800 whitespace-nowrap">{label}</span>
-                    <span className="text-[9.5px] text-gray-500 leading-tight whitespace-nowrap">{desc}</span>
-                  </a>
-                ))}
-              </div>
-              <p className="text-[10px] text-gray-400 mt-2 leading-relaxed">
-                <ExternalLink size={9} className="inline -mt-0.5 mr-0.5" />
-                새 탭에서 외부 사이트로 연결됩니다.
-              </p>
-            </div>
           </aside>
         </div>
       )}

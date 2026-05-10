@@ -123,7 +123,7 @@ function GuideContent() {
             <div className="max-w-[800px] mx-auto space-y-4">
               <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
                 {[
-                  { step: 1, title: '제휴 신청', desc: '사업자 정보와 메신저 연락처를 제출합니다.' },
+                  { step: 1, title: '제휴 신청', desc: '사업자 정보와 연락처를 제출합니다.' },
                   { step: 2, title: '담당자 연락', desc: '영업일 기준 1-2일 내 담당자가 연락드립니다.' },
                   { step: 3, title: '등록 완료', desc: '광고 게시 및 상담 문의가 시작됩니다.' },
                 ].map(s => (
@@ -150,7 +150,7 @@ function GuideContent() {
                       <tr className="border-b border-gray-100">
                         <td className="py-2 px-3"><span className="badge bg-yellow-50 text-yellow-600">프리미엄</span></td>
                         <td className="py-2 px-3 text-gray-600">메인 상단 + 지역별/상품별 상단</td>
-                        <td className="py-2 px-3 text-gray-500">우선 배치 + 카카오톡 노출</td>
+                        <td className="py-2 px-3 text-gray-500">우선 배치 + 사이드바 노출</td>
                       </tr>
                       <tr className="border-b border-gray-100">
                         <td className="py-2 px-3"><span className="badge bg-blue-50 text-blue-600">스탠다드</span></td>

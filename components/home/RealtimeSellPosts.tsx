@@ -1,4 +1,7 @@
+'use client';
+
 import Link from 'next/link';
+import { useMemo } from 'react';
 import { ChevronRight, Tag } from 'lucide-react';
 import type { DBPost, DBUser } from '@/lib/types';
 import { getCategoryName } from '@/data/mock';
@@ -8,6 +11,16 @@ interface Props {
   loading?: boolean;
   /** 매입업체 옆 사이드바 모드 (1열, 더 컴팩트) */
   sidebar?: boolean;
+}
+
+/** Fisher-Yates 셔플 — 새로고침마다 노출 순서 100% 랜덤 */
+function shuffle<T>(arr: T[]): T[] {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
 }
 
 function timeAgo(iso: string): string {
@@ -25,6 +38,8 @@ function timeAgo(iso: string): string {
 
 export default function RealtimeSellPosts({ posts, loading, sidebar = false }: Props) {
   const limit = sidebar ? 10 : 12;
+  // 새로고침마다 100% 랜덤 노출 (PDF: '모든 광고에서 업체 위치 랜덤')
+  const shuffled = useMemo(() => shuffle(posts).slice(0, limit), [posts, limit]);
   return (
     <section className={`bg-white border border-gray-200 ${sidebar ? 'h-full flex flex-col' : 'mb-5'}`}>
       <div className="flex items-center justify-between px-4 py-3 border-b border-gray-200 bg-gray-50">
@@ -57,7 +72,7 @@ export default function RealtimeSellPosts({ posts, loading, sidebar = false }: P
         </div>
       ) : (
         <div className={sidebar ? 'flex-1 flex flex-col' : 'grid grid-cols-1 md:grid-cols-2 gap-x-0'}>
-          {posts.slice(0, limit).map((post) => {
+          {shuffled.map((post) => {
             const isNew = Date.now() - new Date(post.created_at).getTime() < 86400000;
             return (
               <Link
