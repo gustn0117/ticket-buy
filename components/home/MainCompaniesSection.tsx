@@ -55,7 +55,7 @@ function DemoCard({ item, index }: { item: typeof DEMO_COMPANIES[number]; index:
   return (
     <div className="company-card card-hover group flex flex-col">
       <Link href="/register-business" className="block">
-        <div className="relative h-[110px] md:h-[170px] overflow-hidden bg-gray-800">
+        <div className="relative h-[75px] md:h-[130px] overflow-hidden bg-gray-800">
           <img
             src={fallbackPhoto}
             alt=""

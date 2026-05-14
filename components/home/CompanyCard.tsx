@@ -39,7 +39,7 @@ export default function CompanyCard({ company, isNew, fallbackIndex = 0 }: Compa
         className="block"
       >
         {/* Image header with overlay title */}
-        <div className="relative h-[110px] md:h-[170px] overflow-hidden bg-gray-800">
+        <div className="relative h-[75px] md:h-[130px] overflow-hidden bg-gray-800">
           <img
             src={company.image_url || fallbackPhoto}
             alt={company.name}
