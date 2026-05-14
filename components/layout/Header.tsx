@@ -288,8 +288,8 @@ export default function Header() {
               </div>
             </form>
 
-            {/* 그룹형 메뉴 (대출나라 스타일) */}
-            <nav className="py-1">
+            {/* 그룹형 메뉴 (대출나라 스타일) — 공백 최소화 */}
+            <nav className="py-0">
               {[
                 {
                   group: '최근본업체',
@@ -347,13 +347,13 @@ export default function Header() {
                 },
               ].map((g) => (
                 <div key={g.group} className="border-b border-gray-200">
-                  <p className="px-4 pt-3 pb-1 text-[12px] font-bold text-accent">{g.group}</p>
+                  <p className="px-4 pt-1.5 pb-0 text-[12px] font-bold text-accent">{g.group}</p>
                   {g.items.map((m) => (
                     <Link
                       key={m.label + m.href}
                       href={m.href}
                       onClick={() => setMobileMenuOpen(false)}
-                      className="block px-5 py-2 text-[12.5px] text-gray-700 hover:bg-gray-50"
+                      className="block px-5 py-0.5 text-[12.5px] text-gray-700 hover:bg-gray-50"
                     >
                       · {m.label}
                     </Link>

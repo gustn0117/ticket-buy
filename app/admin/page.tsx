@@ -2,7 +2,8 @@
 
 import { useState, useEffect, useRef } from 'react';
 import { supabase } from '@/lib/supabase';
-import { getMessages, getPremiumBuyers, createNotice as apiCreateNotice, deleteNotice as apiDeleteNotice, deleteUser as apiDeleteUser, updateUser, deletePost as apiDeletePost, deleteChat as apiDeleteChat, createPremiumBuyer, updatePremiumBuyer, deletePremiumBuyer as apiDeletePremiumBuyer } from '@/lib/api';
+import { getMessages, getPremiumBuyers, createNotice as apiCreateNotice, deleteNotice as apiDeleteNotice, deleteUser as apiDeleteUser, updateUser, deletePost as apiDeletePost, deleteChat as apiDeleteChat, createPremiumBuyer, updatePremiumBuyer, deletePremiumBuyer as apiDeletePremiumBuyer, createPost } from '@/lib/api';
+import { categories as POST_CATEGORIES } from '@/data/mock';
 import ImageUpload from '@/components/ImageUpload';
 import type { DBUser, DBPost, DBNotice, DBChat, DBMessage, DBPremiumBuyer, DBCommunityPost, CommunityCategory } from '@/lib/types';
 import type { Ad, AdSlot } from '@/lib/ads';
@@ -83,6 +84,36 @@ export default function AdminPage() {
     priority: 0,
     is_active: true,
   });
+
+  // 줄광고(구매글) 빠른 등록 폼 — 상품권 삽니다 list / 실시간 판매문의 list에 즉시 노출
+  const [showLineAdForm, setShowLineAdForm] = useState(false);
+  const [lineAdForm, setLineAdForm] = useState({
+    type: 'buy' as 'buy' | 'sell',
+    title: '',
+    category: 'lotte',
+    price: 0,
+    description: '',
+  });
+  const resetLineAdForm = () => {
+    setLineAdForm({ type: 'buy', title: '', category: 'lotte', price: 0, description: '' });
+    setShowLineAdForm(false);
+  };
+  const saveLineAd = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!lineAdForm.title.trim()) return;
+    await createPost({
+      type: lineAdForm.type,
+      title: lineAdForm.title.trim(),
+      category: lineAdForm.category,
+      price: Number(lineAdForm.price) || 0,
+      description: lineAdForm.description.trim(),
+      author_id: null,
+      guest_name: '관리자 등록',
+      status: 'active',
+    });
+    resetLineAdForm();
+    fetchData();
+  };
 
   const [loginError, setLoginError] = useState('');
   const [sessionChecked, setSessionChecked] = useState(false);
@@ -615,7 +646,60 @@ export default function AdminPage() {
 
       {/* ─── Posts ─── */}
       {!loading && tab === 'posts' && (
-        <div className="card overflow-hidden">
+        <div className="space-y-4">
+          {/* 줄광고(상품권 삽니다/팝니다) 빠른 등록 */}
+          <div className="flex items-center justify-between">
+            <div className="text-[12px] text-zinc-500">
+              <span className="font-bold text-zinc-700">줄광고 안내</span> — 여기 등록된 글이 메인의 "상품권 삽니다" 줄광고 목록과 "실시간 판매문의"에 자동 노출됩니다.
+            </div>
+            <button onClick={() => setShowLineAdForm(s => !s)} className="btn-primary h-9 px-3 text-[12px] inline-flex items-center gap-1">
+              <Plus size={12} /> 줄광고 빠른 등록
+            </button>
+          </div>
+
+          {showLineAdForm && (
+            <form onSubmit={saveLineAd} className="card p-4 space-y-3 animate-fade-in">
+              <div className="flex items-center justify-between">
+                <h3 className="text-[14px] font-semibold">새 줄광고 등록</h3>
+                <button type="button" onClick={resetLineAdForm} className="text-zinc-400 hover:text-zinc-700 text-[12px]">취소</button>
+              </div>
+              <div className="grid grid-cols-3 gap-3">
+                <div>
+                  <label className="block text-[11px] font-medium text-zinc-600 mb-1">유형 *</label>
+                  <select value={lineAdForm.type} onChange={e => setLineAdForm(p => ({ ...p, type: e.target.value as 'buy' | 'sell' }))} className="input h-9">
+                    <option value="buy">상품권 삽니다 (구매)</option>
+                    <option value="sell">상품권 팝니다 (판매)</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-[11px] font-medium text-zinc-600 mb-1">상품권 종류 *</label>
+                  <select value={lineAdForm.category} onChange={e => setLineAdForm(p => ({ ...p, category: e.target.value }))} className="input h-9">
+                    {POST_CATEGORIES.filter(c => c.id !== 'all').map(c => (
+                      <option key={c.id} value={c.id}>{c.name}</option>
+                    ))}
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-[11px] font-medium text-zinc-600 mb-1">금액 (원) *</label>
+                  <input type="number" value={lineAdForm.price} onChange={e => setLineAdForm(p => ({ ...p, price: Number(e.target.value) }))} className="input h-9" placeholder="50000" />
+                </div>
+              </div>
+              <div>
+                <label className="block text-[11px] font-medium text-zinc-600 mb-1">제목 *</label>
+                <input value={lineAdForm.title} onChange={e => setLineAdForm(p => ({ ...p, title: e.target.value }))} className="input h-9" required placeholder="신세계 상품권 삽니다" />
+              </div>
+              <div>
+                <label className="block text-[11px] font-medium text-zinc-600 mb-1">설명 (선택)</label>
+                <textarea value={lineAdForm.description} onChange={e => setLineAdForm(p => ({ ...p, description: e.target.value }))} className="input min-h-15 py-2" placeholder="추가 설명" />
+              </div>
+              <div className="flex justify-end gap-2">
+                <button type="button" onClick={resetLineAdForm} className="btn-secondary h-9">취소</button>
+                <button type="submit" className="btn-primary h-9">등록</button>
+              </div>
+            </form>
+          )}
+
+          <div className="card overflow-hidden">
           <table className="w-full text-[13px]">
             <thead><tr className="bg-zinc-50 border-b border-zinc-200">
               <th className="table-header text-left py-2.5 px-4">유형</th>
@@ -643,6 +727,7 @@ export default function AdminPage() {
               {posts.length === 0 && <tr><td colSpan={8} className="py-8 text-center text-zinc-400">게시글이 없습니다.</td></tr>}
             </tbody>
           </table>
+          </div>
         </div>
       )}
 
@@ -882,6 +967,13 @@ export default function AdminPage() {
       {/* ─── Premium Buyers ─── */}
       {!loading && tab === 'premium' && (
         <div className="space-y-4">
+          {/* 프리미엄 광고 통합 안내 */}
+          <div className="card bg-amber-50 border-amber-200 p-3 text-[12px] text-zinc-700">
+            <p className="font-bold mb-1">📢 프리미엄 업체 = 메인광고 + 프리미엄 배너 + 사이드 + 지역/상품별 광고</p>
+            <p className="text-[11.5px] text-zinc-600 leading-relaxed">
+              여기에 등록한 업체가 ▶ <b>메인 등록업체</b>(5열 그리드) ▶ <b>프리미엄 배너 슬라이더</b> ▶ <b>좌측 사이드바</b> ▶ <b>지역별/상품별 카테고리 페이지</b>에 모두 자동 노출됩니다. (지역/브랜드 입력으로 카테고리 필터링)
+            </p>
+          </div>
           {showPremiumForm && (
             <form onSubmit={savePremium} className="card p-5 space-y-3 animate-fade-in">
               <div className="flex items-center justify-between mb-1">
@@ -1063,6 +1155,13 @@ export default function AdminPage() {
       {/* ─── Ads ─── */}
       {!loading && tab === 'ads' && (
         <div className="space-y-4">
+          {/* 광고 통합 안내 */}
+          <div className="card bg-blue-50 border-blue-200 p-3 text-[12px] text-zinc-700">
+            <p className="font-bold mb-1">📢 슬롯 광고 등록 (이미지/링크 배너)</p>
+            <p className="text-[11.5px] text-zinc-600 leading-relaxed">
+              여기서는 <b>이미지 배너 광고</b>를 페이지 슬롯(메인 상단/중간, 사이드바, 푸터 등)에 등록합니다. <b>업체 카드형 광고</b>(메인 등록업체/프리미엄 배너/지역상품별)는 <b>프리미엄 탭</b>에서, <b>줄광고</b>(상품권 삽니다 목록)는 <b>게시글 탭</b>의 "줄광고 빠른 등록"에서 추가하세요.
+            </p>
+          </div>
           {/* 광고위치 및 비용안내 — 인라인 편집 */}
           <AdPricingEditor />
 
