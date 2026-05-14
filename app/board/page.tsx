@@ -68,7 +68,7 @@ function BoardContent() {
 
         <div className="flex-1 min-w-0">
           {/* AD: 게시판 상단 (960x90) */}
-          <AdBanner slot="board_top" hideEmpty className="mb-4" />
+          <AdBanner slot="board_top" className="mb-4" />
 
           {/* Tabs */}
           <div className="bg-white border border-gray-200 mb-4">
@@ -167,7 +167,7 @@ function BoardContent() {
                       />
                       {/* AD: 게시판 목록 사이 (960x60) — 페이지 중앙에 1회 삽입 */}
                       {showInlineAd && (
-                        <AdBanner slot="board_between" hideEmpty className="mx-4 my-2" />
+                        <AdBanner slot="board_between" className="mx-4 my-2" />
                       )}
                     </div>
                   );

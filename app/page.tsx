@@ -60,7 +60,7 @@ export default function Home() {
 
           <div className="flex-1 min-w-0">
             {/* AD: 메인 히어로 배너 (1140 x 200) */}
-            <AdBanner slot="hero_banner" hideEmpty className="mb-5" />
+            <AdBanner slot="hero_banner" className="mb-5" />
 
             {/* 메인 등록업체 (가장 위) */}
             <MainCompaniesSection buyers={buyers} loading={loading} />
@@ -74,10 +74,10 @@ export default function Home() {
         </div>
 
         {/* AD: 메인 상단 — 수정된 BuyerFinder 밑 일반 배너 1개 (1140 x 90) */}
-        <AdBanner slot="main_top" hideEmpty className="mb-5" />
+        <AdBanner slot="main_top" className="mb-5" />
 
         {/* AD: 메인 중간 (1140 x 90) */}
-        <AdBanner slot="main_middle" hideEmpty className="mb-5" />
+        <AdBanner slot="main_middle" className="mb-5" />
 
         {/* 3. 상품권 삽니다 (줄광고) */}
         <section className="mb-6">

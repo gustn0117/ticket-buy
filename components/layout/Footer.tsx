@@ -19,7 +19,7 @@ export default function Footer() {
       <div className="hidden md:block">
       {/* AD: 푸터 상단 배너 (1140x80) */}
       <div className="container-main pt-4">
-        <AdBanner slot="footer_banner" hideEmpty />
+        <AdBanner slot="footer_banner" />
       </div>
 
       {/* Footer links bar */}

@@ -252,7 +252,7 @@ export default function PostDetailPage({ params }: { params: Promise<{ id: strin
           </article>
 
           {/* AD: 게시글 상세 하단 (740x90) */}
-          <AdBanner slot="detail_bottom" hideEmpty className="mb-4" />
+          <AdBanner slot="detail_bottom" className="mb-4" />
         </div>
 
         <RightSidebar />

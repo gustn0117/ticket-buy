@@ -252,7 +252,7 @@ export default function Header() {
           {/* 우측 슬라이드 패널 */}
           <aside
             onClick={(e) => e.stopPropagation()}
-            className="absolute right-0 top-0 bottom-0 w-[78%] max-w-[340px] bg-white shadow-2xl overflow-y-auto"
+            className="absolute right-0 top-0 bottom-0 w-[42%] max-w-[200px] bg-white shadow-2xl overflow-y-auto"
           >
             {/* 드로어 헤더 */}
             <div className="flex items-center justify-between px-4 py-3 border-b border-gray-200 bg-accent text-white">

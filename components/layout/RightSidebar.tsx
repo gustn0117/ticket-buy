@@ -8,7 +8,7 @@ export default function RightSidebar() {
   return (
     <aside className="w-[180px] shrink-0 hidden xl:block space-y-2.5">
       {/* AD: 사이드바 상단 (300x250) — 폭에 맞춰 자동 축소 */}
-      <AdBanner slot="sidebar_top" hideEmpty />
+      <AdBanner slot="sidebar_top" />
 
       {/* 스폰서링크 (자체 promo) */}
       <div className="sidebar-box">
@@ -30,7 +30,7 @@ export default function RightSidebar() {
       </div>
 
       {/* AD: 사이드바 하단 (300x250) */}
-      <AdBanner slot="sidebar_bottom" hideEmpty />
+      <AdBanner slot="sidebar_bottom" />
     </aside>
   );
 }

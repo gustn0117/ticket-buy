@@ -11,7 +11,7 @@ export default function ChatPage() {
   return (
     <div className="max-w-[640px] mx-auto px-5 py-10">
       {/* AD: 채팅 상단 (320x60) */}
-      <AdBanner slot="chat_top" hideEmpty className="mb-6 mx-auto" />
+      <AdBanner slot="chat_top" className="mb-6 mx-auto" />
 
       {!isLoggedIn ? (
         <div className="text-center py-10">
